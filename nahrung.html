@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Animal Based – Rezepte & Gewürze</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bone: #f5ede0;
+    --cream: #faf6f0;
+    --bark: #2c1a0e;
+    --ember: #c94b1a;
+    --fat: #e8c98a;
+    --ash: #8a7060;
+    --char: #1a0f08;
+    --smoke: #d4c4b0;
+  }
+ 
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+ 
+  body {
+    background: var(--char);
+    color: var(--bone);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+ 
+  /* HERO */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 4rem 2rem;
+    background: radial-gradient(ellipse at 60% 30%, #3d1a08 0%, #1a0f08 60%);
+    overflow: hidden;
+  }
+ 
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 80px, rgba(255,255,255,0.015) 80px, rgba(255,255,255,0.015) 81px),
+      repeating-linear-gradient(90deg, transparent, transparent 80px, rgba(255,255,255,0.015) 80px, rgba(255,255,255,0.015) 81px);
+    pointer-events: none;
+  }
+ 
+  .flame-ring {
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    border: 1px solid rgba(201, 75, 26, 0.15);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: pulse 4s ease-in-out infinite;
+  }
+  .flame-ring:nth-child(2) { width: 800px; height: 800px; animation-delay: 1s; opacity: 0.5; }
+  .flame-ring:nth-child(3) { width: 1000px; height: 1000px; animation-delay: 2s; opacity: 0.25; }
+ 
+  @keyframes pulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.4; }
+    50% { transform: translate(-50%, -50%) scale(1.05); opacity: 0.15; }
+  }
+ 
+  .hero-tag {
+    font-size: 0.65rem;
+    letter-spacing: 0.4em;
+    color: var(--ember);
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.2s forwards;
+  }
+ 
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3.5rem, 10vw, 8rem);
+    font-weight: 900;
+    line-height: 0.9;
+    color: var(--bone);
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.4s forwards;
+  }
+ 
+  .hero-title em {
+    font-style: italic;
+    color: var(--fat);
+  }
+ 
+  .hero-sub {
+    font-size: 0.8rem;
+    color: var(--ash);
+    letter-spacing: 0.15em;
+    max-width: 400px;
+    line-height: 1.8;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.6s forwards;
+  }
+ 
+  .scroll-hint {
+    position: absolute;
+    bottom: 3rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    color: var(--ash);
+    opacity: 0;
+    animation: fadeUp 0.8s ease 1s forwards;
+  }
+ 
+  .scroll-line {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--ember), transparent);
+    animation: scrollLine 2s ease-in-out infinite;
+  }
+ 
+  @keyframes scrollLine {
+    0%, 100% { opacity: 0.3; transform: scaleY(1); }
+    50% { opacity: 1; transform: scaleY(1.2); }
+  }
+ 
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+ 
+  /* NAV */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(26, 15, 8, 0.95);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(201, 75, 26, 0.2);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+ 
+  nav a {
+    color: var(--ash);
+    text-decoration: none;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 0.4rem 1rem;
+    border: 1px solid transparent;
+    transition: all 0.3s;
+  }
+ 
+  nav a:hover {
+    color: var(--bone);
+    border-color: var(--ember);
+  }
+ 
+  /* SECTIONS */
+  section {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 6rem 2rem;
+  }
+ 
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 2rem;
+    margin-bottom: 4rem;
+  }
+ 
+  .section-num {
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    color: var(--ember);
+    white-space: nowrap;
+  }
+ 
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    color: var(--bone);
+    line-height: 1.1;
+  }
+ 
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, var(--ember), transparent);
+  }
+ 
+  /* RECIPE CARDS */
+  .recipes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2px;
+  }
+ 
+  .recipe-card {
+    background: rgba(44, 26, 14, 0.4);
+    border: 1px solid rgba(138, 112, 96, 0.15);
+    padding: 2.5rem;
+    cursor: pointer;
+    transition: all 0.4s;
+    position: relative;
+    overflow: hidden;
+  }
+ 
+  .recipe-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px;
+    height: 0;
+    background: var(--ember);
+    transition: height 0.4s;
+  }
+ 
+  .recipe-card:hover::before { height: 100%; }
+  .recipe-card:hover {
+    background: rgba(44, 26, 14, 0.7);
+    transform: translateY(-2px);
+  }
+ 
+  .card-category {
+    font-size: 0.55rem;
+    letter-spacing: 0.35em;
+    color: var(--ember);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+ 
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--bone);
+  }
+ 
+  .card-desc {
+    font-size: 0.75rem;
+    color: var(--ash);
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+  }
+ 
+  .card-meta {
+    display: flex;
+    gap: 1.5rem;
+    font-size: 0.6rem;
+    color: var(--smoke);
+    letter-spacing: 0.1em;
+  }
+ 
+  .card-meta span::before {
+    content: '— ';
+    color: var(--ember);
+  }
+ 
+  .card-expand-btn {
+    margin-top: 1.5rem;
+    background: none;
+    border: 1px solid rgba(201, 75, 26, 0.4);
+    color: var(--ember);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    padding: 0.6rem 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    width: 100%;
+  }
+ 
+  .card-expand-btn:hover {
+    background: var(--ember);
+    color: var(--bone);
+  }
+ 
+  /* MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 1000;
+    backdrop-filter: blur(8px);
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+ 
+  .modal-overlay.active { display: flex; }
+ 
+  .modal {
+    background: var(--char);
+    border: 1px solid rgba(201, 75, 26, 0.3);
+    max-width: 700px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    position: relative;
+  }
+ 
+  .modal-header {
+    background: linear-gradient(135deg, #2c1a0e, #1a0f08);
+    padding: 2.5rem;
+    border-bottom: 1px solid rgba(201, 75, 26, 0.2);
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+ 
+  .modal-category {
+    font-size: 0.55rem;
+    letter-spacing: 0.35em;
+    color: var(--ember);
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+ 
+  .modal-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--bone);
+    margin-bottom: 0.75rem;
+  }
+ 
+  .modal-desc {
+    font-size: 0.75rem;
+    color: var(--ash);
+    line-height: 1.7;
+  }
+ 
+  .modal-close {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    background: none;
+    border: 1px solid rgba(138, 112, 96, 0.3);
+    color: var(--ash);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    padding: 0.4rem 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+ 
+  .modal-close:hover { color: var(--bone); border-color: var(--ember); }
+ 
+  .modal-body { padding: 2.5rem; }
+ 
+  .modal-section-title {
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    color: var(--ember);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+ 
+  .ingredients-list {
+    list-style: none;
+    margin-bottom: 2.5rem;
+  }
+ 
+  .ingredients-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid rgba(138, 112, 96, 0.1);
+    font-size: 0.75rem;
+  }
+ 
+  .ingredients-list li:last-child { border-bottom: none; }
+ 
+  .ing-name { color: var(--bone); }
+  .ing-amount { color: var(--fat); font-weight: 500; }
+ 
+  .steps-list {
+    list-style: none;
+  }
+ 
+  .step-item {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+ 
+  .step-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    color: var(--ember);
+    opacity: 0.4;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+ 
+  .step-content { flex: 1; }
+ 
+  .step-title {
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    color: var(--fat);
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+ 
+  .step-text {
+    font-size: 0.75rem;
+    color: var(--smoke);
+    line-height: 1.7;
+  }
+ 
+  .step-time {
+    font-size: 0.6rem;
+    color: var(--ember);
+    margin-top: 0.4rem;
+    letter-spacing: 0.1em;
+  }
+ 
+  .modal-note {
+    margin-top: 2rem;
+    padding: 1rem 1.5rem;
+    border-left: 2px solid var(--ember);
+    background: rgba(201, 75, 26, 0.05);
+    font-size: 0.72rem;
+    color: var(--ash);
+    line-height: 1.7;
+  }
+ 
+  /* SPICE SECTION */
+  .spice-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+ 
+  .spice-group {
+    padding: 2rem;
+    border: 1px solid rgba(138, 112, 96, 0.15);
+    background: rgba(44, 26, 14, 0.3);
+    position: relative;
+  }
+ 
+  .spice-group-status {
+    position: absolute;
+    top: -1px;
+    left: 2rem;
+    font-size: 0.55rem;
+    letter-spacing: 0.3em;
+    padding: 0.3rem 0.8rem;
+    text-transform: uppercase;
+  }
+ 
+  .status-ok { background: rgba(120, 180, 80, 0.2); color: #a0d060; }
+  .status-warn { background: rgba(230, 180, 60, 0.2); color: #e0c060; }
+  .status-no { background: rgba(201, 75, 26, 0.2); color: var(--ember); }
+ 
+  .spice-group-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    margin-top: 0.5rem;
+  }
+ 
+  .spice-items {
+    list-style: none;
+  }
+ 
+  .spice-items li {
+    padding: 0.35rem 0;
+    font-size: 0.72rem;
+    color: var(--ash);
+    border-bottom: 1px solid rgba(138, 112, 96, 0.07);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+ 
+  .spice-items li::before { content: '·'; color: var(--ember); font-size: 1rem; }
+  .spice-items li:last-child { border-bottom: none; }
+ 
+  /* MIXES SECTION */
+  .mixes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+ 
+  .mix-card {
+    border: 1px solid rgba(138, 112, 96, 0.15);
+    background: rgba(44, 26, 14, 0.3);
+    overflow: hidden;
+  }
+ 
+  .mix-card-header {
+    padding: 1.5rem 2rem;
+    background: linear-gradient(135deg, rgba(201, 75, 26, 0.15), transparent);
+    border-bottom: 1px solid rgba(138, 112, 96, 0.15);
+  }
+ 
+  .mix-card-tag {
+    font-size: 0.55rem;
+    letter-spacing: 0.3em;
+    color: var(--ember);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+ 
+  .mix-card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    color: var(--bone);
+  }
+ 
+  .mix-card-body { padding: 1.5rem 2rem; }
+ 
+  .mix-ingredient {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.4rem 0;
+    font-size: 0.7rem;
+    border-bottom: 1px solid rgba(138, 112, 96, 0.07);
+  }
+ 
+  .mix-ingredient:last-child { border-bottom: none; }
+  .mix-ing-name { color: var(--smoke); }
+  .mix-ing-amount { color: var(--fat); }
+ 
+  .mix-tip {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(201, 75, 26, 0.2);
+    font-size: 0.65rem;
+    color: var(--ash);
+    line-height: 1.6;
+  }
+ 
+  /* FOOTER */
+  footer {
+    border-top: 1px solid rgba(138, 112, 96, 0.15);
+    padding: 3rem 2rem;
+    text-align: center;
+  }
+ 
+  .footer-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-style: italic;
+    color: var(--ash);
+    margin-bottom: 0.75rem;
+  }
+ 
+  .footer-note {
+    font-size: 0.65rem;
+    color: rgba(138, 112, 96, 0.5);
+    letter-spacing: 0.15em;
+  }
+ 
+  /* DIVIDER */
+  .divider {
+    border: none;
+    border-top: 1px solid rgba(138, 112, 96, 0.1);
+    margin: 0 2rem;
+  }
+ 
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--char); }
+  ::-webkit-scrollbar-thumb { background: var(--ember); }
+ 
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    .section-header { flex-wrap: wrap; }
+    .section-line { display: none; }
+    nav { gap: 0.25rem; }
+    nav a { font-size: 0.55rem; padding: 0.3rem 0.6rem; }
+  }
+</style>
+</head>
+<body>
+ 
+<!-- HERO -->
+<div class="hero">
+  <div class="flame-ring"></div>
+  <div class="flame-ring"></div>
+  <div class="flame-ring"></div>
+  <p class="hero-tag">Ernährung · Rezepte · Gewürze</p>
+  <h1 class="hero-title">Animal<br><em>Based</em></h1>
+  <p class="hero-sub">Ursprünglich essen. Tierische Nahrung, natürliche Gewürze, echte Nährstoffe.</p>
+  <div class="scroll-hint">
+    <div class="scroll-line"></div>
+    <span>Scrollen</span>
+  </div>
+</div>
+ 
+<!-- NAV -->
+<nav>
+  <a href="#rezepte">Rezepte</a>
+  <a href="#gewuerze">Erlaubte Gewürze</a>
+  <a href="#mischungen">Eigene Mischungen</a>
+</nav>
+ 
+<!-- REZEPTE -->
+<section id="rezepte">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <h2 class="section-title">Rezepte</h2>
+    <div class="section-line"></div>
+  </div>
+ 
+  <div class="recipes-grid" id="recipesGrid"></div>
+</section>
+ 
+<hr class="divider">
+ 
+<!-- GEWÜRZE -->
+<section id="gewuerze">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <h2 class="section-title">Gewürze</h2>
+    <div class="section-line"></div>
+  </div>
+ 
+  <div class="spice-grid">
+    <div class="spice-group">
+      <span class="spice-group-status status-ok">✓ Problemlos</span>
+      <h3 class="spice-group-title">Immer erlaubt</h3>
+      <ul class="spice-items">
+        <li>Meersalz / Himalayasalz / keltisches Salz</li>
+        <li>Schwarzer Pfeffer (frisch gemahlen)</li>
+        <li>Rosmarin (frisch oder getrocknet)</li>
+        <li>Thymian</li>
+        <li>Oregano</li>
+        <li>Lorbeerblatt</li>
+        <li>Knoblauch (frisch)</li>
+        <li>Ingwer (frisch)</li>
+        <li>Kurkuma (frisch oder gemahlen)</li>
+        <li>Dill</li>
+        <li>Zimt (Ceylon)</li>
+        <li>Roher, ungefilterter Honig</li>
+        <li>Knochenbrühe (zum Würzen)</li>
+      </ul>
+    </div>
+ 
+    <div class="spice-group">
+      <span class="spice-group-status status-warn">⚠ Mit Vorsicht</span>
+      <h3 class="spice-group-title">In Maßen</h3>
+      <ul class="spice-items">
+        <li>Chilipulver (Nachtschattengewächs)</li>
+        <li>Paprikapulver (Nachtschattengewächs)</li>
+        <li>Apfelessig (roh, in kleinen Mengen)</li>
+        <li>Fertiggewürzmischungen ohne Zusatzstoffe</li>
+        <li>Getrocknete Kräuter in großen Mengen</li>
+      </ul>
+    </div>
+ 
+    <div class="spice-group">
+      <span class="spice-group-status status-no">✗ Vermeiden</span>
+      <h3 class="spice-group-title">Nicht empfohlen</h3>
+      <ul class="spice-items">
+        <li>Fertige Gewürzmischungen mit Maltodextrin</li>
+        <li>Glutamat / MSG</li>
+        <li>Rapsöl-Marinaden & Dressings</li>
+        <li>Hefeextrakt</li>
+        <li>Künstliche Aromen & Farbstoffe</li>
+        <li>Sojasauce / Tamari</li>
+        <li>Zucker (außer rohem Honig)</li>
+      </ul>
+    </div>
+  </div>
+</section>
+ 
+<hr class="divider">
+ 
+<!-- MISCHUNGEN -->
+<section id="mischungen">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <h2 class="section-title">Eigene Mischungen</h2>
+    <div class="section-line"></div>
+  </div>
+ 
+  <div class="mixes-grid">
+    <div class="mix-card">
+      <div class="mix-card-header">
+        <p class="mix-card-tag">Fleisch · Steak · Lamm</p>
+        <h3 class="mix-card-title">Animal-Based Steak-Rub</h3>
+      </div>
+      <div class="mix-card-body">
+        <div class="mix-ingredient"><span class="mix-ing-name">Grobes Meersalz</span><span class="mix-ing-amount">2 EL</span></div>
+        <div class="mix-ingredient"><span class="mix-ing-name">Schwarzer Pfeffer (gemahlen)</span><span class="mix-ing-amount">1 EL</span></div>
+        <div class="mix-ingredient"><span class="mix-ing-name">Getrockneter Rosmarin</span><span class="mix-ing-amount">1 TL</span></div>
+        <div class="mix-ingredient"><span class="mix-ing-name">Getrockneter Thymian</span><span class="mix-ing-amount">1 TL</span></div>
+        <div class="mix-ingredient"><span class="mix-ing-name">Knoblauchpulver (100% rein)</span><span class="mix-ing-amount">½ TL</span></div>
+        <p class="mix-tip">💡 Fleisch nach dem Würzen 1–2 Std. offen im Kühlschrank trocknen lassen (Dry Brine) für eine stärkere Kruste.</p>
+      </div>
+    </div>
+ 
+    <div class="mix-card">
+      <div class="mix-card-header">
+        <p class="mix-card-tag">Lachs · Makrele · Sardinen</p>
+        <h3 class="mix-card-title">Fisch-Gewürzmischung</h3>
+      </div>
+      <div class="mix-card-body">
+        <div class="mix-ingredient"><span class="mix-ing-name">Feines Meersalz</span><span class="mix-ing-amount">2 EL</span></div>
+        <div class="mix-ingredient"><span class="mix-ing-name">Schwarzer Pfeffer</span><span class="mix-ing-amount">½ TL</span></div>
+        <div class="mix-ingredient"><span class="mix-ing-name">Getrockneter Dill</span><span class="mix-ing-amount">1 TL</span></div>
+        <div class="mix-ingredient"><span class="mix-ing-name">Getrockneter Thymian</span><span class="mix-ing-amount">½ TL</span></div>
+        <div class="mix-ingredient"><span class="mix-ing-name">Zitronenschale (getrocknet)</span><span class="mix-ing-amount">1 TL</span></div>
+        <p class="mix-tip">💡 Frische Zitronenschale kurz vor dem Auftragen hinzufügen für maximales Aroma.</p>
+      </div>
+    </div>
+ 
+    <div class="mix-card">
+      <div class="mix-card-header">
+        <p class="mix-card-tag">Eier · Leber · Innereien</p>
+        <h3 class="mix-card-title">Eier & Innereien Mix</h3>
+      </div>
+      <div class="mix-card-body">
+        <div class="mix-ingredient"><span class="mix-ing-name">Feines Meersalz</span><span class="mix-ing-amount">1 EL</span></div>
+        <div class="mix-ingredient"><span class="mix-ing-name">Schwarzer Pfeffer</span><span class="mix-ing-amount">½ TL</span></div>
+        <div class="mix-ingredient"><span class="mix-ing-name">Getrockneter Oregano</span><span class="mix-ing-amount">1 TL</span></div>
+        <div class="mix-ingredient"><span class="mix-ing-name">Rosmarin (fein gemahlen)</span><span class="mix-ing-amount">½ TL</span></div>
+        <div class="mix-ingredient"><span class="mix-ing-name">Kurkuma</span><span class="mix-ing-amount">¼ TL</span></div>
+        <p class="mix-tip">💡 Kurkuma immer mit schwarzem Pfeffer kombinieren – das erhöht die Aufnahme von Curcumin um ein Vielfaches.</p>
+      </div>
+    </div>
+  </div>
+</section>
+ 
+<footer>
+  <p class="footer-title">Iss ursprünglich. Leb natürlich.</p>
+  <p class="footer-note">Animal Based Diet · Alle Rezepte ohne Getreide, Hülsenfrüchte & Pflanzenöle</p>
+</footer>
+ 
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <button class="modal-close" onclick="closeModalDirect()">✕ Schließen</button>
+      <p class="modal-category" id="modalCategory"></p>
+      <h2 class="modal-title" id="modalTitle"></h2>
+      <p class="modal-desc" id="modalDesc"></p>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+ 
+<script>
+const recipes = [
+  {
+    category: "Fleisch",
+    title: "Ribeye-Steak mit Kräuterbutter",
+    desc: "Saftiges Steak mit aromatischer Butter – einfach und nährstoffreich",
+    time: "20 Min",
+    servings: "2 Personen",
+    difficulty: "Einfach",
+    ingredients: [
+      { name: "Ribeye-Steak (grasgefüttert)", amount: "2 Stück" },
+      { name: "Butter (grasgefüttert)", amount: "50 g" },
+      { name: "Meersalz", amount: "1 TL" },
+      { name: "Schwarzer Pfeffer", amount: "½ TL" },
+      { name: "Frischer Rosmarin", amount: "2 Zweige" },
+      { name: "Knoblauchzehen", amount: "2 Stück" },
+    ],
+    steps: [
+      { title: "Steak vorbereiten", text: "Die Steaks 30 Minuten vor dem Braten aus dem Kühlschrank nehmen. Großzügig mit Meersalz und Pfeffer würzen.", time: null },
+      { title: "Pfanne erhitzen", text: "Eine Gusseisenpfanne auf höchster Stufe erhitzen, bis sie leicht raucht.", time: "3 Min" },
+      { title: "Steak anbraten", text: "Die Steaks ohne Fett in die heiße Pfanne legen und pro Seite 2–3 Minuten scharf anbraten, bis eine schöne Kruste entsteht.", time: "5 Min" },
+      { title: "Butter hinzufügen", text: "Hitze reduzieren, Butter, Rosmarin und Knoblauch dazugeben. Die Steaks mehrfach mit der flüssigen Butter übergießen (Arrosieren).", time: "1 Min" },
+      { title: "Ruhen lassen", text: "Steaks aus der Pfanne nehmen und auf einem Brett 5 Minuten ruhen lassen, damit der Fleischsaft sich verteilt.", time: "5 Min" },
+      { title: "Servieren", text: "In Scheiben schneiden und mit dem Bratensaft aus der Pfanne beträufeln. Guten Appetit!", time: null },
+    ],
+    note: "Tipp: Für eine intensivere Kruste das Fleisch nach dem Würzen offen im Kühlschrank 1–2 Stunden trocknen lassen (Dry Brine)."
+  },
+  {
+    category: "Innereien",
+    title: "Rinderleber mit Spiegeleiern & Speck",
+    desc: "Nährstoffkönig auf dem Teller – ideal als sättigendes Frühstück oder Mittagessen",
+    time: "20 Min",
+    servings: "2 Personen",
+    difficulty: "Einfach",
+    ingredients: [
+      { name: "Rinderleber", amount: "200 g" },
+      { name: "Freilandeier", amount: "4 Stück" },
+      { name: "Speckscheiben", amount: "4 Stück" },
+      { name: "Butter", amount: "30 g" },
+      { name: "Meersalz", amount: "1 TL" },
+      { name: "Schwarzer Pfeffer", amount: "½ TL" },
+    ],
+    steps: [
+      { title: "Leber vorbereiten", text: "Die Rinderleber in ca. 1 cm dicke Scheiben schneiden. Mit Salz und Pfeffer würzen.", time: null },
+      { title: "Speck braten", text: "Die Speckscheiben in einer Pfanne ohne Fett bei mittlerer Hitze knusprig braten, herausnehmen und beiseitestellen.", time: "4 Min" },
+      { title: "Leber anbraten", text: "Im Speckfett die Butter schmelzen und die Leber bei hoher Hitze je Seite 2 Minuten braten – innen darf sie noch leicht rosa sein.", time: "4 Min" },
+      { title: "Eier braten", text: "In einer zweiten Pfanne mit etwas Butter die Eier als Spiegeleier bei niedriger Hitze braten, bis das Eiweiß gestockt ist.", time: "3 Min" },
+      { title: "Servieren", text: "Leber, Speck und Spiegeleier zusammen anrichten und sofort genießen.", time: null },
+    ],
+    note: null
+  },
+  {
+    category: "Fisch",
+    title: "Gebratener Lachs mit Blaubeer-Honig-Dip",
+    desc: "Omega-3-reich & fruchtig – eine perfekte Kombination aus Fisch und erlaubten Früchten",
+    time: "20 Min",
+    servings: "2 Personen",
+    difficulty: "Einfach",
+    ingredients: [
+      { name: "Lachsfilets (wild gefangen)", amount: "2 Stück" },
+      { name: "Butter", amount: "30 g" },
+      { name: "Meersalz", amount: "1 TL" },
+      { name: "Blaubeeren", amount: "100 g" },
+      { name: "Roher Honig", amount: "2 EL" },
+      { name: "Zitronensaft", amount: "1 EL" },
+    ],
+    steps: [
+      { title: "Dip vorbereiten", text: "Die Blaubeeren mit Honig und Zitronensaft in einem kleinen Topf bei niedriger Hitze 5 Minuten köcheln lassen, bis die Beeren weich werden. Beiseite stellen.", time: "5 Min" },
+      { title: "Lachs würzen", text: "Die Lachsfilets mit Meersalz würzen und kurz abtupfen.", time: null },
+      { title: "Lachs braten", text: "In einer Pfanne Butter schmelzen und den Lachs bei mittlerer-hoher Hitze je Seite 3–4 Minuten braten, bis er goldbraun ist und sich leicht flöckt.", time: "7 Min" },
+      { title: "Servieren", text: "Lachs auf dem Teller anrichten und den Beeren-Honig-Dip darüber oder daneben geben. Sofort servieren.", time: null },
+    ],
+    note: "Tipp: Frische Zitronenschale über den Lachs reiben für ein intensiveres Aroma."
+  },
+  {
+    category: "Frühstück",
+    title: "Butter-Rührei mit Knochenbrühe",
+    desc: "Das perfekte nährstoffreiche Frühstück – cremig, sättigend und in 10 Minuten fertig",
+    time: "10 Min",
+    servings: "1 Person",
+    difficulty: "Sehr einfach",
+    ingredients: [
+      { name: "Freilandeier", amount: "4 Stück" },
+      { name: "Butter (grasgefüttert)", amount: "40 g" },
+      { name: "Knochenbrühe", amount: "2 EL" },
+      { name: "Meersalz", amount: "½ TL" },
+      { name: "Schwarzer Pfeffer", amount: "1 Prise" },
+    ],
+    steps: [
+      { title: "Eier vorbereiten", text: "Die Eier in einer Schüssel mit Salz, Pfeffer und Knochenbrühe verquirlen.", time: null },
+      { title: "Butter schmelzen", text: "Die Butter bei niedriger bis mittlerer Hitze in einer Pfanne schmelzen lassen – nicht bräunen.", time: "1 Min" },
+      { title: "Rührei machen", text: "Die Eimasse in die Pfanne geben und mit einem Spatel langsam vom Rand zur Mitte schieben. Pfanne gelegentlich vom Herd nehmen um eine cremige Konsistenz zu erhalten.", time: "5 Min" },
+      { title: "Servieren", text: "Sofort auf dem Teller anrichten, solange die Eier noch cremig sind. Mit etwas extra Butter toppen.", time: null },
+    ],
+    note: "Geheimnis: Je langsamer und sanfter das Rührei gemacht wird, desto cremiger wird es. Nie auf hoher Hitze!"
+  },
+  {
+    category: "Suppe",
+    title: "Goldene Knochenbrühe",
+    desc: "Flüssiges Gold – die Basis jeder Animal-Based Ernährung, reich an Kollagen und Mineralstoffen",
+    time: "12–24 Std",
+    servings: "6–8 Portionen",
+    difficulty: "Mittel",
+    ingredients: [
+      { name: "Rinderknochen (Markknochen, Gelenkknochen)", amount: "1.5 kg" },
+      { name: "Wasser", amount: "3 l" },
+      { name: "Apfelessig (roh)", amount: "2 EL" },
+      { name: "Meersalz", amount: "2 TL" },
+      { name: "Lorbeerblätter", amount: "2 Stück" },
+      { name: "Schwarze Pfefferkörner", amount: "1 TL" },
+      { name: "Frischer Rosmarin", amount: "2 Zweige" },
+    ],
+    steps: [
+      { title: "Knochen rösten", text: "Den Backofen auf 200°C vorheizen. Die Knochen auf einem Backblech 30 Minuten rösten, bis sie golden-braun sind – das verstärkt den Geschmack enorm.", time: "1800 Min" },
+      { title: "Knochen einweichen", text: "Die gerösteten Knochen in einen großen Topf geben, Wasser und Apfelessig hinzufügen. 30 Minuten stehen lassen – der Essig zieht Mineralien aus den Knochen.", time: "30 Min" },
+      { title: "Köcheln lassen", text: "Aufkochen, dann Hitze stark reduzieren. Lorbeer, Pfeffer und Rosmarin hinzufügen. Mindestens 12 Stunden (besser 24 Stunden) sanft köcheln lassen.", time: "720 Min" },
+      { title: "Abseihen", text: "Die Brühe durch ein feines Sieb abseihen. Den Schaum der ersten Stunde abschöpfen.", time: null },
+      { title: "Aufbewahren", text: "Heiß in Gläser füllen oder abkühlen lassen. Im Kühlschrank 5 Tage haltbar, eingefroren bis zu 6 Monate.", time: null },
+    ],
+    note: "Goldene Regel: Die Brühe sollte leise köcheln – nie sprudelnd kochen. Je länger sie köchelt, desto mehr Kollagen löst sich aus den Knochen."
+  },
+  {
+    category: "Fleisch",
+    title: "Lammlachs mit Thymian-Butter",
+    desc: "Zartes Lammfleisch, in duftendem Thymian und Butter gebraten – ein Festmahl in 15 Minuten",
+    time: "15 Min",
+    servings: "2 Personen",
+    difficulty: "Einfach",
+    ingredients: [
+      { name: "Lammlachsscheiben", amount: "400 g" },
+      { name: "Butter", amount: "60 g" },
+      { name: "Frischer Thymian", amount: "4 Zweige" },
+      { name: "Knoblauch", amount: "3 Zehen" },
+      { name: "Meersalz", amount: "1 TL" },
+      { name: "Schwarzer Pfeffer", amount: "½ TL" },
+    ],
+    steps: [
+      { title: "Fleisch würzen", text: "Den Lammlachs großzügig mit Salz und Pfeffer würzen. 10 Minuten Raumtemperatur annehmen lassen.", time: "10 Min" },
+      { title: "Scharf anbraten", text: "Eine Pfanne stark erhitzen. Das Lamm ohne Fett je Seite 2 Minuten scharf anbraten.", time: "4 Min" },
+      { title: "Arrosieren", text: "Hitze reduzieren. Butter, Thymian und angedrückte Knoblauchzehen dazugeben. Das Fleisch kontinuierlich mit der schäumenden Butter übergießen.", time: "2 Min" },
+      { title: "Ruhen & servieren", text: "3 Minuten auf einem Brett ruhen lassen, dann mit dem Thymianbutter-Jus servieren.", time: "3 Min" },
+    ],
+    note: null
+  },
+  {
+    category: "Fisch",
+    title: "Sardinen mit Zitrone & Meersalz",
+    desc: "Blitzschnell, unglaublich nährstoffreich und voller Omega-3 – das unterschätzte Superfood",
+    time: "10 Min",
+    servings: "2 Personen",
+    difficulty: "Sehr einfach",
+    ingredients: [
+      { name: "Frische Sardinen (oder aus der Dose in Olivenöl)", amount: "300 g" },
+      { name: "Butter oder Ghee", amount: "30 g" },
+      { name: "Zitrone", amount: "½ Stück" },
+      { name: "Grobes Meersalz", amount: "1 TL" },
+      { name: "Schwarzer Pfeffer", amount: "½ TL" },
+      { name: "Frischer Dill", amount: "1 Handvoll" },
+    ],
+    steps: [
+      { title: "Vorbereiten", text: "Frische Sardinen abspülen und trocken tupfen. Mit Salz und Pfeffer würzen.", time: null },
+      { title: "Braten", text: "Butter in der Pfanne schmelzen. Sardinen bei mittlerer Hitze 2–3 Minuten je Seite braten.", time: "5 Min" },
+      { title: "Finalisieren", text: "Frischen Zitronensaft über die Sardinen pressen und mit Dill bestreuen.", time: null },
+      { title: "Servieren", text: "Sofort servieren. Dosenware: direkt aus der Dose mit Salz, Pfeffer und Zitrone genießen.", time: null },
+    ],
+    note: "Dosensardinen in Olivenöl oder Wasser sind eine perfekte schnelle Mahlzeit – einfach mit Zitrone und Meersalz verfeinern."
+  },
+  {
+    category: "Dessert",
+    title: "Honig-Beeren-Bowl mit rohem Ei",
+    desc: "Natürlich süß, nährstoffreich und erfrischend – der Animal-Based Nachtisch",
+    time: "5 Min",
+    servings: "1 Person",
+    difficulty: "Sehr einfach",
+    ingredients: [
+      { name: "Gemischte Beeren (Blaubeeren, Erdbeeren, Himbeeren)", amount: "200 g" },
+      { name: "Roher Honig", amount: "2 EL" },
+      { name: "Freilandeier (Eigelb)", amount: "2 Stück" },
+      { name: "Vollmilch (grasgefüttert)", amount: "50 ml" },
+      { name: "Zimt (Ceylon)", amount: "1 Prise" },
+    ],
+    steps: [
+      { title: "Beeren vorbereiten", text: "Die Beeren waschen und in eine Schüssel geben.", time: null },
+      { title: "Sauce machen", text: "Eigelb mit Honig und Milch cremig verrühren – ergibt eine natürliche, seidige Sauce.", time: null },
+      { title: "Anrichten", text: "Die Honig-Eigelb-Sauce über die Beeren geben.", time: null },
+      { title: "Verfeinern", text: "Mit einer Prise Ceylon-Zimt bestreuen und sofort genießen.", time: null },
+    ],
+    note: "Rohes Eigelb von hochwertigen Freilandeiern ist völlig unbedenklich und enthält Cholin, Vitamine und gesunde Fette."
+  },
+];
+ 
+function renderRecipes() {
+  const grid = document.getElementById('recipesGrid');
+  recipes.forEach((r, i) => {
+    const card = document.createElement('div');
+    card.className = 'recipe-card';
+    card.innerHTML = `
+      <p class="card-category">${r.category}</p>
+      <h3 class="card-title">${r.title}</h3>
+      <p class="card-desc">${r.desc}</p>
+      <div class="card-meta">
+        <span>${r.time}</span>
+        <span>${r.servings}</span>
+        <span>${r.difficulty}</span>
+      </div>
+      <button class="card-expand-btn" onclick="openModal(${i})">Rezept ansehen →</button>
+    `;
+    grid.appendChild(card);
+  });
+}
+ 
+function openModal(index) {
+  const r = recipes[index];
+  document.getElementById('modalCategory').textContent = r.category;
+  document.getElementById('modalTitle').textContent = r.title;
+  document.getElementById('modalDesc').textContent = r.desc;
+ 
+  let html = `
+    <p class="modal-section-title">Zutaten (${r.servings})</p>
+    <ul class="ingredients-list">
+      ${r.ingredients.map(ing => `
+        <li>
+          <span class="ing-name">${ing.name}</span>
+          <span class="ing-amount">${ing.amount}</span>
+        </li>
+      `).join('')}
+    </ul>
+    <p class="modal-section-title">Zubereitung</p>
+    <ol class="steps-list">
+      ${r.steps.map((step, i) => `
+        <li class="step-item">
+          <span class="step-num">${String(i+1).padStart(2,'0')}</span>
+          <div class="step-content">
+            <p class="step-title">${step.title}</p>
+            <p class="step-text">${step.text}</p>
+            ${step.time ? `<p class="step-time">⏱ ${step.time}</p>` : ''}
+          </div>
+        </li>
+      `).join('')}
+    </ol>
+    ${r.note ? `<div class="modal-note">${r.note}</div>` : ''}
+  `;
+ 
+  document.getElementById('modalBody').innerHTML = html;
+  document.getElementById('modalOverlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+ 
+function closeModal(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModalDirect();
+}
+ 
+function closeModalDirect() {
+  document.getElementById('modalOverlay').classList.remove('active');
+  document.body.style.overflow = '';
+}
+ 
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModalDirect();
+});
+ 
+renderRecipes();
+</script>
+</body>
+</html>
