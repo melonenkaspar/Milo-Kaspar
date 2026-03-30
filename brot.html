@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Das Brotbuch — Meister Bäcker's Rezepte</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --wheat: #C8A96E;
+    --crust: #8B5E3C;
+    --dark: #1C1410;
+    --cream: #F5EDD8;
+    --parchment: #EDE0C4;
+    --smoke: #6B5744;
+    --char: #2D1F14;
+    --accent: #D4622A;
+  }
+
+- { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+background-color: var(–dark);
+color: var(–cream);
+font-family: ‘Crimson Pro’, Georgia, serif;
+font-size: 18px;
+line-height: 1.7;
+min-height: 100vh;
+}
+
+/* Grain texture overlay */
+body::before {
+content: ‘’;
+position: fixed;
+inset: 0;
+background-image: url(“data:image/svg+xml,%3Csvg viewBox=‘0 0 200 200’ xmlns=‘http://www.w3.org/2000/svg’%3E%3Cfilter id=‘n’%3E%3CfeTurbulence type=‘fractalNoise’ baseFrequency=‘0.9’ numOctaves=‘4’ stitchTiles=‘stitch’/%3E%3C/filter%3E%3Crect width=‘100%25’ height=‘100%25’ filter=‘url(%23n)’ opacity=‘0.04’/%3E%3C/svg%3E”);
+pointer-events: none;
+z-index: 1000;
+opacity: 0.4;
+}
+
+header {
+text-align: center;
+padding: 80px 40px 60px;
+border-bottom: 1px solid rgba(200, 169, 110, 0.3);
+position: relative;
+overflow: hidden;
+}
+
+header::before {
+content: ‘’;
+position: absolute;
+top: -100px; left: 50%;
+transform: translateX(-50%);
+width: 600px; height: 400px;
+background: radial-gradient(ellipse, rgba(200,169,110,0.12) 0%, transparent 70%);
+pointer-events: none;
+}
+
+.header-ornament {
+font-size: 14px;
+letter-spacing: 6px;
+text-transform: uppercase;
+color: var(–wheat);
+opacity: 0.8;
+margin-bottom: 20px;
+font-family: ‘Crimson Pro’, serif;
+font-weight: 300;
+}
+
+h1 {
+font-family: ‘Playfair Display’, Georgia, serif;
+font-size: clamp(3rem, 8vw, 6rem);
+font-weight: 900;
+line-height: 0.95;
+color: var(–cream);
+letter-spacing: -2px;
+margin-bottom: 10px;
+}
+
+h1 em {
+font-style: italic;
+color: var(–wheat);
+}
+
+.subtitle {
+font-family: ‘Playfair Display’, serif;
+font-style: italic;
+font-size: 1.3rem;
+color: var(–smoke);
+margin-top: 16px;
+font-weight: 300;
+}
+
+.divider {
+display: flex;
+align-items: center;
+gap: 16px;
+margin: 40px auto;
+max-width: 300px;
+}
+.divider::before, .divider::after {
+content: ‘’;
+flex: 1;
+height: 1px;
+background: linear-gradient(to right, transparent, var(–wheat));
+}
+.divider::after { background: linear-gradient(to left, transparent, var(–wheat)); }
+.divider span { color: var(–wheat); font-size: 1.2rem; }
+
+.intro-box {
+max-width: 720px;
+margin: 0 auto 60px;
+padding: 40px 50px;
+background: rgba(200,169,110,0.06);
+border: 1px solid rgba(200,169,110,0.2);
+border-radius: 2px;
+font-style: italic;
+font-size: 1.1rem;
+color: var(–parchment);
+line-height: 1.9;
+}
+
+.intro-box strong { color: var(–wheat); font-style: normal; }
+
+/* Navigation */
+.toc {
+max-width: 860px;
+margin: 0 auto 80px;
+padding: 0 40px;
+}
+
+.toc h2 {
+font-family: ‘Playfair Display’, serif;
+font-size: 1rem;
+letter-spacing: 5px;
+text-transform: uppercase;
+color: var(–wheat);
+margin-bottom: 24px;
+font-weight: 400;
+}
+
+.toc-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+gap: 8px;
+}
+
+.toc-item {
+display: flex;
+align-items: center;
+gap: 12px;
+padding: 10px 16px;
+border: 1px solid rgba(200,169,110,0.15);
+background: rgba(200,169,110,0.04);
+cursor: pointer;
+transition: all 0.2s ease;
+text-decoration: none;
+color: var(–cream);
+font-family: ‘Crimson Pro’, serif;
+font-size: 1rem;
+}
+
+.toc-item:hover {
+background: rgba(200,169,110,0.12);
+border-color: rgba(200,169,110,0.4);
+color: var(–wheat);
+}
+
+.toc-num {
+font-family: ‘Playfair Display’, serif;
+font-style: italic;
+color: var(–wheat);
+opacity: 0.6;
+font-size: 0.85rem;
+min-width: 24px;
+}
+
+/* Sections */
+.section-header {
+text-align: center;
+padding: 60px 40px 40px;
+border-top: 1px solid rgba(200,169,110,0.2);
+}
+
+.section-tag {
+font-family: ‘Crimson Pro’, serif;
+font-size: 0.8rem;
+letter-spacing: 5px;
+text-transform: uppercase;
+color: var(–accent);
+margin-bottom: 12px;
+}
+
+.section-title {
+font-family: ‘Playfair Display’, serif;
+font-size: clamp(2rem, 5vw, 3.5rem);
+font-weight: 700;
+color: var(–cream);
+margin-bottom: 10px;
+}
+
+.section-desc {
+font-style: italic;
+color: var(–smoke);
+max-width: 500px;
+margin: 0 auto;
+font-size: 1rem;
+}
+
+/* Recipe cards */
+.recipes-container {
+max-width: 900px;
+margin: 0 auto;
+padding: 0 30px 60px;
+}
+
+.recipe-card {
+background: rgba(200,169,110,0.04);
+border: 1px solid rgba(200,169,110,0.15);
+margin-bottom: 40px;
+overflow: hidden;
+cursor: pointer;
+transition: border-color 0.3s ease;
+scroll-margin-top: 20px;
+}
+
+.recipe-card:hover { border-color: rgba(200,169,110,0.35); }
+.recipe-card.open { border-color: rgba(200,169,110,0.4); }
+
+.recipe-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 28px 36px;
+user-select: none;
+}
+
+.recipe-header-left { flex: 1; }
+
+.recipe-num {
+font-family: ‘Playfair Display’, serif;
+font-style: italic;
+color: var(–wheat);
+opacity: 0.5;
+font-size: 0.85rem;
+display: block;
+margin-bottom: 4px;
+}
+
+.recipe-title {
+font-family: ‘Playfair Display’, serif;
+font-size: 1.6rem;
+font-weight: 700;
+color: var(–cream);
+line-height: 1.2;
+}
+
+.recipe-tags {
+display: flex;
+gap: 8px;
+margin-top: 10px;
+flex-wrap: wrap;
+}
+
+.tag {
+font-size: 0.7rem;
+letter-spacing: 3px;
+text-transform: uppercase;
+padding: 3px 10px;
+border: 1px solid rgba(200,169,110,0.3);
+color: var(–wheat);
+opacity: 0.8;
+font-family: ‘Crimson Pro’, serif;
+}
+
+.tag.highlight {
+background: rgba(212,98,42,0.15);
+border-color: rgba(212,98,42,0.4);
+color: #E88855;
+}
+
+.toggle-btn {
+width: 36px; height: 36px;
+border: 1px solid rgba(200,169,110,0.3);
+background: transparent;
+color: var(–wheat);
+font-size: 1.2rem;
+cursor: pointer;
+display: flex; align-items: center; justify-content: center;
+transition: all 0.3s ease;
+flex-shrink: 0;
+margin-left: 20px;
+}
+
+.toggle-btn:hover { background: rgba(200,169,110,0.1); }
+
+.recipe-body {
+display: none;
+padding: 0 36px 36px;
+border-top: 1px solid rgba(200,169,110,0.1);
+animation: fadeIn 0.3s ease;
+}
+
+.recipe-card.open .recipe-body { display: block; }
+
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(-8px); }
+to { opacity: 1; transform: translateY(0); }
+}
+
+.recipe-intro {
+font-style: italic;
+color: var(–smoke);
+margin: 20px 0 28px;
+font-size: 1rem;
+border-left: 2px solid var(–wheat);
+padding-left: 16px;
+opacity: 0.9;
+}
+
+.recipe-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 36px;
+margin-bottom: 32px;
+}
+
+@media (max-width: 600px) {
+.recipe-grid { grid-template-columns: 1fr; }
+.recipe-header { padding: 20px 20px; }
+.recipe-body { padding: 0 20px 24px; }
+}
+
+.column-title {
+font-family: ‘Playfair Display’, serif;
+font-size: 0.75rem;
+letter-spacing: 4px;
+text-transform: uppercase;
+color: var(–wheat);
+margin-bottom: 16px;
+padding-bottom: 8px;
+border-bottom: 1px solid rgba(200,169,110,0.2);
+}
+
+.ingredient-list { list-style: none; }
+.ingredient-list li {
+padding: 6px 0;
+border-bottom: 1px solid rgba(200,169,110,0.07);
+font-size: 0.95rem;
+color: var(–parchment);
+display: flex;
+gap: 10px;
+}
+.ingredient-list li::before {
+content: ‘—’;
+color: var(–wheat);
+opacity: 0.4;
+flex-shrink: 0;
+}
+
+.steps-list { list-style: none; counter-reset: steps; }
+.steps-list li {
+counter-increment: steps;
+padding: 10px 0 10px 44px;
+border-bottom: 1px solid rgba(200,169,110,0.07);
+font-size: 0.95rem;
+color: var(–parchment);
+position: relative;
+line-height: 1.65;
+}
+.steps-list li::before {
+content: counter(steps);
+position: absolute;
+left: 0; top: 10px;
+width: 28px; height: 28px;
+background: rgba(200,169,110,0.1);
+border: 1px solid rgba(200,169,110,0.2);
+color: var(–wheat);
+font-family: ‘Playfair Display’, serif;
+font-size: 0.8rem;
+display: flex; align-items: center; justify-content: center;
+}
+
+.tip-box {
+margin-top: 24px;
+padding: 18px 22px;
+background: rgba(212,98,42,0.08);
+border-left: 3px solid var(–accent);
+font-size: 0.9rem;
+color: var(–parchment);
+line-height: 1.7;
+}
+
+.tip-box strong {
+display: block;
+font-family: ‘Playfair Display’, serif;
+color: #E88855;
+margin-bottom: 6px;
+font-size: 0.8rem;
+letter-spacing: 3px;
+text-transform: uppercase;
+}
+
+.meta-row {
+display: flex;
+gap: 20px;
+flex-wrap: wrap;
+margin-top: 16px;
+padding-top: 16px;
+border-top: 1px solid rgba(200,169,110,0.1);
+}
+
+.meta-item {
+display: flex;
+flex-direction: column;
+gap: 2px;
+}
+
+.meta-label {
+font-size: 0.65rem;
+letter-spacing: 3px;
+text-transform: uppercase;
+color: var(–wheat);
+opacity: 0.6;
+font-family: ‘Crimson Pro’, serif;
+}
+
+.meta-value {
+font-family: ‘Playfair Display’, serif;
+font-size: 1rem;
+color: var(–cream);
+}
+
+footer {
+text-align: center;
+padding: 60px 40px;
+border-top: 1px solid rgba(200,169,110,0.15);
+font-style: italic;
+color: var(–smoke);
+font-size: 0.95rem;
+}
+
+footer strong { color: var(–wheat); font-style: normal; }
+</style>
+
+</head>
+<body>
+
+<header>
+  <div class="header-ornament">✦ Handwerk & Tradition ✦</div>
+  <h1>Das <em>Brot</em>buch</h1>
+  <p class="subtitle">Meister Bäcker's Rezepte — perfektioniert über Jahrzehnte</p>
+  <div class="divider"><span>❧</span></div>
+  <div class="intro-box">
+    Brot ist Geduld. Brot ist Respekt vor dem Rohstoff. Hier findest du meine besten Rezepte — 
+    von <strong>lebendigem Sauerteig</strong> bis zu schnellen Alltagsbroten. 
+    Keine Samenöle, kein Schnickschnack. Nur Mehl, Wasser, Salz — und Zeit. 
+    Jedes Rezept habe ich hunderte Male gebacken. Jetzt gehören sie dir.
+  </div>
+</header>
+
+<!-- Inhaltsverzeichnis -->
+
+<nav class="toc">
+  <h2>Inhalt</h2>
+  <div class="toc-grid">
+    <a class="toc-item" href="#r1"><span class="toc-num">01</span> Roggensauerteig-Brot</a>
+    <a class="toc-item" href="#r2"><span class="toc-num">02</span> Weizen-Dinkel Sauerteig</a>
+    <a class="toc-item" href="#r3"><span class="toc-num">03</span> Vollkorn-Sauerteig Miche</a>
+    <a class="toc-item" href="#r4"><span class="toc-num">04</span> Dinkel-Emmer Urkornbrot</a>
+    <a class="toc-item" href="#r5"><span class="toc-num">05</span> Buttermilch-Bauernbrot</a>
+    <a class="toc-item" href="#r6"><span class="toc-num">06</span> Kartoffelbrot mit Kümmel</a>
+    <a class="toc-item" href="#r7"><span class="toc-num">07</span> Schnelles Joghurtbrot</a>
+    <a class="toc-item" href="#r8"><span class="toc-num">08</span> Lebendiger Sauerteig-Starter</a>
+  </div>
+</nav>
+
+<!-- SEKTION: SAUERTEIG -->
+
+<div class="section-header">
+  <div class="section-tag">★ Meine Meisterwerke ★</div>
+  <div class="section-title">Die Sauerteig-Brote</div>
+  <p class="section-desc">Fermentiert, lebendig, unvergänglich. Diese Brote brauchen Zeit — und lohnen jede Stunde.</p>
+</div>
+
+<div class="recipes-container">
+
+  <!-- Rezept 1 -->
+
+  <div class="recipe-card" id="r1">
+    <div class="recipe-header" onclick="toggle(this)">
+      <div class="recipe-header-left">
+        <span class="recipe-num">Rezept 01</span>
+        <div class="recipe-title">Roggen-Sauerteig 100 %</div>
+        <div class="recipe-tags">
+          <span class="tag highlight">Mein Bestes</span>
+          <span class="tag">Sauerteig</span>
+          <span class="tag">Ohne Hefe</span>
+          <span class="tag">Glutenfrei möglich</span>
+        </div>
+      </div>
+      <button class="toggle-btn">+</button>
+    </div>
+    <div class="recipe-body">
+      <p class="recipe-intro">
+        Das ist das Brot meines Herzens. Reines Roggenmehl, langer Ferment, kaum Aufwand — 
+        dafür ein Aroma, das kein Bäcker mit Backhefe je erreicht. Hält eine Woche problemlos.
+      </p>
+      <div class="meta-row">
+        <div class="meta-item"><span class="meta-label">Backzeit</span><span class="meta-value">75 Min.</span></div>
+        <div class="meta-item"><span class="meta-label">Gehzeit</span><span class="meta-value">12–16 Std.</span></div>
+        <div class="meta-item"><span class="meta-label">Schwierigkeit</span><span class="meta-value">Mittel</span></div>
+        <div class="meta-item"><span class="meta-label">Laibgewicht</span><span class="meta-value">~1,1 kg</span></div>
+      </div>
+      <div class="recipe-grid" style="margin-top:28px">
+        <div>
+          <div class="column-title">Zutaten</div>
+          <ul class="ingredient-list">
+            <li>500 g Roggenvollkornmehl (Type 1150 oder Vollkorn)</li>
+            <li>150 g aktiver Roggen-Sauerteig</li>
+            <li>350 ml lauwarmes Wasser</li>
+            <li>12 g feines Meersalz</li>
+            <li>1 TL Brotgewürz (Kümmel, Koriander, Fenchel)</li>
+            <li>Optional: 50 g Sonnenblumenkerne oder Leinsamen</li>
+          </ul>
+        </div>
+        <div>
+          <div class="column-title">Zubereitung</div>
+          <ol class="steps-list">
+            <li>Sauerteig mit Wasser (30 °C) in einer Schüssel auflösen und 5 Min. stehen lassen.</li>
+            <li>Mehl, Salz und Gewürze einrühren — kein Kneten nötig, nur rühren bis alles verbunden ist. Der Teig ist weich und klebrig.</li>
+            <li>Kastenform (ca. 25 cm) gut einfetten (Butter oder Schmalz), Teig hineingeben und glattstreichen.</li>
+            <li>Oberfläche mit nassen Händen glätten, mit Frischhaltefolie abdecken.</li>
+            <li>12–16 Stunden bei Raumtemperatur gehen lassen bis er das Volumen verdoppelt hat.</li>
+            <li>Ofen auf 250 °C Ober-/Unterhitze vorheizen (Backstein oder schwere Pfanne auf den Boden stellen).</li>
+            <li>Brot einschneiden, in den Ofen — 1 Tasse kochendes Wasser auf die heiße Pfanne: Dampf erzeugen.</li>
+            <li>15 Min. bei 250 °C, dann auf 200 °C senken und weitere 55–60 Min. backen.</li>
+            <li>Aus der Form stürzen und <strong>mindestens 3 Stunden</strong> auskühlen lassen bevor man schneidet!</li>
+          </ol>
+        </div>
+      </div>
+      <div class="tip-box">
+        <strong>Meister-Tipp</strong>
+        Roggenbrot schneidet man erst am nächsten Tag an. Die Krume braucht 12 Stunden um zu „setzen" — 
+        zu früh angeschnitten klebt sie. Wer ungeduldig ist, wird bestraft. Geduld wird belohnt.
+      </div>
+    </div>
+  </div>
+
+  <!-- Rezept 2 -->
+
+  <div class="recipe-card" id="r2">
+    <div class="recipe-header" onclick="toggle(this)">
+      <div class="recipe-header-left">
+        <span class="recipe-num">Rezept 02</span>
+        <div class="recipe-title">Weizen-Dinkel Sauerteig (offene Porung)</div>
+        <div class="recipe-tags">
+          <span class="tag highlight">Liebling der Gäste</span>
+          <span class="tag">Sauerteig</span>
+          <span class="tag">Luftig</span>
+        </div>
+      </div>
+      <button class="toggle-btn">+</button>
+    </div>
+    <div class="recipe-body">
+      <p class="recipe-intro">
+        Goldene Kruste, offene wilde Krume, mildes Aroma. Das Brot für alle die 
+        „Bäckerbrot" vermissen — aber besser. Wird freigeschoben, braucht einen Dutch Oven oder Bräter.
+      </p>
+      <div class="meta-row">
+        <div class="meta-item"><span class="meta-label">Backzeit</span><span class="meta-value">45 Min.</span></div>
+        <div class="meta-item"><span class="meta-label">Gehzeit</span><span class="meta-value">4 Std. + 12 Std. kalt</span></div>
+        <div class="meta-item"><span class="meta-label">Schwierigkeit</span><span class="meta-value">Fortgeschritten</span></div>
+        <div class="meta-item"><span class="meta-label">Laibgewicht</span><span class="meta-value">~900 g</span></div>
+      </div>
+      <div class="recipe-grid" style="margin-top:28px">
+        <div>
+          <div class="column-title">Zutaten</div>
+          <ul class="ingredient-list">
+            <li>350 g Weizenmehl Type 550</li>
+            <li>150 g Dinkelmehl Type 630</li>
+            <li>100 g aktiver Weizen-Sauerteig (100 % Hydration)</li>
+            <li>330 ml Wasser (kalt)</li>
+            <li>10 g feines Salz</li>
+          </ul>
+        </div>
+        <div>
+          <div class="column-title">Zubereitung</div>
+          <ol class="steps-list">
+            <li>Mehl und 290 ml Wasser vermengen (kein Sauerteig noch) — 30 Min. Autolyse.</li>
+            <li>Sauerteig, Salz und restliche 40 ml Wasser einfalten, 5 Min. mit der Hand kneten.</li>
+            <li>Alle 30 Min. 4× Stretch & Fold durchführen (je 4 Runden in alle Himmelsrichtungen falten).</li>
+            <li>4 Stunden bei 24 °C Raumtemperatur gehen lassen.</li>
+            <li>Teig auf bemehlter Fläche formen (rund oder oval), in gut bemehltem Gärkorb mit Naht nach oben.</li>
+            <li>Abgedeckt für 12 Stunden in den Kühlschrank (Kaltgare).</li>
+            <li>Dutch Oven 1 Stunde bei 250 °C aufheizen. Teig direkt aus dem Kühlschrank einschneiden und in den Dutch Oven stürzen.</li>
+            <li>Mit Deckel 20 Min. backen. Deckel ab — weitere 20–25 Min. bis die Kruste tief dunkelbraun ist.</li>
+          </ol>
+        </div>
+      </div>
+      <div class="tip-box">
+        <strong>Geheimnis der offenen Porung</strong>
+        Kaltgare ist kein Luxus — sie ist Pflicht. Die langen kalten Stunden entwickeln Aroma 
+        und straffen die Glutenstruktur. Je kälter der Teig beim Einschießen, desto mehr 
+        „Ofentrieb" und desto größer die Poren.
+      </div>
+    </div>
+  </div>
+
+  <!-- Rezept 3 -->
+
+  <div class="recipe-card" id="r3">
+    <div class="recipe-header" onclick="toggle(this)">
+      <div class="recipe-header-left">
+        <span class="recipe-num">Rezept 03</span>
+        <div class="recipe-title">Vollkorn-Sauerteig Miche</div>
+        <div class="recipe-tags">
+          <span class="tag">Sauerteig</span>
+          <span class="tag">Vollkorn</span>
+          <span class="tag">Nährstoffreich</span>
+        </div>
+      </div>
+      <button class="toggle-btn">+</button>
+    </div>
+    <div class="recipe-body">
+      <p class="recipe-intro">
+        Ein großer, runder Laib wie in französischen Bäckereien. Weizenvolkorn und etwas 
+        Hafer geben Tiefe, Sauerteig macht es bekömmlich. Ideal für Familien — hält 5 Tage.
+      </p>
+      <div class="meta-row">
+        <div class="meta-item"><span class="meta-label">Backzeit</span><span class="meta-value">55 Min.</span></div>
+        <div class="meta-item"><span class="meta-label">Gehzeit</span><span class="meta-value">6 Std. + 8 Std. kalt</span></div>
+        <div class="meta-item"><span class="meta-label">Schwierigkeit</span><span class="meta-value">Mittel</span></div>
+        <div class="meta-item"><span class="meta-label">Laibgewicht</span><span class="meta-value">~1,2 kg</span></div>
+      </div>
+      <div class="recipe-grid" style="margin-top:28px">
+        <div>
+          <div class="column-title">Zutaten</div>
+          <ul class="ingredient-list">
+            <li>400 g Weizenvollkornmehl</li>
+            <li>80 g Haferflocken (Feinblatt, aufgeweicht)</li>
+            <li>60 g Roggenmehl 1150</li>
+            <li>120 g aktiver Sauerteig</li>
+            <li>380 ml Wasser</li>
+            <li>12 g Salz</li>
+            <li>15 g Rohhonig (optional, fördert Bräunung)</li>
+          </ul>
+        </div>
+        <div>
+          <div class="column-title">Zubereitung</div>
+          <ol class="steps-list">
+            <li>Haferflocken mit 80 ml heißem Wasser übergießen, 20 Min. quellen lassen (Quellstück).</li>
+            <li>Alle Mehle, restliches Wasser, Sauerteig und Honig vermengen. 30 Min. Autolyse.</li>
+            <li>Salz und das Quellstück hinzufügen, gut einarbeiten.</li>
+            <li>5× Stretch & Fold alle 30 Minuten. Dann 2 Stunden ruhen lassen.</li>
+            <li>Runden Laib formen, in bemehlten Gärkorb. 8 Stunden Kaltgare im Kühlschrank.</li>
+            <li>Backofen mit Dutch Oven auf 240 °C vorheizen (1 Stunde).</li>
+            <li>Brot einschneiden (tiefes Kreuz oder Spirale), in den Dutch Oven. 20 Min. mit Deckel, 30–35 Min. ohne.</li>
+          </ol>
+        </div>
+      </div>
+      <div class="tip-box">
+        <strong>Warum Quellstück?</strong>
+        Haferflocken direkt in den Teig machen ihn klebrig und schwer. Im Quellstück 
+        nehmen sie Wasser auf und geben es kontrolliert ab — das macht die Krume saftig 
+        ohne den Teig zu destabilisieren.
+      </div>
+    </div>
+  </div>
+
+  <!-- Rezept 4 -->
+
+  <div class="recipe-card" id="r4">
+    <div class="recipe-header" onclick="toggle(this)">
+      <div class="recipe-header-left">
+        <span class="recipe-num">Rezept 04</span>
+        <div class="recipe-title">Dinkel-Emmer Urkornbrot</div>
+        <div class="recipe-tags">
+          <span class="tag highlight">Besonders</span>
+          <span class="tag">Urgetreide</span>
+          <span class="tag">Sauerteig</span>
+        </div>
+      </div>
+      <button class="toggle-btn">+</button>
+    </div>
+    <div class="recipe-body">
+      <p class="recipe-intro">
+        Emmer ist eines der ältesten Getreide der Welt — nussig, kräftig, bekömmlich. 
+        Kombiniert mit Dinkel ergibt das ein Urkornbrot von außergewöhnlichem Charakter. 
+        Nicht für jeden Tag — für besondere Tage.
+      </p>
+      <div class="meta-row">
+        <div class="meta-item"><span class="meta-label">Backzeit</span><span class="meta-value">50 Min.</span></div>
+        <div class="meta-item"><span class="meta-label">Gehzeit</span><span class="meta-value">5 Std. + 10 Std. kalt</span></div>
+        <div class="meta-item"><span class="meta-label">Schwierigkeit</span><span class="meta-value">Mittel</span></div>
+        <div class="meta-item"><span class="meta-label">Laibgewicht</span><span class="meta-value">~900 g</span></div>
+      </div>
+      <div class="recipe-grid" style="margin-top:28px">
+        <div>
+          <div class="column-title">Zutaten</div>
+          <ul class="ingredient-list">
+            <li>250 g Emmermehl (Vollkorn)</li>
+            <li>250 g Dinkelmehl Type 630</li>
+            <li>100 g aktiver Dinkel-Sauerteig</li>
+            <li>320 ml Wasser</li>
+            <li>10 g Salz</li>
+            <li>Optional: 1 EL Butter (weich, für saftigen Geschmack)</li>
+            <li>Optional: 30 g Walnusskerne (grob gehackt)</li>
+          </ul>
+        </div>
+        <div>
+          <div class="column-title">Zubereitung</div>
+          <ol class="steps-list">
+            <li>Mehl und 280 ml Wasser mischen, 45 Min. Autolyse (Dinkel braucht mehr Zeit).</li>
+            <li>Sauerteig, Salz, restliches Wasser — und wenn gewünscht die Butter — einarbeiten.</li>
+            <li>Dinkel nicht zu intensiv kneten (bricht das Gluten): 3–4 Stretch & Fold alle 45 Min.</li>
+            <li>5 Stunden Stockgare bei 22–24 °C. Walnüsse beim letzten Falten einarbeiten.</li>
+            <li>Oval formen, in Gärkorb, 10 Std. Kaltgare.</li>
+            <li>Ofen mit Dutch Oven auf 230 °C vorheizen. 20 Min. mit Deckel, 25–30 Min. ohne.</li>
+          </ol>
+        </div>
+      </div>
+      <div class="tip-box">
+        <strong>Dinkel-Regel</strong>
+        Dinkel und Emmer haben empfindliches Gluten. Zu viel Kneten macht den Teig 
+        klitschig. Lieber weniger intensiv arbeiten und längere Ruhezeiten einplanen.
+      </div>
+    </div>
+  </div>
+
+  <!-- SEKTION: Alltagsbrote -->
+
+  <div class="section-header" style="padding: 60px 0 40px; border-top: 1px solid rgba(200,169,110,0.2);">
+    <div class="section-tag">◆ Für jeden Tag ◆</div>
+    <div class="section-title">Alltagsbrote</div>
+    <p class="section-desc">Schneller, zugänglicher — aber mit demselben Respekt vor guten Zutaten gebacken.</p>
+  </div>
+
+  <!-- Rezept 5 -->
+
+  <div class="recipe-card" id="r5">
+    <div class="recipe-header" onclick="toggle(this)">
+      <div class="recipe-header-left">
+        <span class="recipe-num">Rezept 05</span>
+        <div class="recipe-title">Buttermilch-Bauernbrot</div>
+        <div class="recipe-tags">
+          <span class="tag">Schnell</span>
+          <span class="tag">Saftig</span>
+          <span class="tag">Für Anfänger</span>
+        </div>
+      </div>
+      <button class="toggle-btn">+</button>
+    </div>
+    <div class="recipe-body">
+      <p class="recipe-intro">
+        Kein Sauerteig, keine langen Wartezeiten — aber Buttermilch gibt natürliche 
+        Säure und macht das Brot wunderbar saftig. Perfekt für Spontan-Bäcker.
+      </p>
+      <div class="meta-row">
+        <div class="meta-item"><span class="meta-label">Backzeit</span><span class="meta-value">55 Min.</span></div>
+        <div class="meta-item"><span class="meta-label">Gehzeit</span><span class="meta-value">90 Min.</span></div>
+        <div class="meta-item"><span class="meta-label">Schwierigkeit</span><span class="meta-value">Einfach</span></div>
+        <div class="meta-item"><span class="meta-label">Laibgewicht</span><span class="meta-value">~1,0 kg</span></div>
+      </div>
+      <div class="recipe-grid" style="margin-top:28px">
+        <div>
+          <div class="column-title">Zutaten</div>
+          <ul class="ingredient-list">
+            <li>300 g Weizenmehl Type 1050</li>
+            <li>200 g Roggenmehl Type 1150</li>
+            <li>400 ml Buttermilch (Raumtemperatur)</li>
+            <li>7 g Trockenhefe (1 Päckchen)</li>
+            <li>11 g Salz</li>
+            <li>1 TL Kümmel (ganz oder gemahlen)</li>
+            <li>1 TL Rübenzuckermelasse (optional, für Farbe und Tiefe)</li>
+          </ul>
+        </div>
+        <div>
+          <div class="column-title">Zubereitung</div>
+          <ol class="steps-list">
+            <li>Hefe in der Buttermilch auflösen (5 Min. stehen lassen).</li>
+            <li>Mehle, Salz, Kümmel und Melasse vermischen.</li>
+            <li>Feuchte Zutaten zu den Trockenen geben, 8–10 Minuten kräftig kneten.</li>
+            <li>Abgedeckt 60–75 Min. gehen lassen bis doppelt so groß.</li>
+            <li>Kurz falten, in gefettete Kastenform oder frei auf Backpapier.</li>
+            <li>15 Min. Stückgare. Ofen auf 230 °C vorheizen mit Wasserschale.</li>
+            <li>Brot einschneiden. 15 Min. bei 230 °C, dann 35–40 Min. bei 200 °C fertigbacken.</li>
+          </ol>
+        </div>
+      </div>
+      <div class="tip-box">
+        <strong>Klopftest</strong>
+        Brot aus der Form stürzen und auf den Boden klopfen — klingt es hohl, ist es gar. 
+        Klingt es dumpf, noch 10 Minuten — ohne Form direkt auf dem Rost.
+      </div>
+    </div>
+  </div>
+
+  <!-- Rezept 6 -->
+
+  <div class="recipe-card" id="r6">
+    <div class="recipe-header" onclick="toggle(this)">
+      <div class="recipe-header-left">
+        <span class="recipe-num">Rezept 06</span>
+        <div class="recipe-title">Kartoffelbrot mit Kümmel</div>
+        <div class="recipe-tags">
+          <span class="tag">Saftig</span>
+          <span class="tag">Hält lang</span>
+          <span class="tag">Hausmannskost</span>
+        </div>
+      </div>
+      <button class="toggle-btn">+</button>
+    </div>
+    <div class="recipe-body">
+      <p class="recipe-intro">
+        Das Geheimnis saftiger Brote: Kartoffel. Sie halten Feuchtigkeit, 
+        verlängern die Haltbarkeit und geben eine zarte, samtige Krume. Meine Oma backte 
+        dieses Brot jede Woche.
+      </p>
+      <div class="meta-row">
+        <div class="meta-item"><span class="meta-label">Backzeit</span><span class="meta-value">60 Min.</span></div>
+        <div class="meta-item"><span class="meta-label">Gehzeit</span><span class="meta-value">2 Std.</span></div>
+        <div class="meta-item"><span class="meta-label">Schwierigkeit</span><span class="meta-value">Einfach</span></div>
+        <div class="meta-item"><span class="meta-label">Laibgewicht</span><span class="meta-value">~1,1 kg</span></div>
+      </div>
+      <div class="recipe-grid" style="margin-top:28px">
+        <div>
+          <div class="column-title">Zutaten</div>
+          <ul class="ingredient-list">
+            <li>400 g Weizenmehl Type 550</li>
+            <li>100 g Roggenmehl Type 997</li>
+            <li>250 g mehlig kochende Kartoffeln (gekocht, gestampft, abgekühlt)</li>
+            <li>200 ml lauwarmes Wasser</li>
+            <li>7 g Trockenhefe</li>
+            <li>11 g Salz</li>
+            <li>1,5 TL Kümmel</li>
+            <li>20 g Butter (weich)</li>
+          </ul>
+        </div>
+        <div>
+          <div class="column-title">Zubereitung</div>
+          <ol class="steps-list">
+            <li>Hefe im Wasser auflösen, 5 Minuten stehen lassen.</li>
+            <li>Mehl, Salz, Kümmel mischen. Kartoffelpüree und Butter dazu.</li>
+            <li>Hefewasser zugießen und 10 Min. intensiv kneten (Teig ist leicht klebrig — das ist gut).</li>
+            <li>90 Min. gehen lassen bis doppelt so groß.</li>
+            <li>Laib formen, 30 Min. Stückgare auf Backpapier.</li>
+            <li>Ofen auf 220 °C, Brot tief einschneiden, Dampf dazu (Tasse Wasser in den Ofen).</li>
+            <li>20 Min. bei 220 °C, dann 35 Min. bei 190 °C bis tief goldbraun.</li>
+          </ol>
+        </div>
+      </div>
+      <div class="tip-box">
+        <strong>Tipp: Kartoffeln vom Vortag</strong>
+        Erkaltetes, leicht ausgetrocknetes Kartoffelpüree vom Vortag funktioniert am besten — 
+        weniger Restfeuchte bedeutet mehr Kontrolle über die Teigkonsistenz.
+      </div>
+    </div>
+  </div>
+
+  <!-- Rezept 7 -->
+
+  <div class="recipe-card" id="r7">
+    <div class="recipe-header" onclick="toggle(this)">
+      <div class="recipe-header-left">
+        <span class="recipe-num">Rezept 07</span>
+        <div class="recipe-title">Schnelles Joghurtbrot (ohne Hefe)</div>
+        <div class="recipe-tags">
+          <span class="tag">45 Minuten</span>
+          <span class="tag">Ohne Hefe</span>
+          <span class="tag">Anfänger</span>
+        </div>
+      </div>
+      <button class="toggle-btn">+</button>
+    </div>
+    <div class="recipe-body">
+      <p class="recipe-intro">
+        Kein Warten, kein Sauerteig, keine Hefe. Backpulver und Joghurt erzeugen 
+        genug Trieb für ein weiches, saftiges Brot. Fertig in unter einer Stunde — 
+        ideal für unerwarteten Besuch.
+      </p>
+      <div class="meta-row">
+        <div class="meta-item"><span class="meta-label">Backzeit</span><span class="meta-value">40 Min.</span></div>
+        <div class="meta-item"><span class="meta-label">Gehzeit</span><span class="meta-value">Keine</span></div>
+        <div class="meta-item"><span class="meta-label">Schwierigkeit</span><span class="meta-value">Sehr einfach</span></div>
+        <div class="meta-item"><span class="meta-label">Laibgewicht</span><span class="meta-value">~750 g</span></div>
+      </div>
+      <div class="recipe-grid" style="margin-top:28px">
+        <div>
+          <div class="column-title">Zutaten</div>
+          <ul class="ingredient-list">
+            <li>300 g Weizenmehl Type 550 (oder Dinkel 630)</li>
+            <li>100 g Vollkornmehl (Weizen oder Dinkel)</li>
+            <li>300 g Naturjoghurt (mind. 3,5 % Fett)</li>
+            <li>2 TL Weinsteinbackpulver</li>
+            <li>1 TL Natron</li>
+            <li>10 g Salz</li>
+            <li>Optional: Sonnenblumenkerne, Sesam, Leinsamen zum Bestreuen</li>
+          </ul>
+        </div>
+        <div>
+          <div class="column-title">Zubereitung</div>
+          <ol class="steps-list">
+            <li>Ofen auf 200 °C vorheizen. Kastenform fetten.</li>
+            <li>Alle trockenen Zutaten gut vermischen.</li>
+            <li>Joghurt zugeben und mit Gabel oder Löffel kurz vermengen — nicht überkneten!</li>
+            <li>Teig in die Form geben, Oberfläche etwas glattstreichen und bestreuen.</li>
+            <li>Sofort in den Ofen — 40–45 Min. bei 200 °C backen bis Stäbchentest sauber.</li>
+            <li>10 Min. in der Form auskühlen lassen, dann stürzen.</li>
+          </ol>
+        </div>
+      </div>
+      <div class="tip-box">
+        <strong>Wichtig: Schnell in den Ofen</strong>
+        Sobald Backpulver und Joghurt sich berühren beginnt die Reaktion. 
+        Teig nie lange stehen lassen — sofort backen für optimalen Trieb.
+      </div>
+    </div>
+  </div>
+
+  <!-- SEKTION: Starter -->
+
+  <div class="section-header" style="padding: 60px 0 40px; border-top: 1px solid rgba(200,169,110,0.2);">
+    <div class="section-tag">✦ Das Fundament ✦</div>
+    <div class="section-title">Der lebendige Sauerteig-Starter</div>
+    <p class="section-desc">Kein Sauerteigbrot ohne lebendigen Starter. Einmal angesetzt, hält er ein Leben lang.</p>
+  </div>
+
+  <!-- Rezept 8 -->
+
+  <div class="recipe-card" id="r8">
+    <div class="recipe-header" onclick="toggle(this)">
+      <div class="recipe-header-left">
+        <span class="recipe-num">Grundlage</span>
+        <div class="recipe-title">Sauerteig-Starter ansetzen & pflegen</div>
+        <div class="recipe-tags">
+          <span class="tag highlight">Unverzichtbar</span>
+          <span class="tag">7 Tage</span>
+          <span class="tag">Lebenslang</span>
+        </div>
+      </div>
+      <button class="toggle-btn">+</button>
+    </div>
+    <div class="recipe-body">
+      <p class="recipe-intro">
+        Ein gesunder Starter ist alles. Er ist lebendig, er riecht nach Joghurt und Apfel, 
+        er blubbert. Ich nenne meinen „Franz". Franz ist seit 12 Jahren bei mir. 
+        Hier erkläre ich, wie du deinen eigenen Franz züchtest.
+      </p>
+      <div class="recipe-grid" style="margin-top:28px">
+        <div>
+          <div class="column-title">Du brauchst</div>
+          <ul class="ingredient-list">
+            <li>Roggenvollkornmehl (Bio, wenn möglich)</li>
+            <li>Wasser (lauwarm, am besten gefiltert oder abgestanden)</li>
+            <li>Ein sauberes Schraubglas (500 ml+)</li>
+            <li>7 Tage Geduld</li>
+          </ul>
+        </div>
+        <div>
+          <div class="column-title">Tag 1–7</div>
+          <ol class="steps-list">
+            <li><strong>Tag 1:</strong> 50 g Roggenmehl + 50 ml Wasser (28 °C) verrühren. Abdecken, bei 24–26 °C stellen.</li>
+            <li><strong>Tag 2:</strong> Hälfte wegwerfen. 25 g Mehl + 25 ml Wasser dazu. Wieder warten.</li>
+            <li><strong>Tag 3–4:</strong> Gleiches Prozedere. Ab Tag 3 sollten Bläschen zu sehen sein und ein säuerlicher Geruch entstehen.</li>
+            <li><strong>Tag 5–6:</strong> Aktivität steigt. Starter sollte sich binnen 4–6 Std. nach Fütterung verdoppeln.</li>
+            <li><strong>Tag 7:</strong> Starter ist bereit wenn er sich zuverlässig verdoppelt und angenehm säuerlich riecht. Float Test: 1 TL im Wasser — schwimmt er, ist er aktiv!</li>
+          </ol>
+        </div>
+      </div>
+      <div class="recipe-grid">
+        <div>
+          <div class="column-title">Tägliche Pflege (beim Backen)</div>
+          <ul class="ingredient-list">
+            <li>Vor dem Backen: 12 Std. vorher füttern (1:1:1 — Starter : Mehl : Wasser)</li>
+            <li>Nach dem Backen: Rest bei Raumtemp. einige Std. ruhen, dann in den Kühlschrank</li>
+            <li>Im Kühlschrank: hält 1–2 Wochen ohne Fütterung</li>
+          </ul>
+        </div>
+        <div>
+          <div class="column-title">Zeichen eines gesunden Starters</div>
+          <ul class="ingredient-list">
+            <li>Riecht nach Joghurt, Apfel oder mild sauer — nie faulig</li>
+            <li>Verdoppelt sich nach 4–8 Stunden nach Fütterung</li>
+            <li>Hat Blasen und eine leicht gewölbte Oberfläche</li>
+            <li>Float Test positiv: schwimmt im Wasser</li>
+          </ul>
+        </div>
+      </div>
+      <div class="tip-box">
+        <strong>Stinkender Starter — was tun?</strong>
+        Eine dünne graue Flüssigkeit (Hooch) oben bedeutet Hunger — einfach einrühren und füttern. 
+        Riecht er nach Nagellackentferner oder Aceton: 3 Tage täglich zweimal füttern. 
+        Nur bei Schimmel (echtem, flaumigem Schimmel) wegwerfen und neu anfangen.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="divider" style="max-width:200px; margin: 0 auto 30px;"><span>✦</span></div>
+  <p><strong>„Gutes Brot braucht keine Maschine — es braucht deine Hände und Zeit."</strong></p>
+  <p style="margin-top:10px; font-size:0.85rem; opacity:0.6;">Alle Rezepte ohne Samenöle · Nur echte Zutaten · Mit Liebe gesammelt</p>
+</footer>
+
+<script>
+  function toggle(header) {
+    const card = header.closest('.recipe-card');
+    const btn = header.querySelector('.toggle-btn');
+    const isOpen = card.classList.contains('open');
+    card.classList.toggle('open', !isOpen);
+    btn.textContent = isOpen ? '+' : '−';
+    if (!isOpen) card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  // Open first card by default
+  document.addEventListener('DOMContentLoaded', () => {
+    const first = document.querySelector('.recipe-card');
+    if (first) {
+      first.classList.add('open');
+      first.querySelector('.toggle-btn').textContent = '−';
+    }
+  });
+</script>
+
+</body>
+</html>
