@@ -7,404 +7,365 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <style>
     :root {
-      --bg: #0f0f1a;
-      --card: #1a1a2e;
-      --accent: #7c3aed;
-      --accent2: #ec4899;
-      --text: #e2e8f0;
-      --muted: #94a3b8;
-      --border: #2d2d4a;
+      --bg: #0f0f1a; --card: #1a1a2e; --card2: #16213e;
+      --accent: #7c3aed; --accent2: #ec4899;
+      --text: #e2e8f0; --muted: #94a3b8; --border: #2d2d4a;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      min-height: 100vh;
-    }
+    body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; }
+
     header {
-      text-align: center;
-      padding: 3rem 1rem 2rem;
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      text-align: center; padding: 3rem 1rem 2rem;
+      background: linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);
       border-bottom: 1px solid var(--border);
     }
     header h1 {
-      font-size: clamp(1.8rem, 4vw, 3rem);
-      background: linear-gradient(90deg, #a78bfa, #ec4899, #f472b6);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 0.5rem;
+      font-size: clamp(1.8rem,4vw,3rem);
+      background: linear-gradient(90deg,#a78bfa,#ec4899,#f472b6);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      margin-bottom: .5rem;
     }
-    header p {
-      color: var(--muted);
-      font-size: 1rem;
-    }
-    .badge {
-      display: inline-block;
-      background: var(--accent);
-      color: white;
-      padding: 0.2rem 0.7rem;
-      border-radius: 9999px;
-      font-size: 0.8rem;
-      margin-top: 0.5rem;
-    }
+    header p { color: var(--muted); font-size: 1rem; }
+    .badge { display:inline-block; background:var(--accent); color:#fff; padding:.2rem .7rem; border-radius:9999px; font-size:.8rem; margin-top:.5rem; }
+
     .filters {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      justify-content: center;
-      padding: 1.5rem 1rem;
-      background: var(--card);
-      border-bottom: 1px solid var(--border);
+      display:flex; flex-wrap:wrap; gap:.5rem; justify-content:center;
+      padding:1.2rem 1rem; background:var(--card); border-bottom:1px solid var(--border);
+      position:sticky; top:0; z-index:20;
     }
     .filter-btn {
-      background: var(--border);
-      border: 1px solid #3d3d5e;
-      color: var(--muted);
-      padding: 0.4rem 1rem;
-      border-radius: 9999px;
-      cursor: pointer;
-      font-size: 0.85rem;
-      transition: all 0.2s;
+      background:var(--border); border:1px solid #3d3d5e; color:var(--muted);
+      padding:.4rem 1rem; border-radius:9999px; cursor:pointer; font-size:.85rem; transition:all .2s;
     }
-    .filter-btn:hover, .filter-btn.active {
-      background: var(--accent);
-      color: white;
-      border-color: var(--accent);
-    }
+    .filter-btn:hover,.filter-btn.active { background:var(--accent); color:#fff; border-color:var(--accent); }
+
     .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-      gap: 1.5rem;
-      padding: 2rem;
-      max-width: 1400px;
-      margin: 0 auto;
+      display:grid; grid-template-columns:repeat(auto-fill,minmax(360px,1fr));
+      gap:1.5rem; padding:2rem; max-width:1500px; margin:0 auto;
     }
+
+    /* ── CARD ── */
     .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 1rem;
-      padding: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      transition: transform 0.2s, box-shadow 0.2s;
+      background:var(--card); border:1px solid var(--border);
+      border-radius:1rem; overflow:hidden;
+      display:flex; flex-direction:column;
+      transition:transform .2s, box-shadow .2s;
     }
-    .card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 30px rgba(124, 58, 237, 0.2);
+    .card:hover { transform:translateY(-3px); box-shadow:0 8px 30px rgba(124,58,237,.2); }
+
+    .card-inner { padding:1.5rem; display:flex; flex-direction:column; align-items:center; flex:1; }
+    .card h2 { font-size:.95rem; text-align:center; margin-bottom:1.2rem; line-height:1.4; min-height:2.8em; }
+    .chart-wrap { width:100%; max-width:260px; }
+
+    /* ── LEGEND ── */
+    .legend { width:100%; margin-top:1rem; display:flex; flex-direction:column; gap:.3rem; }
+    .legend-item { display:flex; align-items:center; gap:.5rem; font-size:.82rem; color:var(--muted); }
+    .legend-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+    .legend-label { flex:1; }
+    .legend-count { font-weight:600; color:var(--text); }
+
+    /* ── RAW PANEL TOGGLE ── */
+    .raw-toggle {
+      width:100%; background:var(--border); border:none; color:var(--muted);
+      padding:.6rem 1rem; cursor:pointer; font-size:.82rem; text-align:left;
+      display:flex; align-items:center; justify-content:space-between;
+      transition:background .2s, color .2s;
     }
-    .card h2 {
-      font-size: 0.95rem;
-      color: var(--text);
-      text-align: center;
-      margin-bottom: 1.2rem;
-      line-height: 1.4;
-      min-height: 2.8em;
+    .raw-toggle:hover { background:#3d3d5e; color:var(--text); }
+    .raw-toggle .arrow { transition:transform .25s; font-size:.75rem; }
+    .raw-toggle.open .arrow { transform:rotate(180deg); }
+
+    .raw-panel {
+      max-height:0; overflow:hidden;
+      transition:max-height .35s ease;
+      background:var(--card2); border-top:1px solid var(--border);
     }
-    .chart-wrap {
-      width: 100%;
-      max-width: 260px;
-      position: relative;
+    .raw-panel.open { max-height:600px; overflow-y:auto; }
+    .raw-panel::-webkit-scrollbar { width:4px; }
+    .raw-panel::-webkit-scrollbar-track { background:var(--border); }
+    .raw-panel::-webkit-scrollbar-thumb { background:var(--accent); border-radius:4px; }
+
+    .raw-list { padding:.8rem 1rem; display:flex; flex-direction:column; gap:.4rem; }
+    .raw-item {
+      background:var(--border); border-radius:.5rem; padding:.5rem .75rem;
+      font-size:.8rem; color:var(--muted); line-height:1.5;
+      border-left:3px solid var(--accent);
+      white-space:pre-wrap; word-break:break-word;
     }
-    .legend {
-      width: 100%;
-      margin-top: 1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.3rem;
-    }
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.82rem;
-      color: var(--muted);
-    }
-    .legend-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-    .legend-label { flex: 1; }
-    .legend-count {
-      font-weight: 600;
-      color: var(--text);
-    }
-    .special-card {
-      grid-column: 1 / -1;
-    }
-    .hotdog-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 0.8rem;
-      width: 100%;
-      margin-top: 1rem;
-    }
-    .hotdog-item {
-      background: var(--border);
-      border-radius: 0.5rem;
-      padding: 0.7rem;
-      font-size: 0.82rem;
-      color: var(--muted);
-    }
-    .hotdog-item.ja { border-left: 3px solid #22c55e; }
-    .hotdog-item.nein { border-left: 3px solid #ef4444; }
-    .cuteness-bar {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      width: 100%;
-      margin-top: 0.5rem;
-    }
-    .bar-label { font-size: 0.9rem; width: 40px; text-align: right; }
-    .bar-track {
-      flex: 1;
-      background: var(--border);
-      border-radius: 9999px;
-      height: 12px;
-      overflow: hidden;
-    }
-    .bar-fill {
-      height: 100%;
-      border-radius: 9999px;
-      background: linear-gradient(90deg, #7c3aed, #ec4899);
-    }
-    .bar-count { font-size: 0.85rem; color: var(--muted); width: 30px; }
-    footer {
-      text-align: center;
-      padding: 2rem;
-      color: var(--muted);
-      font-size: 0.85rem;
-      border-top: 1px solid var(--border);
-    }
+    .raw-item:nth-child(even) { border-left-color: var(--accent2); }
+    .raw-num { font-size:.7rem; color:#4a4a7a; margin-right:.3rem; }
+
+    /* freetext card has slightly different layout */
+    .card.freetext .card-inner { align-items:flex-start; }
+    .card.freetext h2 { text-align:left; min-height:unset; }
+
+    footer { text-align:center; padding:2rem; color:var(--muted); font-size:.85rem; border-top:1px solid var(--border); margin-top:2rem; }
   </style>
 </head>
 <body>
 
 <header>
   <h1>🎉 Freundes Umfrage 2026</h1>
-  <p>Die wichtigsten Fragen des Lebens – "demokratisch" beantwortet</p><p>Die restlichen fragen mach ich zuhause noch dazu</p>
-  <span class="badge">16 Stimmen</span>
+  <p>Die wichtigsten Fragen des Lebens – demokratisch beantwortet</p>
+  <span class="badge">16 Stimmen · 28 Fragen</span>
 </header>
 
 <div class="filters">
-  <button class="filter-btn active" onclick="filterCards('all', this)">Alle</button>
-  <button class="filter-btn" onclick="filterCards('person', this)">👥 Personen-Fragen</button>
-  <button class="filter-btn" onclick="filterCards('fun', this)">😂 Sonstige</button>
+  <button class="filter-btn active" onclick="filterCards('all',this)">Alle</button>
+  <button class="filter-btn" onclick="filterCards('person',this)">👥 Personen</button>
+  <button class="filter-btn" onclick="filterCards('debate',this)">🗳️ Debatten</button>
+  <button class="filter-btn" onclick="filterCards('creative',this)">✍️ Kreatives</button>
+  <button class="filter-btn" onclick="filterCards('other',this)">🎲 Sonstiges</button>
 </div>
 
 <div class="grid" id="grid"></div>
-
-<footer>Erstellt aus den Umfrage-Ergebnissen vom 20. Mai 2026</footer>
+<footer>Erstellt aus den Umfrage-Ergebnissen vom 20. Mai 2026 🍌</footer>
 
 <script>
-const PALETTE = [
-  '#7c3aed','#ec4899','#f59e0b','#10b981','#3b82f6',
-  '#ef4444','#a78bfa','#f472b6','#34d399','#60a5fa',
-  '#fbbf24','#fb7185','#818cf8','#4ade80','#38bdf8',
-  '#c084fc','#e879f9','#fb923c','#a3e635','#22d3ee'
-];
+// ── ALL RAW ANSWERS ────────────────────────────────────────────
+const RAW = {
+  "Wer ist am schönsten?": ["Leo","Martin (groß und schlank)","Lukas","Lars Daniels","Alle hässlich","Niemand","Leo","Lukas","Leo","Martin (groß und schlank)","Lars Daniels","Martin (groß und schlank)","Lars Daniels","Leo"],
+  "Wer ist am hässligsten?": ["Lars Daniels","Lars Robel","Kein Kommentar","Lars Robel","Fynn","Lars Daniels","Jonas","Lars Robel","Eric","Leonard","Lars Bosbach","Shin","Kackhaufen","Jonas","Keiner <3 (Lars)"],
+  "Wer ist am nonchalantesten?": ["Eric","Leo","Lukas","Eric","Eric aber er tut nur so","Eric","Fynn","Lukas","Martin (groß und schlank)","Mauro","Lars Daniels","Eric","Lars Bosbach","Leo","Lukas","Martin (groß und schlank)"],
+  "Wer ist am überlebensfähigsten?": ["Mauro","Jonas","Lukas","Leo","Lukas","Lars Daniels","Lars Daniels","Milo","Fynn","Fynn","Milo","Milo","Milo","Mauro","Lars Daniels","Fynn"],
+  "Wer hat die beste Frisur?": ["Martin (groß und schlank)","Martin (groß und schlank)","Leo","Leo","Malte","Lars Daniels","Martin (groß und schlank)","Lars Bosbach","Lukas","Lukas","Lukas","Fynn","Martin (groß und schlank)","Lars Daniels","Lars Daniels","Lukas"],
+  "Wer hat am meisten Rizz?": ["Burak","Eric","Leo","Lars Bosbach","Lukas","Nuemand","Burak","Lukas","Martin (groß und schlank)","Fynn","Fynn","Lukas","Lars Robel","Fynn","Eric","Fynn"],
+  "Wer kommt am ehesten ins Gefängnis?": ["Lars Robel","Eric","Lars Robel","Lars Robel","Eric","Jonas","Lars Daniels","Eric","Lars Robel","Eric","Lars Robel","Lars Robel","Lars Robel","Lars Robel","Lars Daniels","Lars Robel"],
+  "Wer wird am ehesten Millionär?": ["Lars Robel","Lukas","Lukas","Leonard","Kp","Lukas","Lukas","Lukas","Lukas","Lars Robel","Lukas","Lars Robel","Lars Bosbach","Lukas","Leonard","Keiner <3"],
+  "Wer wird am meisten Kiffen?": ["Fynn","Lars Daniels","Lars Robel","Jonas","Fabian eigebtlich er kifft schon","Lars Daniels","Lars Robel","Eric","Malte","Eric","Lars Robel","Lars Robel","Lars Robel","Eric","Lars Daniels","Jonas"],
+  "Wer stirbt zuerst?": ["Lars Daniels","Lars Daniels","Lars Daniels","Lars Daniels","Fabian weil.... weil.","Lars Daniels","Shin","Eric","Lars Daniels","Miles","Milo","Milo","Jonas","Miles","Lars Daniels","Eric"],
+  "Wer lebt am längsten?": ["Lukas","Burak","Lars Bosbach","Mauro","Jonas","Julian","Jonas","Shin","Lars Bosbach","Milo","Julian","Julian","Martin (groß und schlank)","Julian","Julian","Julian"],
+  "Wer ist am ehesten Schwul/Bi?": ["Jonas","Milo","Jonas","Jonas","Jonas","Milo","Miles","Shin","Jonas","Eric","Milo","Burak","Miles","Jonas","Jonas"],
+  "Wer ist am ehesten ein Furry?": ["Julian","Leonard","Lukas","Eric","Lars Robel","Leonard","Shin","Burak","Eric","Milo","Milo","Milo","Jonas","Milo"],
+  "Wer ist am ehesten Trans?": ["Lars Daniels","Fynn","Jonas","Eric","Jonas","Julian","Leonard","Eric","Eric","Lars Robel","Lars Robel","Jonas","Jonas","Lars Robel"],
+  "Wer wird vom Verfassungsschutz beobachtet?": ["Shin","Lars Robel","Lars Robel","Lars Robel","Lars Robel","Lars Robel","Lars Daniels","Lars Robel","Lars Daniels","Lars Robel","Lars Robel","Lars Robel","Lars Robel","Lars Robel","Lars Robel"],
+  "Wer wird am ehesten Bundeskanzler?": ["Lukas","Lukas","Leo","Lukas","Leo","Leonard","Leo","Lars Bosbach","Lars Daniels","Lars Bosbach","Leo","Lars Robel","Lars Robel","Martin (groß und schlank)","Fynn"],
+  "Wer wird am ehesten Führer?": ["Lars Daniels","Lars Daniels","Lars Daniels","Lars Bosbach","Lars Daniels","Lars Daniels","Fynn","Lars Daniels","Lars Daniels","Leo","Lars Daniels","Lars Robel","Lars Daniels","Lars Daniels","Lars Daniels"],
+  "Wer wird am schnellsten obdachlos?": ["Miles","Shin","Jonas","Eric","Jonas","Lars Bosbach","Shin","Eric","Eric","Eric","Lars Robel","Jonas","Jonas","Burak"],
+  "Mit wem am ehesten Sex?": ["Jonas","Ganz sicher nicht","Julian","Bin nd schwul","Niemanden","Lars Daniels;Lukas;Mauro;Julian;Milo;Miles;Jonas;Burak;Martin (groß und schlank);Leo;Leonard;Shin;Fynn","Lukas","Lars Daniels;Lukas;Lars Robel;Lars Bosbach;Mauro;Julian;Milo;Miles;Jonas;Burak;Eric;Martin (groß und schlank);Leo;Leonard;Shin;Fynn;Von Milo (´꒳`)♡","Shin","Lars Robel;Lars Bosbach;Eric;Martin (groß und schlank)","Frauen","Meinem Nachbarn <3"],
+  "Ist ein Hotdog ein Sandwich?": ["Hail naw dawg","Ne","Nein, es ist an einer Seite geschlossen","Nein... wtf","Nein ein Hotdog ist ein hotdog","Ja, aber eins mit spezieller Form und speziellem Namen","Ja","Selbstverständlich! Brot mit inhalt","Ja","no","Ja. Belag zwischen zwei Scheiben Brot","Ist dein Vater ein Hurensohn?","Ja weil nach Alltags Definition ist ein Sandwich: Brot (soße) Belag (soße) Brot\nEin Hotdog ist Brot Soße Belag Soße Brot. \nHat halt nur bisschen andere Form, kann aber auch als vercracktws Sandwich gesehen werden","Nein","Nah pal"],
+  "Schlimmste Lehrkraft?": ["Big Mink (Herr Minklai)","(Außer Mielke) Ehms","Frau Ehms, AFD anhängerin und nervig","Herr Miehlke *würg*","MIEHLKE!!!!!","Miehlke","Herr Stz (Schmitz oder wie der wichser geschrieben wird","Hatte ihn nicht aber Miehlke","Borgs","Ehms","Frau hingst","Miehlke. (Pedo und schlechte Lehrkraft an sich)","Keine Angaben","Keiner :-)","Hingst // Miehlke"],
+  "Bananenpreise in Zimbabwe?": ["Die armen Zimbabwaner :(","W","Sehr guter Einfluss, Jayden wird gefördert","Was?","Mir egal","Absoluter Horror. Der Einfluss den die Bananenpreise auf den sozioökonomischen Markt haben ist so unglaublich hoch, das es über kurz oder lang zu einem völligen Zusammenbruch des Systems kommen würde. Wenn sich dieses Phänomen auch auf anderes Obst ausweitet könnte dies einen inakzeptablen Einfluss auf unser sozialverhalten haben, bis wir anfangen anstatt Bananenbrot normales Brot zu essen usw.. Daher unterstütze ich sämtliche präventiven Initiativen im Hinblick auf die Bananenpreise in Zimbabwe.","I got bigger fish to fry","Eine grauenhafte Wandlung mit internationalen und unvorhersehbaren Folgen","UwU","double it and give it to the next person","Schlimme Sache","Der Bananenpreis in Zimbabwe ist kein ökonomischer Fakt sondern ein Gewaltakt der Abstraktion. Wert wird nicht produziert sondern extrahiert durch die epistemische Ordnung des Weltmarkts. [...] Die Frucht verrottet nicht – sie dekonstruiert die Erzählung von Entwicklung von unten nach oben.","Das Thema ist mir in dem Zusammenhang unbekannt","Tja, was soll man sagen :/","Stagnierend"],
+  "Zu welcher Zeit wurdest du gezeugt?": ["12:06","22:00","15:15","20:25","18:45","15:30","19:30","01:31","13:30","04:20","07:00","19:34","02:22","11:11"],
+  "Eichendorff-Analyse": ["Fuck nah hund","Joseph von paprika Eichendorff zählt paprika zu den paprika bedeutendsten Vertretern paprika der deutschen paprika Romantik. Sein paprika Gedicht thematisiert paprika typisch romantische paprika Motive...","Fresse halten","Fick dich","Das Gedicht sagt aus: Leck mich am Arsch","[Eine vollständige, mehrseitige akademische Analyse – zu lang für dieses Feld, aber vorhanden!]","Hell nah","Fuck no wer hat diese drecks Umfrage gemacht","Goont","bro war spät","Joseph von Eichendorffs Sonett gilt als eines der eindrücklichsten Spätwerke des Dichters. Während das Motiv des Wanderns in der Hochromantik meist als Ausdruck von Freiheit verstanden wurde, wandelt es sich hier zu einer melancholischen Reflexion über Altern und Vergänglichkeit...","„Der verspätete Wanderer\" ist mehr als eine romantische Alterselegie. Eichendorff zeigt, wie ein Subjekt, das seine Identität aus Gemeinschaft und geteilter Praxis bezieht, haltlos wird, wenn diese wegbrechen...","[Ausführliche Analyse mit Einleitung, Inhaltsanalyse, formaler Analyse, Epocheneinordnung und Schluss]","Es war einmal…","[insert ChatGPT answer here]"],
+  "Cuteness Bewertung": ["7","10","10","10","10","10","10","10","10","10","10","9","7","10","4"],
+  "Wie wird WW4 gestartet?": ["Den Russen, ganz klar.","Israel, Israel, Israel, Polen oder Israel","Lars wird Führer","Deutschland. Mein Herz in Flammen. Will dich lieben und verdammen. ✨","Mir","Nachdem im dritten Weltkrieg ungefähr 67% der Erde nuklear verseucht wurden, kämpfen nun drei mutierte Menschenstämme: Wassermenschen, Liliputaner und Freedom-Eagle-Menschen. Die letzte Atombombe wird gezündet...","Es wird keine geben – die Menschheit überlebt den Dritten nicht","Vom kommenden Bundeskanzler und Führer","China","Robel","Herr Borgs","The Marxist-Leninist republic of Germany invades the anarcho-capitalist utopia of Iceland... 😭","Lars Robel und Lars Bosbach gaslighten die politischen Machthaber solange bis irgendwer irgendwen ohne Grund angreift.","Liechtenstein","Von Mir"],
+  "Bedeutung von Kontext": ["Mein IQ reicht ned dafür.","Ne kein Bock","Wenn ich sage, Lars ist der Führer, aber Menschen ohne Kontext denken, ich meine das nicht ernst","Was?","Mir egal","Kontext ist die Fähigkeit ein Gespräch nicht nur zu haben sondern aktiv an gesagtes anzuknüpfen. Sagt Jonas zum Beispiel er will vegetarisch leben, hat aber kurz davor gesagt er lebt vegan bis ans Lebensende – kann ich ihn mit einem freundlichen Tritt in die Eier darauf hinweisen.","Ne","Was du willst – von deinem Vater gefickt werden… basierend auf der letzten Frage","Der Kontext ist der gesamte Zusammenhang oder das Umfeld, in dem ein Wort oder Ereignis steht. Erst durch diesen Hintergrund versteht man die genaue Bedeutung.","Kontext ist keine äußere Zugabe zum eigentlichen Sinn – er ist die Bedingung, unter der Sinn erst entsteht. Wer das ignoriert, spricht in ein Vakuum.","Kontext bezeichnet den Sinn- und Handlungszusammenhang, in dem eine Aussage steht. Er liefert die notwendigen Rahmenbedingungen, um etwas richtig zu deuten.","Keine Zeit","Meine Aura"],
+  "In welche Richtung bewegst du dich?": ["Nach hinten","Nach hinten","Nach hinten","Nach hinten","Nach vorne","Nach hinten","Nach hinten","Nach vorne","Nach hinten","Nach vorne","Nach hinten","Nach hinten","Nach hinten","Nach vorne","Nach vorne","Nach hinten"]
+};
 
-const personData = [
-  {
-    q: "Wer ist am schönsten? 😍",
-    cat: "person",
-    data: { "Leo": 4, "Martin": 3, "Lars Daniels": 3, "Lukas": 2, "Alle hässlich": 1, "Niemand": 1 }
-  },
-  {
-    q: "Wer ist am hässligsten? 💀",
-    cat: "person",
-    data: { "Lars Robel": 3, "Lars Daniels": 2, "Jonas": 2, "Fynn": 1, "Eric": 1, "Leonard": 1, "Shin": 1, "Kackhaufen": 1, "Keiner <3": 1 }
-  },
-  {
-    q: "Wer ist am nonchalantesten? 😎",
-    cat: "person",
-    data: { "Eric": 5, "Lukas": 3, "Leo": 2, "Martin": 2, "Fynn": 1, "Mauro": 1, "Lars Daniels": 1, "Lars Bosbach": 1 }
-  },
-  {
-    q: "Wer ist am überlebensfähigsten? 🪖",
-    cat: "person",
-    data: { "Milo": 4, "Lars Daniels": 3, "Fynn": 3, "Mauro": 2, "Lukas": 2, "Jonas": 1, "Leo": 1 }
-  },
-  {
-    q: "Wer hat die beste Frisur? 💇",
-    cat: "person",
-    data: { "Martin": 4, "Lukas": 4, "Lars Daniels": 3, "Leo": 2, "Malte": 1, "Lars Bosbach": 1, "Fynn": 1 }
-  },
-  {
-    q: "Wer hat am meisten Rizz? 🔥",
-    cat: "person",
-    data: { "Fynn": 4, "Lukas": 3, "Burak": 2, "Eric": 2, "Leo": 1, "Lars Bosbach": 1, "Nuemand": 1, "Martin": 1, "Lars Robel": 1 }
-  },
-  {
-    q: "Wer kommt am ehesten ins Gefängnis? ⛓️",
-    cat: "person",
-    data: { "Lars Robel": 9, "Eric": 4, "Lars Daniels": 2, "Jonas": 1 }
-  },
-  {
-    q: "Wer wird am ehesten Millionär? 💰",
-    cat: "person",
-    data: { "Lukas": 8, "Lars Robel": 3, "Leonard": 2, "Kp": 1, "Lars Bosbach": 1, "Keiner <3": 1 }
-  },
-  {
-    q: "Wer wird am meisten Kiffen? 🌿",
-    cat: "person",
-    data: { "Lars Robel": 5, "Lars Daniels": 3, "Eric": 3, "Jonas": 2, "Fynn": 1, "Fabian": 1, "Malte": 1 }
-  },
-  {
-    q: "Wer stirbt zuerst? ☠️",
-    cat: "person",
-    data: { "Lars Daniels": 7, "Eric": 2, "Miles": 2, "Milo": 2, "Shin": 1, "Jonas": 1, "Fabian": 1 }
-  },
-  {
-    q: "Wer lebt am längsten? 🧓",
-    cat: "person",
-    data: { "Julian": 6, "Lars Bosbach": 2, "Jonas": 2, "Lukas": 1, "Burak": 1, "Mauro": 1, "Shin": 1, "Milo": 1, "Martin": 1 }
-  },
-  {
-    q: "Wer ist am ehesten Schwul/Bi? 🏳️‍🌈",
-    cat: "person",
-    data: { "Jonas": 7, "Milo": 3, "Miles": 2, "Shin": 1, "Eric": 1, "Burak": 1 }
-  },
-  {
-    q: "Wer ist am ehesten ein Furry? 🐾",
-    cat: "person",
-    data: { "Milo": 4, "Leonard": 2, "Eric": 2, "Julian": 1, "Lukas": 1, "Lars Robel": 1, "Shin": 1, "Burak": 1, "Jonas": 1 }
-  },
-  {
-    q: "Wer ist am ehesten Trans? 🏳️‍⚧️",
-    cat: "person",
-    data: { "Jonas": 4, "Eric": 3, "Lars Robel": 3, "Lars Daniels": 1, "Fynn": 1, "Julian": 1, "Leonard": 1 }
-  },
-  {
-    q: "Wer wird am ehesten vom Verfassungsschutz beobachtet? 🕵️",
-    cat: "person",
-    data: { "Lars Robel": 12, "Lars Daniels": 2, "Shin": 1 }
-  },
-  {
-    q: "Wer wird am ehesten Bundeskanzler? 🏛️",
-    cat: "person",
-    data: { "Leo": 4, "Lukas": 3, "Lars Bosbach": 2, "Lars Robel": 2, "Leonard": 1, "Lars Daniels": 1, "Martin": 1, "Fynn": 1 }
-  },
-  {
-    q: "Wer wird am ehesten Führer? 😬",
-    cat: "person",
-    data: { "Lars Daniels": 11, "Lars Bosbach": 1, "Fynn": 1, "Leo": 1, "Lars Robel": 1 }
-  },
-  {
-    q: "Wer wird am schnellsten obdachlos? 🏚️",
-    cat: "person",
-    data: { "Jonas": 4, "Eric": 4, "Shin": 2, "Miles": 1, "Lars Bosbach": 1, "Lars Robel": 1, "Burak": 1 }
-  },
-];
+// ── HELPERS ───────────────────────────────────────────────────
+const PALETTE = ['#7c3aed','#ec4899','#f59e0b','#10b981','#3b82f6','#ef4444','#a78bfa','#f472b6','#34d399','#60a5fa','#fbbf24','#fb7185','#818cf8','#4ade80','#38bdf8','#c084fc','#e879f9','#fb923c','#a3e635','#22d3ee'];
+let cid = 0;
 
-function makeChart(canvasId, labels, values) {
+function rawKey(title) {
+  // map display title → RAW key
+  const map = {
+    "Wer ist am schönsten? 😍": "Wer ist am schönsten?",
+    "Wer ist am hässligsten? 💀": "Wer ist am hässligsten?",
+    "Wer ist am nonchalantesten? 😎": "Wer ist am nonchalantesten?",
+    "Wer ist am überlebensfähigsten? 🪖": "Wer ist am überlebensfähigsten?",
+    "Wer hat die beste Frisur? 💇": "Wer hat die beste Frisur?",
+    "Wer hat am meisten Rizz? 🔥": "Wer hat am meisten Rizz?",
+    "Wer kommt am ehesten ins Gefängnis? ⛓️": "Wer kommt am ehesten ins Gefängnis?",
+    "Wer wird am ehesten Millionär? 💰": "Wer wird am ehesten Millionär?",
+    "Wer wird am meisten Kiffen? 🌿": "Wer wird am meisten Kiffen?",
+    "Wer stirbt zuerst? ☠️": "Wer stirbt zuerst?",
+    "Wer lebt am längsten? 🧓": "Wer lebt am längsten?",
+    "Wer ist am ehesten Schwul/Bi? 🏳️‍🌈": "Wer ist am ehesten Schwul/Bi?",
+    "Wer ist am ehesten ein Furry? 🐾": "Wer ist am ehesten ein Furry?",
+    "Wer ist am ehesten Trans? 🏳️‍⚧️": "Wer ist am ehesten Trans?",
+    "Wer wird vom Verfassungsschutz beobachtet? 🕵️": "Wer wird vom Verfassungsschutz beobachtet?",
+    "Wer wird am ehesten Bundeskanzler? 🏛️": "Wer wird am ehesten Bundeskanzler?",
+    "Wer wird am ehesten Führer? 😬": "Wer wird am ehesten Führer?",
+    "Wer wird am schnellsten obdachlos? 🏚️": "Wer wird am schnellsten obdachlos?",
+    "Mit wem am ehesten Sex? 💘": "Mit wem am ehesten Sex?",
+    "Ist ein Hotdog ein Sandwich? 🌭": "Ist ein Hotdog ein Sandwich?",
+    "Schlimmste Lehrkraft? 👨‍🏫": "Schlimmste Lehrkraft?",
+    "Bananenpreise in Zimbabwe? 🍌": "Bananenpreise in Zimbabwe?",
+    "Zu welcher Zeit gezeugt? 🕐": "Zu welcher Zeit wurdest du gezeugt?",
+    "Eichendorff-Analyse ✍️": "Eichendorff-Analyse",
+    "Cuteness Bewertung 🥺": "Cuteness Bewertung",
+    "Wie wird WW4 gestartet? 🌐": "Wie wird WW4 gestartet?",
+    "Bedeutung von Kontext 🧠": "Bedeutung von Kontext",
+    "In welche Richtung? 😏": "In welche Richtung bewegst du dich?"
+  };
+  return map[title] || title;
+}
+
+function makeRawPanel(title) {
+  const key = rawKey(title);
+  const answers = RAW[key] || [];
+  const id = 'raw_' + (cid++);
+  const listHTML = answers.map((a, i) =>
+    `<div class="raw-item"><span class="raw-num">#${i+1}</span>${escHtml(a)}</div>`
+  ).join('');
+  return `
+    <button class="raw-toggle" onclick="toggleRaw(this)" aria-expanded="false">
+      <span>📋 Alle ${answers.length} Rohantworten anzeigen</span>
+      <span class="arrow">▼</span>
+    </button>
+    <div class="raw-panel" id="${id}">
+      <div class="raw-list">${listHTML}</div>
+    </div>`;
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function toggleRaw(btn) {
+  const panel = btn.nextElementSibling;
+  const open = panel.classList.toggle('open');
+  btn.classList.toggle('open', open);
+  btn.setAttribute('aria-expanded', open);
+  btn.querySelector('span:first-child').textContent =
+    open ? `📋 Rohantworten schließen` : `📋 Alle ${panel.querySelectorAll('.raw-item').length} Rohantworten anzeigen`;
+}
+
+function makeChart(canvasId, labels, values, type='pie') {
   const ctx = document.getElementById(canvasId).getContext('2d');
   new Chart(ctx, {
-    type: 'pie',
+    type,
     data: {
       labels,
       datasets: [{
         data: values,
-        backgroundColor: PALETTE.slice(0, labels.length),
-        borderColor: '#0f0f1a',
-        borderWidth: 2
+        backgroundColor: type==='bar' ? PALETTE.slice(0,labels.length).map(c=>c+'cc') : PALETTE.slice(0,labels.length),
+        borderColor: type==='bar' ? PALETTE.slice(0,labels.length) : '#0f0f1a',
+        borderWidth: 2, borderRadius: type==='bar' ? 6 : 0
       }]
     },
     options: {
       responsive: true,
+      indexAxis: type==='bar' ? 'y' : undefined,
       plugins: {
         legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: ctx => ` ${ctx.label}: ${ctx.parsed} Stimmen`
-          }
-        }
-      }
+        tooltip: { callbacks: { label: c => ` ${c.label}: ${c.parsed.x ?? c.parsed} Stimmen` } }
+      },
+      scales: type==='bar' ? {
+        x: { ticks:{color:'#94a3b8'}, grid:{color:'#2d2d4a'} },
+        y: { ticks:{color:'#94a3b8',font:{size:11}}, grid:{display:false} }
+      } : {}
     }
   });
 }
 
-function buildCards() {
-  const grid = document.getElementById('grid');
+function makeLegend(labels, values) {
+  return labels.map((l,j) => `
+    <div class="legend-item">
+      <div class="legend-dot" style="background:${PALETTE[j]}"></div>
+      <span class="legend-label">${l}</span>
+      <span class="legend-count">${values[j]}</span>
+    </div>`).join('');
+}
 
-  personData.forEach((item, i) => {
-    const labels = Object.keys(item.data);
-    const values = Object.values(item.data);
-    const total = values.reduce((a, b) => a + b, 0);
-    const canvasId = `chart_${i}`;
-
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.dataset.cat = item.cat;
-
-    const legendHTML = labels.map((l, j) => `
-      <div class="legend-item">
-        <div class="legend-dot" style="background:${PALETTE[j]}"></div>
-        <span class="legend-label">${l}</span>
-        <span class="legend-count">${values[j]}</span>
-      </div>`).join('');
-
-    card.innerHTML = `
-      <h2>${item.q}</h2>
-      <div class="chart-wrap">
-        <canvas id="${canvasId}"></canvas>
+function addPieCard(cat, title, data, chartType='pie') {
+  const labels = Object.keys(data), values = Object.values(data);
+  const id = 'chart_' + (cid++);
+  const isBar = chartType==='bar';
+  const card = document.createElement('div');
+  card.className = 'card'; card.dataset.cat = cat;
+  card.innerHTML = `
+    <div class="card-inner">
+      <h2>${title}</h2>
+      <div class="chart-wrap" style="max-width:${isBar?'100%':'260px'}">
+        <canvas id="${id}" ${isBar?'height="200"':''}></canvas>
       </div>
-      <div class="legend">${legendHTML}</div>
-    `;
-    grid.appendChild(card);
-    setTimeout(() => makeChart(canvasId, labels, values), 50);
-  });
-
-  // Hotdog special card
-  const hotdogCard = document.createElement('div');
-  hotdogCard.className = 'card';
-  hotdogCard.dataset.cat = 'fun';
-  hotdogCard.innerHTML = `
-    <h2>🌭 Ist ein Hotdog ein Sandwich?</h2>
-    <div style="width:100%;max-width:260px"><canvas id="chart_hotdog"></canvas></div>
-    <div class="legend">
-      <div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div><span class="legend-label">Ja (inkl. Varianten)</span><span class="legend-count">7</span></div>
-      <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div><span class="legend-label">Nein (inkl. Varianten)</span><span class="legend-count">7</span></div>
+      <div class="legend">${makeLegend(labels,values)}</div>
     </div>
-  `;
-  grid.appendChild(hotdogCard);
-  setTimeout(() => makeChart('chart_hotdog', ['Ja', 'Nein'], [7, 7]), 50);
+    ${makeRawPanel(title)}`;
+  document.getElementById('grid').appendChild(card);
+  setTimeout(() => makeChart(id, labels, values, chartType), 50);
+}
 
-  // Cuteness card
-  const cutenessCard = document.createElement('div');
-  cutenessCard.className = 'card';
-  cutenessCard.dataset.cat = 'fun';
-  cutenessCard.innerHTML = `
-    <h2>🥺 Cuteness Bewertung (Durchschnitt: 9.5/10)</h2>
-    <div style="width:100%;max-width:260px"><canvas id="chart_cute"></canvas></div>
-    <div class="legend">
-      <div class="legend-item"><div class="legend-dot" style="background:#a78bfa"></div><span class="legend-label">10/10</span><span class="legend-count">11</span></div>
-      <div class="legend-item"><div class="legend-dot" style="background:#7c3aed"></div><span class="legend-label">9/10</span><span class="legend-count">1</span></div>
-      <div class="legend-item"><div class="legend-dot" style="background:#ec4899"></div><span class="legend-label">7/10</span><span class="legend-count">2</span></div>
-      <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div><span class="legend-label">4/10</span><span class="legend-count">1</span></div>
+function addFreeCard(cat, title) {
+  const key = rawKey(title);
+  const answers = RAW[key] || [];
+  const card = document.createElement('div');
+  card.className = 'card freetext'; card.dataset.cat = cat;
+  const listHTML = answers.map((a, i) =>
+    `<div class="raw-item"><span class="raw-num">#${i+1}</span>${escHtml(a)}</div>`
+  ).join('');
+  card.innerHTML = `
+    <div class="card-inner" style="align-items:flex-start">
+      <h2 style="text-align:left;min-height:unset">${title}</h2>
+      <p style="font-size:.78rem;color:var(--muted);margin-bottom:.5rem">${answers.length} Antworten – alle sichtbar</p>
+      <div style="max-height:320px;overflow-y:auto;width:100%;display:flex;flex-direction:column;gap:.4rem;padding-right:4px">
+        ${listHTML}
+      </div>
+    </div>`;
+  document.getElementById('grid').appendChild(card);
+}
+
+function addClockCard() {
+  const id = 'chart_zeit';
+  const card = document.createElement('div');
+  card.className = 'card'; card.dataset.cat = 'other';
+  card.innerHTML = `
+    <div class="card-inner">
+      <h2>Zu welcher Zeit gezeugt? 🕐</h2>
+      <div class="chart-wrap"><canvas id="${id}"></canvas></div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div><span class="legend-label">Abends (18–23h)</span><span class="legend-count">5</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:#7c3aed"></div><span class="legend-label">Nachmittags (12–18h)</span><span class="legend-count">4</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div><span class="legend-label">Nachts (23–5h)</span><span class="legend-count">3</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div><span class="legend-label">Morgens (5–12h)</span><span class="legend-count">2</span></div>
+      </div>
     </div>
-  `;
-  grid.appendChild(cutenessCard);
-  setTimeout(() => makeChart('chart_cute', ['10/10', '9/10', '7/10', '4/10'], [11, 1, 2, 1]), 50);
+    ${makeRawPanel('Zu welcher Zeit gezeugt? 🕐')}`;
+  document.getElementById('grid').appendChild(card);
+  setTimeout(() => makeChart(id, ['Abends (18–23h)','Nachmittags (12–18h)','Nachts (23–5h)','Morgens (5–12h)'], [5,4,3,2]), 50);
+}
+
+// ── BUILD ALL CARDS ───────────────────────────────────────────
+function build() {
+  // PERSONEN
+  addPieCard('person','Wer ist am schönsten? 😍',{"Leo":4,"Martin":3,"Lars Daniels":3,"Lukas":2,"Alle hässlich":1,"Niemand":1});
+  addPieCard('person','Wer ist am hässligsten? 💀',{"Lars Robel":3,"Lars Daniels":2,"Jonas":2,"Fynn":1,"Eric":1,"Leonard":1,"Shin":1,"Kackhaufen":1,"Keiner <3":1});
+  addPieCard('person','Wer ist am nonchalantesten? 😎',{"Eric":5,"Lukas":3,"Leo":2,"Martin":2,"Fynn":1,"Mauro":1,"Lars Daniels":1,"Lars Bosbach":1});
+  addPieCard('person','Wer ist am überlebensfähigsten? 🪖',{"Milo":4,"Lars Daniels":3,"Fynn":3,"Mauro":2,"Lukas":2,"Jonas":1,"Leo":1});
+  addPieCard('person','Wer hat die beste Frisur? 💇',{"Martin":4,"Lukas":4,"Lars Daniels":3,"Leo":2,"Malte":1,"Lars Bosbach":1,"Fynn":1});
+  addPieCard('person','Wer hat am meisten Rizz? 🔥',{"Fynn":4,"Lukas":3,"Burak":2,"Eric":2,"Leo":1,"Lars Bosbach":1,"Niemand":1,"Martin":1,"Lars Robel":1});
+  addPieCard('person','Wer kommt am ehesten ins Gefängnis? ⛓️',{"Lars Robel":9,"Eric":4,"Lars Daniels":2,"Jonas":1});
+  addPieCard('person','Wer wird am ehesten Millionär? 💰',{"Lukas":8,"Lars Robel":3,"Leonard":2,"Kp":1,"Lars Bosbach":1,"Keiner <3":1});
+  addPieCard('person','Wer wird am meisten Kiffen? 🌿',{"Lars Robel":5,"Lars Daniels":3,"Eric":3,"Jonas":2,"Fynn":1,"Fabian":1,"Malte":1});
+  addPieCard('person','Wer stirbt zuerst? ☠️',{"Lars Daniels":7,"Eric":2,"Miles":2,"Milo":2,"Shin":1,"Jonas":1,"Fabian":1});
+  addPieCard('person','Wer lebt am längsten? 🧓',{"Julian":6,"Lars Bosbach":2,"Jonas":2,"Lukas":1,"Burak":1,"Mauro":1,"Shin":1,"Milo":1,"Martin":1});
+  addPieCard('person','Wer ist am ehesten Schwul/Bi? 🏳️‍🌈',{"Jonas":7,"Milo":3,"Miles":2,"Shin":1,"Eric":1,"Burak":1});
+  addPieCard('person','Wer ist am ehesten ein Furry? 🐾',{"Milo":4,"Leonard":2,"Eric":2,"Julian":1,"Lukas":1,"Lars Robel":1,"Shin":1,"Burak":1,"Jonas":1});
+  addPieCard('person','Wer ist am ehesten Trans? 🏳️‍⚧️',{"Jonas":4,"Eric":3,"Lars Robel":3,"Lars Daniels":1,"Fynn":1,"Julian":1,"Leonard":1});
+  addPieCard('person','Wer wird vom Verfassungsschutz beobachtet? 🕵️',{"Lars Robel":12,"Lars Daniels":2,"Shin":1});
+  addPieCard('person','Wer wird am ehesten Bundeskanzler? 🏛️',{"Leo":4,"Lukas":3,"Lars Bosbach":2,"Lars Robel":2,"Leonard":1,"Lars Daniels":1,"Martin":1,"Fynn":1});
+  addPieCard('person','Wer wird am ehesten Führer? 😬',{"Lars Daniels":11,"Lars Bosbach":1,"Fynn":1,"Leo":1,"Lars Robel":1});
+  addPieCard('person','Wer wird am schnellsten obdachlos? 🏚️',{"Jonas":4,"Eric":4,"Shin":2,"Miles":1,"Lars Bosbach":1,"Lars Robel":1,"Burak":1});
+  addPieCard('other','Mit wem am ehesten Sex? 💘',{"Jonas":1,"Julian":1,"Shin":1,"Lukas":1,"Alle (fast)":2,"Ablehnung":3,"Frauen":1,"Nachbar":1,"Lars Robel+3":1});
+
+  // DEBATTEN
+  addPieCard('debate','Ist ein Hotdog ein Sandwich? 🌭',{"Ja (inkl. Varianten)":7,"Nein (inkl. Varianten)":7,"Ausweichend":1});
+  addPieCard('debate','In welche Richtung? 😏',{"Nach hinten":11,"Nach vorne":5});
+  addPieCard('debate','Wie wird WW4 gestartet? 🌐',{"Lars(e)":3,"Ich selbst":2,"Menschheit stirbt bei WW3":2,"Sonstige":2,"Russland":1,"Israel":1,"China":1,"Liechtenstein":1,"Herr Borgs":1,"Deutschland/Führer":1});
+  addPieCard('person','Schlimmste Lehrkraft? 👨‍🏫',{"Miehlke":7,"Ehms":2,"Keine Angabe":2,"Schmitz":1,"Borgs":1,"Hingst":1},'bar');
+
+  // SONSTIGES
+  addPieCard('other','Cuteness Bewertung 🥺',{"10/10":11,"9/10":1,"7/10":2,"4/10":1});
+  addClockCard();
+
+  // FREITEXT / KREATIV
+  addFreeCard('creative','Bananenpreise in Zimbabwe? 🍌');
+  addFreeCard('creative','Eichendorff-Analyse ✍️');
+  addFreeCard('creative','Bedeutung von Kontext 🧠');
 }
 
 function filterCards(cat, btn) {
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   document.querySelectorAll('.card').forEach(card => {
-    if (cat === 'all' || card.dataset.cat === cat) {
-      card.style.display = '';
-    } else {
-      card.style.display = 'none';
-    }
+    card.style.display = (cat==='all' || card.dataset.cat===cat) ? '' : 'none';
   });
 }
 
-buildCards();
+build();
 </script>
 </body>
 </html>
