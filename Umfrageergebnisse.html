@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Freundes Umfrage 2026 – Ergebnisse</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #0f0f1a;
+      --card: #1a1a2e;
+      --accent: #7c3aed;
+      --accent2: #ec4899;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --border: #2d2d4a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+    }
+    header {
+      text-align: center;
+      padding: 3rem 1rem 2rem;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      border-bottom: 1px solid var(--border);
+    }
+    header h1 {
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      background: linear-gradient(90deg, #a78bfa, #ec4899, #f472b6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+    header p {
+      color: var(--muted);
+      font-size: 1rem;
+    }
+    .badge {
+      display: inline-block;
+      background: var(--accent);
+      color: white;
+      padding: 0.2rem 0.7rem;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      margin-top: 0.5rem;
+    }
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      padding: 1.5rem 1rem;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+    }
+    .filter-btn {
+      background: var(--border);
+      border: 1px solid #3d3d5e;
+      color: var(--muted);
+      padding: 0.4rem 1rem;
+      border-radius: 9999px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+    }
+    .filter-btn:hover, .filter-btn.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1.5rem;
+      padding: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(124, 58, 237, 0.2);
+    }
+    .card h2 {
+      font-size: 0.95rem;
+      color: var(--text);
+      text-align: center;
+      margin-bottom: 1.2rem;
+      line-height: 1.4;
+      min-height: 2.8em;
+    }
+    .chart-wrap {
+      width: 100%;
+      max-width: 260px;
+      position: relative;
+    }
+    .legend {
+      width: 100%;
+      margin-top: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .legend-label { flex: 1; }
+    .legend-count {
+      font-weight: 600;
+      color: var(--text);
+    }
+    .special-card {
+      grid-column: 1 / -1;
+    }
+    .hotdog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 0.8rem;
+      width: 100%;
+      margin-top: 1rem;
+    }
+    .hotdog-item {
+      background: var(--border);
+      border-radius: 0.5rem;
+      padding: 0.7rem;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    .hotdog-item.ja { border-left: 3px solid #22c55e; }
+    .hotdog-item.nein { border-left: 3px solid #ef4444; }
+    .cuteness-bar {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      width: 100%;
+      margin-top: 0.5rem;
+    }
+    .bar-label { font-size: 0.9rem; width: 40px; text-align: right; }
+    .bar-track {
+      flex: 1;
+      background: var(--border);
+      border-radius: 9999px;
+      height: 12px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: 9999px;
+      background: linear-gradient(90deg, #7c3aed, #ec4899);
+    }
+    .bar-count { font-size: 0.85rem; color: var(--muted); width: 30px; }
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--muted);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🎉 Freundes Umfrage 2026</h1>
+  <p>Die wichtigsten Fragen des Lebens – demokratisch beantwortet</p>
+  <span class="badge">16 Stimmen</span>
+</header>
+
+<div class="filters">
+  <button class="filter-btn active" onclick="filterCards('all', this)">Alle</button>
+  <button class="filter-btn" onclick="filterCards('person', this)">👥 Personen-Fragen</button>
+  <button class="filter-btn" onclick="filterCards('fun', this)">😂 Sonstige</button>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<footer>Erstellt aus den Umfrage-Ergebnissen vom 20. Mai 2026</footer>
+
+<script>
+const PALETTE = [
+  '#7c3aed','#ec4899','#f59e0b','#10b981','#3b82f6',
+  '#ef4444','#a78bfa','#f472b6','#34d399','#60a5fa',
+  '#fbbf24','#fb7185','#818cf8','#4ade80','#38bdf8',
+  '#c084fc','#e879f9','#fb923c','#a3e635','#22d3ee'
+];
+
+const personData = [
+  {
+    q: "Wer ist am schönsten? 😍",
+    cat: "person",
+    data: { "Leo": 4, "Martin": 3, "Lars Daniels": 3, "Lukas": 2, "Alle hässlich": 1, "Niemand": 1 }
+  },
+  {
+    q: "Wer ist am hässligsten? 💀",
+    cat: "person",
+    data: { "Lars Robel": 3, "Lars Daniels": 2, "Jonas": 2, "Fynn": 1, "Eric": 1, "Leonard": 1, "Shin": 1, "Kackhaufen": 1, "Keiner <3": 1 }
+  },
+  {
+    q: "Wer ist am nonchalantesten? 😎",
+    cat: "person",
+    data: { "Eric": 5, "Lukas": 3, "Leo": 2, "Martin": 2, "Fynn": 1, "Mauro": 1, "Lars Daniels": 1, "Lars Bosbach": 1 }
+  },
+  {
+    q: "Wer ist am überlebensfähigsten? 🪖",
+    cat: "person",
+    data: { "Milo": 4, "Lars Daniels": 3, "Fynn": 3, "Mauro": 2, "Lukas": 2, "Jonas": 1, "Leo": 1 }
+  },
+  {
+    q: "Wer hat die beste Frisur? 💇",
+    cat: "person",
+    data: { "Martin": 4, "Lukas": 4, "Lars Daniels": 3, "Leo": 2, "Malte": 1, "Lars Bosbach": 1, "Fynn": 1 }
+  },
+  {
+    q: "Wer hat am meisten Rizz? 🔥",
+    cat: "person",
+    data: { "Fynn": 4, "Lukas": 3, "Burak": 2, "Eric": 2, "Leo": 1, "Lars Bosbach": 1, "Nuemand": 1, "Martin": 1, "Lars Robel": 1 }
+  },
+  {
+    q: "Wer kommt am ehesten ins Gefängnis? ⛓️",
+    cat: "person",
+    data: { "Lars Robel": 9, "Eric": 4, "Lars Daniels": 2, "Jonas": 1 }
+  },
+  {
+    q: "Wer wird am ehesten Millionär? 💰",
+    cat: "person",
+    data: { "Lukas": 8, "Lars Robel": 3, "Leonard": 2, "Kp": 1, "Lars Bosbach": 1, "Keiner <3": 1 }
+  },
+  {
+    q: "Wer wird am meisten Kiffen? 🌿",
+    cat: "person",
+    data: { "Lars Robel": 5, "Lars Daniels": 3, "Eric": 3, "Jonas": 2, "Fynn": 1, "Fabian": 1, "Malte": 1 }
+  },
+  {
+    q: "Wer stirbt zuerst? ☠️",
+    cat: "person",
+    data: { "Lars Daniels": 7, "Eric": 2, "Miles": 2, "Milo": 2, "Shin": 1, "Jonas": 1, "Fabian": 1 }
+  },
+  {
+    q: "Wer lebt am längsten? 🧓",
+    cat: "person",
+    data: { "Julian": 6, "Lars Bosbach": 2, "Jonas": 2, "Lukas": 1, "Burak": 1, "Mauro": 1, "Shin": 1, "Milo": 1, "Martin": 1 }
+  },
+  {
+    q: "Wer ist am ehesten Schwul/Bi? 🏳️‍🌈",
+    cat: "person",
+    data: { "Jonas": 7, "Milo": 3, "Miles": 2, "Shin": 1, "Eric": 1, "Burak": 1 }
+  },
+  {
+    q: "Wer ist am ehesten ein Furry? 🐾",
+    cat: "person",
+    data: { "Milo": 4, "Leonard": 2, "Eric": 2, "Julian": 1, "Lukas": 1, "Lars Robel": 1, "Shin": 1, "Burak": 1, "Jonas": 1 }
+  },
+  {
+    q: "Wer ist am ehesten Trans? 🏳️‍⚧️",
+    cat: "person",
+    data: { "Jonas": 4, "Eric": 3, "Lars Robel": 3, "Lars Daniels": 1, "Fynn": 1, "Julian": 1, "Leonard": 1 }
+  },
+  {
+    q: "Wer wird am ehesten vom Verfassungsschutz beobachtet? 🕵️",
+    cat: "person",
+    data: { "Lars Robel": 12, "Lars Daniels": 2, "Shin": 1 }
+  },
+  {
+    q: "Wer wird am ehesten Bundeskanzler? 🏛️",
+    cat: "person",
+    data: { "Leo": 4, "Lukas": 3, "Lars Bosbach": 2, "Lars Robel": 2, "Leonard": 1, "Lars Daniels": 1, "Martin": 1, "Fynn": 1 }
+  },
+  {
+    q: "Wer wird am ehesten Führer? 😬",
+    cat: "person",
+    data: { "Lars Daniels": 11, "Lars Bosbach": 1, "Fynn": 1, "Leo": 1, "Lars Robel": 1 }
+  },
+  {
+    q: "Wer wird am schnellsten obdachlos? 🏚️",
+    cat: "person",
+    data: { "Jonas": 4, "Eric": 4, "Shin": 2, "Miles": 1, "Lars Bosbach": 1, "Lars Robel": 1, "Burak": 1 }
+  },
+];
+
+function makeChart(canvasId, labels, values) {
+  const ctx = document.getElementById(canvasId).getContext('2d');
+  new Chart(ctx, {
+    type: 'pie',
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        backgroundColor: PALETTE.slice(0, labels.length),
+        borderColor: '#0f0f1a',
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` ${ctx.label}: ${ctx.parsed} Stimmen`
+          }
+        }
+      }
+    }
+  });
+}
+
+function buildCards() {
+  const grid = document.getElementById('grid');
+
+  personData.forEach((item, i) => {
+    const labels = Object.keys(item.data);
+    const values = Object.values(item.data);
+    const total = values.reduce((a, b) => a + b, 0);
+    const canvasId = `chart_${i}`;
+
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.dataset.cat = item.cat;
+
+    const legendHTML = labels.map((l, j) => `
+      <div class="legend-item">
+        <div class="legend-dot" style="background:${PALETTE[j]}"></div>
+        <span class="legend-label">${l}</span>
+        <span class="legend-count">${values[j]}</span>
+      </div>`).join('');
+
+    card.innerHTML = `
+      <h2>${item.q}</h2>
+      <div class="chart-wrap">
+        <canvas id="${canvasId}"></canvas>
+      </div>
+      <div class="legend">${legendHTML}</div>
+    `;
+    grid.appendChild(card);
+    setTimeout(() => makeChart(canvasId, labels, values), 50);
+  });
+
+  // Hotdog special card
+  const hotdogCard = document.createElement('div');
+  hotdogCard.className = 'card';
+  hotdogCard.dataset.cat = 'fun';
+  hotdogCard.innerHTML = `
+    <h2>🌭 Ist ein Hotdog ein Sandwich?</h2>
+    <div style="width:100%;max-width:260px"><canvas id="chart_hotdog"></canvas></div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div><span class="legend-label">Ja (inkl. Varianten)</span><span class="legend-count">7</span></div>
+      <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div><span class="legend-label">Nein (inkl. Varianten)</span><span class="legend-count">7</span></div>
+    </div>
+  `;
+  grid.appendChild(hotdogCard);
+  setTimeout(() => makeChart('chart_hotdog', ['Ja', 'Nein'], [7, 7]), 50);
+
+  // Cuteness card
+  const cutenessCard = document.createElement('div');
+  cutenessCard.className = 'card';
+  cutenessCard.dataset.cat = 'fun';
+  cutenessCard.innerHTML = `
+    <h2>🥺 Cuteness Bewertung (Durchschnitt: 9.5/10)</h2>
+    <div style="width:100%;max-width:260px"><canvas id="chart_cute"></canvas></div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#a78bfa"></div><span class="legend-label">10/10</span><span class="legend-count">11</span></div>
+      <div class="legend-item"><div class="legend-dot" style="background:#7c3aed"></div><span class="legend-label">9/10</span><span class="legend-count">1</span></div>
+      <div class="legend-item"><div class="legend-dot" style="background:#ec4899"></div><span class="legend-label">7/10</span><span class="legend-count">2</span></div>
+      <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div><span class="legend-label">4/10</span><span class="legend-count">1</span></div>
+    </div>
+  `;
+  grid.appendChild(cutenessCard);
+  setTimeout(() => makeChart('chart_cute', ['10/10', '9/10', '7/10', '4/10'], [11, 1, 2, 1]), 50);
+}
+
+function filterCards(cat, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.card').forEach(card => {
+    if (cat === 'all' || card.dataset.cat === cat) {
+      card.style.display = '';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
+
+buildCards();
+</script>
+</body>
+</html>
