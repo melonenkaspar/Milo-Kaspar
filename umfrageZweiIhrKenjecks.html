@@ -1,1074 +1,528 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Umfrage Ergebnisse</title>
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #0f1117;
-    --surface: #181c27;
-    --surface2: #1e2235;
-    --mint: #7fffd4;
-    --mint-dim: #4ecba0;
-    --gold: #e8c97d;
-    --rose: #f4907a;
-    --lavender: #a89fd8;
-    --text: #e8e6df;
-    --text-dim: #8a8c99;
-    --border: #2a2e40;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'EB Garamond', Georgia, serif;
-    font-size: 18px;
-    line-height: 1.7;
-  }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Freundes Umfrage 2 – Ergebnisse</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #0f0f1a; --card: #1a1a2e; --card2: #16213e;
+      --accent: #06b6d4; --accent2: #f59e0b;
+      --text: #e2e8f0; --muted: #94a3b8; --border: #2d2d4a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; }
 
-  /* ── HERO ── */
-  header {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 4rem 2rem;
-    position: relative;
-    overflow: hidden;
-  }
-  header::before {
-    content: '';
-    position: absolute; inset: 0;
-    background: radial-gradient(ellipse 70% 50% at 50% 40%, rgba(127,255,212,0.07) 0%, transparent 70%);
-    pointer-events: none;
-  }
-  .hero-eyebrow {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.75rem;
-    letter-spacing: 0.2em;
-    color: var(--mint-dim);
-    text-transform: uppercase;
-    margin-bottom: 1.5rem;
-  }
-  header h1 {
-    font-size: clamp(2.8rem, 8vw, 5.5rem);
-    font-weight: 600;
-    line-height: 1.1;
-    letter-spacing: -0.02em;
-    margin-bottom: 1.2rem;
-  }
-  header h1 em {
-    font-style: italic;
-    color: var(--mint);
-  }
-  header p {
-    color: var(--text-dim);
-    font-size: 1.1rem;
-    max-width: 480px;
-    margin-bottom: 3rem;
-  }
-  .stat-row {
-    display: flex;
-    gap: 3rem;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  .stat { text-align: center; }
-  .stat-num {
-    font-family: 'DM Mono', monospace;
-    font-size: 2.4rem;
-    color: var(--mint);
-    display: block;
-  }
-  .stat-label {
-    font-size: 0.85rem;
-    color: var(--text-dim);
-    font-family: 'DM Mono', monospace;
-    letter-spacing: 0.08em;
-  }
-  .scroll-hint {
-    position: absolute;
-    bottom: 2rem;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.7rem;
-    color: var(--text-dim);
-    letter-spacing: 0.15em;
-    animation: bounce 2s infinite;
-  }
-  @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(6px)} }
+    header {
+      text-align: center; padding: 3rem 1rem 2rem;
+      background: linear-gradient(135deg,#0f1a2e,#0a1628,#0f2040);
+      border-bottom: 1px solid var(--border);
+    }
+    header h1 {
+      font-size: clamp(1.8rem,4vw,3rem);
+      background: linear-gradient(90deg,#67e8f9,#f59e0b,#34d399);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      margin-bottom: .5rem;
+    }
+    header p { color: var(--muted); font-size: 1rem; }
+    .badge { display:inline-block; background:var(--accent); color:#000; padding:.2rem .7rem; border-radius:9999px; font-size:.8rem; margin-top:.5rem; font-weight:600; }
 
-  /* ── NAV ── */
-  nav {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: rgba(15,17,23,0.92);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border);
-    padding: 0 2rem;
-    display: flex;
-    gap: 0;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  nav::-webkit-scrollbar { display: none; }
-  nav a {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.72rem;
-    color: var(--text-dim);
-    text-decoration: none;
-    padding: 1rem 1.2rem;
-    white-space: nowrap;
-    border-bottom: 2px solid transparent;
-    transition: color 0.2s, border-color 0.2s;
-    letter-spacing: 0.06em;
-  }
-  nav a:hover { color: var(--mint); border-bottom-color: var(--mint); }
+    .filters {
+      display:flex; flex-wrap:wrap; gap:.5rem; justify-content:center;
+      padding:1.2rem 1rem; background:var(--card); border-bottom:1px solid var(--border);
+      position:sticky; top:0; z-index:20;
+    }
+    .filter-btn {
+      background:var(--border); border:1px solid #3d3d5e; color:var(--muted);
+      padding:.4rem 1rem; border-radius:9999px; cursor:pointer; font-size:.85rem; transition:all .2s;
+    }
+    .filter-btn:hover,.filter-btn.active { background:var(--accent); color:#000; border-color:var(--accent); font-weight:600; }
 
-  /* ── SECTIONS ── */
-  section {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 5rem 2rem;
-    border-bottom: 1px solid var(--border);
-  }
-  .section-header {
-    display: flex;
-    align-items: baseline;
-    gap: 1.2rem;
-    margin-bottom: 3rem;
-  }
-  .section-num {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.7rem;
-    color: var(--mint-dim);
-    letter-spacing: 0.15em;
-  }
-  .section-title {
-    font-size: clamp(1.6rem, 4vw, 2.4rem);
-    font-weight: 600;
-    letter-spacing: -0.01em;
-  }
+    .grid {
+      display:grid; grid-template-columns:repeat(auto-fill,minmax(360px,1fr));
+      gap:1.5rem; padding:2rem; max-width:1500px; margin:0 auto;
+    }
 
-  /* ── RANKING CARDS ── */
-  .ranking-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 1.2rem;
-  }
-  .ranking-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 1.2rem 1.4rem;
-    transition: border-color 0.2s;
-  }
-  .ranking-card:hover { border-color: var(--mint-dim); }
-  .ranking-card h3 {
-    font-size: 0.78rem;
-    font-family: 'DM Mono', monospace;
-    color: var(--text-dim);
-    letter-spacing: 0.08em;
-    margin-bottom: 0.7rem;
-    text-transform: uppercase;
-  }
-  .bar-container { display: flex; flex-direction: column; gap: 0.45rem; }
-  .bar-row {
-    display: flex;
-    align-items: center;
-    gap: 0.7rem;
-  }
-  .bar-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.8rem;
-    color: var(--text);
-    min-width: 90px;
-  }
-  .bar-track {
-    flex: 1;
-    height: 6px;
-    background: var(--border);
-    border-radius: 3px;
-    overflow: hidden;
-  }
-  .bar-fill {
-    height: 100%;
-    border-radius: 3px;
-    background: var(--mint);
-    transition: width 1s cubic-bezier(.16,1,.3,1);
-  }
-  .bar-fill.gold { background: var(--gold); }
-  .bar-fill.rose { background: var(--rose); }
-  .bar-fill.lav  { background: var(--lavender); }
-  .bar-count {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.75rem;
-    color: var(--text-dim);
-    min-width: 1.5rem;
-    text-align: right;
-  }
-  .winner-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    background: rgba(127,255,212,0.1);
-    border: 1px solid var(--mint-dim);
-    color: var(--mint);
-    font-family: 'DM Mono', monospace;
-    font-size: 0.75rem;
-    padding: 0.15rem 0.6rem;
-    border-radius: 20px;
-    margin-top: 0.6rem;
-  }
+    .card {
+      background:var(--card); border:1px solid var(--border);
+      border-radius:1rem; overflow:hidden;
+      display:flex; flex-direction:column;
+      transition:transform .2s, box-shadow .2s;
+    }
+    .card:hover { transform:translateY(-3px); box-shadow:0 8px 30px rgba(6,182,212,.2); }
 
-  /* ── PIE / DONUT ── */
-  .pie-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 1.5rem;
-  }
-  .pie-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 1.4rem;
-    text-align: center;
-  }
-  .pie-card h3 {
-    font-size: 0.75rem;
-    font-family: 'DM Mono', monospace;
-    color: var(--text-dim);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: 1rem;
-  }
-  .donut-wrap {
-    position: relative;
-    width: 100px;
-    height: 100px;
-    margin: 0 auto 1rem;
-  }
-  .donut-wrap svg { transform: rotate(-90deg); }
-  .donut-center {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'DM Mono', monospace;
-    font-size: 1.1rem;
-    color: var(--text);
-    transform: rotate(0deg);
-  }
-  .pie-legend {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.5rem;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.7rem;
-    color: var(--text-dim);
-  }
-  .legend-dot {
-    display: inline-block;
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    margin-right: 3px;
-    vertical-align: middle;
-  }
+    .card-inner { padding:1.5rem; display:flex; flex-direction:column; align-items:center; flex:1; }
+    .card h2 { font-size:.95rem; text-align:center; margin-bottom:1.2rem; line-height:1.4; min-height:2.8em; }
+    .chart-wrap { width:100%; max-width:260px; }
 
-  /* ── PERSONAL (C/T) ── */
-  .personal-table-wrap {
-    overflow-x: auto;
-    border-radius: 10px;
-    border: 1px solid var(--border);
-  }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.92rem;
-  }
-  thead th {
-    background: var(--surface2);
-    padding: 0.9rem 1.1rem;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.7rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    text-align: left;
-    border-bottom: 1px solid var(--border);
-    white-space: nowrap;
-  }
-  tbody tr { border-bottom: 1px solid var(--border); }
-  tbody tr:last-child { border-bottom: none; }
-  tbody tr:hover { background: var(--surface); }
-  tbody td {
-    padding: 0.8rem 1.1rem;
-    vertical-align: top;
-  }
-  .name-cell {
-    font-family: 'DM Mono', monospace;
-    color: var(--mint);
-    font-size: 0.85rem;
-    white-space: nowrap;
-  }
-  .yn-yes {
-    display: inline-block;
-    background: rgba(127,255,212,0.12);
-    color: var(--mint);
-    font-family: 'DM Mono', monospace;
-    font-size: 0.7rem;
-    padding: 0.1rem 0.5rem;
-    border-radius: 4px;
-  }
-  .yn-no {
-    display: inline-block;
-    background: rgba(244,144,122,0.12);
-    color: var(--rose);
-    font-family: 'DM Mono', monospace;
-    font-size: 0.7rem;
-    padding: 0.1rem 0.5rem;
-    border-radius: 4px;
-  }
-  .yn-ka {
-    display: inline-block;
-    background: rgba(168,159,216,0.12);
-    color: var(--lavender);
-    font-family: 'DM Mono', monospace;
-    font-size: 0.7rem;
-    padding: 0.1rem 0.5rem;
-    border-radius: 4px;
-  }
+    .legend { width:100%; margin-top:1rem; display:flex; flex-direction:column; gap:.3rem; }
+    .legend-item { display:flex; align-items:center; gap:.5rem; font-size:.82rem; color:var(--muted); }
+    .legend-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+    .legend-label { flex:1; }
+    .legend-count { font-weight:600; color:var(--text); }
 
-  /* ── OPEN ANSWERS ── */
-  .answers-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-    gap: 1.5rem;
-  }
-  .answer-block {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    overflow: hidden;
-  }
-  .answer-qheader {
-    background: var(--surface2);
-    padding: 0.8rem 1.2rem;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.72rem;
-    color: var(--mint-dim);
-    letter-spacing: 0.07em;
-    border-bottom: 1px solid var(--border);
-  }
-  .answer-entries { padding: 0; }
-  .answer-entry {
-    padding: 0.9rem 1.2rem;
-    border-bottom: 1px solid var(--border);
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 0.8rem;
-    align-items: start;
-  }
-  .answer-entry:last-child { border-bottom: none; }
-  .anon-badge {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.68rem;
-    background: var(--border);
-    color: var(--text-dim);
-    padding: 0.15rem 0.45rem;
-    border-radius: 4px;
-    white-space: nowrap;
-    margin-top: 2px;
-  }
-  .named-badge {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.68rem;
-    background: rgba(127,255,212,0.12);
-    color: var(--mint);
-    padding: 0.15rem 0.45rem;
-    border-radius: 4px;
-    white-space: nowrap;
-    margin-top: 2px;
-  }
-  .answer-text {
-    font-size: 0.97rem;
-    color: var(--text);
-    line-height: 1.55;
-  }
-  .answer-text.long {
-    font-size: 0.88rem;
-    line-height: 1.6;
-  }
+    .raw-toggle {
+      width:100%; background:var(--border); border:none; color:var(--muted);
+      padding:.6rem 1rem; cursor:pointer; font-size:.82rem; text-align:left;
+      display:flex; align-items:center; justify-content:space-between;
+      transition:background .2s, color .2s;
+    }
+    .raw-toggle:hover { background:#3d3d5e; color:var(--text); }
+    .raw-toggle .arrow { transition:transform .25s; font-size:.75rem; }
+    .raw-toggle.open .arrow { transform:rotate(180deg); }
 
-  /* ── RAW DATA TOGGLE ── */
-  .raw-toggle {
-    margin-top: 3rem;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    overflow: hidden;
-  }
-  .raw-toggle summary {
-    padding: 1rem 1.4rem;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.78rem;
-    color: var(--text-dim);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    background: var(--surface);
-    letter-spacing: 0.08em;
-    list-style: none;
-    user-select: none;
-  }
-  .raw-toggle summary::-webkit-details-marker { display: none; }
-  .raw-toggle summary::before {
-    content: '▶';
-    font-size: 0.6rem;
-    transition: transform 0.2s;
-  }
-  .raw-toggle[open] summary::before { transform: rotate(90deg); }
-  .raw-toggle summary:hover { color: var(--text); }
-  .raw-content {
-    overflow-x: auto;
-    max-height: 500px;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: var(--border) transparent;
-  }
-  .raw-content table { font-size: 0.72rem; }
-  .raw-content thead th { font-size: 0.65rem; }
-  .raw-content tbody td { padding: 0.5rem 0.8rem; white-space: nowrap; }
+    .raw-panel {
+      max-height:0; overflow:hidden;
+      transition:max-height .35s ease;
+      background:var(--card2); border-top:1px solid var(--border);
+    }
+    .raw-panel.open { max-height:600px; overflow-y:auto; }
+    .raw-panel::-webkit-scrollbar { width:4px; }
+    .raw-panel::-webkit-scrollbar-track { background:var(--border); }
+    .raw-panel::-webkit-scrollbar-thumb { background:var(--accent); border-radius:4px; }
 
-  /* ── SMASH/PASS SECTION ── */
-  .sp-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.2rem;
-  }
-  .sp-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 1.2rem 1.4rem;
-  }
-  .sp-card h3 {
-    font-size: 0.75rem;
-    font-family: 'DM Mono', monospace;
-    color: var(--text-dim);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: 0.9rem;
-  }
-  .sp-bars { display: flex; gap: 0.5rem; height: 60px; align-items: flex-end; }
-  .sp-bar-group { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.3rem; }
-  .sp-bar {
-    width: 100%;
-    border-radius: 3px 3px 0 0;
-    min-height: 4px;
-    transition: height 0.8s cubic-bezier(.16,1,.3,1);
-  }
-  .sp-bar.smash { background: var(--mint); }
-  .sp-bar.pass { background: var(--rose); }
-  .sp-bar-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.65rem;
-    color: var(--text-dim);
-  }
-  .sp-count {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.75rem;
-    color: var(--text);
-  }
+    .raw-list { padding:.8rem 1rem; display:flex; flex-direction:column; gap:.4rem; }
+    .raw-item {
+      background:var(--border); border-radius:.5rem; padding:.5rem .75rem;
+      font-size:.8rem; color:var(--muted); line-height:1.5;
+      border-left:3px solid var(--accent);
+      white-space:pre-wrap; word-break:break-word;
+    }
+    .raw-item:nth-child(even) { border-left-color: var(--accent2); }
+    .raw-num { font-size:.7rem; color:#4a4a7a; margin-right:.3rem; }
 
-  footer {
-    text-align: center;
-    padding: 3rem 2rem;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.72rem;
-    color: var(--text-dim);
-    letter-spacing: 0.1em;
-  }
-  footer span { color: var(--mint-dim); }
-</style>
+    .card.freetext .card-inner { align-items:flex-start; }
+    .card.freetext h2 { text-align:left; min-height:unset; }
+
+    /* Trans/Cis person cards */
+    .trans-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 1rem;
+      width: 100%;
+      margin-top: .5rem;
+    }
+    .trans-person {
+      display: flex; flex-direction: column; align-items: center; gap: .4rem;
+    }
+    .trans-photo {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: var(--border); border: 2px solid var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.8rem; color: var(--muted); overflow: hidden;
+      flex-shrink: 0;
+    }
+    .trans-photo img { width:100%; height:100%; object-fit:cover; }
+    .trans-label {
+      font-size: .78rem; color: var(--text); text-align: center; font-weight: 600;
+    }
+    .trans-type {
+      font-size: .68rem; color: var(--muted); text-align: center;
+    }
+    .trans-votes {
+      font-size: .72rem; background: var(--accent); color: #000;
+      padding: .1rem .4rem; border-radius: 9999px; font-weight: 700;
+    }
+
+    .yesno-bar {
+      width: 100%; margin-top: .8rem; display: flex; flex-direction: column; gap: .5rem;
+    }
+    .yesno-row { display: flex; align-items: center; gap: .5rem; font-size: .82rem; }
+    .yesno-track { flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+    .yesno-fill { height: 100%; border-radius: 4px; transition: width .6s ease; }
+    .yesno-label { width: 80px; color: var(--muted); text-align: right; }
+    .yesno-count { width: 24px; text-align: right; font-weight: 600; color: var(--text); }
+
+    footer { text-align:center; padding:2rem; color:var(--muted); font-size:.85rem; border-top:1px solid var(--border); margin-top:2rem; }
+  </style>
 </head>
 <body>
 
 <header>
-  <div class="hero-eyebrow">Gruppen-Umfrage · Anonym</div>
-  <h1>Die große<br><em>Freundeskreis</em>-Umfrage</h1>
-  <p>Ergebnisse aus allen eingereichten Antworten. Anonymisiert, analysiert, aufbereitet.</p>
-  <div class="stat-row">
-    <div class="stat">
-      <span class="stat-num">16</span>
-      <span class="stat-label">Teilnehmer</span>
-    </div>
-    <div class="stat">
-      <span class="stat-num">60+</span>
-      <span class="stat-label">Fragen</span>
-    </div>
-    <div class="stat">
-      <span class="stat-num">5</span>
-      <span class="stat-label">Abschnitte</span>
-    </div>
-  </div>
-  <div class="scroll-hint">scroll ↓</div>
+  <h1>🎉 Freundes Umfrage 2</h1>
+  <p>Runde 2 – noch mehr existenzielle Fragen demokratisch beantwortet</p>
+  <span class="badge">16 Stimmen · 58 Fragen</span>
 </header>
 
-<nav>
-  <a href="#s1">01 · Persönlichkeit</a>
-  <a href="#s2">02 · Romantik</a>
-  <a href="#s3">03 · Apokalypse</a>
-  <a href="#s4">04 · Ja / Nein</a>
-  <a href="#s5">05 · Offene Antworten</a>
-</nav>
+<div class="filters">
+  <button class="filter-btn active" onclick="filterCards('all',this)">Alle</button>
+  <button class="filter-btn" onclick="filterCards('person',this)">👥 Personen</button>
+  <button class="filter-btn" onclick="filterCards('liebe',this)">💕 Liebe & Beziehung</button>
+  <button class="filter-btn" onclick="filterCards('janeindebatte',this)">🗳️ Ja/Nein</button>
+  <button class="filter-btn" onclick="filterCards('trans',this)">🏳️‍⚧️ Trans/Cis</button>
+  <button class="filter-btn" onclick="filterCards('creative',this)">✍️ Kreatives</button>
+  <button class="filter-btn" onclick="filterCards('other',this)">🎲 Sonstiges</button>
+</div>
 
-<!-- ════════════════════════════════════
-     SECTION 1 – PERSÖNLICHKEIT & SOZIALES
-     ════════════════════════════════════ -->
-<section id="s1">
-  <div class="section-header">
-    <span class="section-num">01</span>
-    <h2 class="section-title">Persönlichkeit &amp; Soziales</h2>
-  </div>
-
-  <div class="ranking-grid" id="grid-s1"></div>
-
-  <details class="raw-toggle" style="margin-top:2rem">
-    <summary>Rohdaten anzeigen — Persönlichkeit &amp; Soziales</summary>
-    <div class="raw-content">
-      <table id="raw-s1-table"></table>
-    </div>
-  </details>
-</section>
-
-<!-- ════════════════════════════════════
-     SECTION 2 – ROMANTIK & BEZIEHUNGEN
-     ════════════════════════════════════ -->
-<section id="s2">
-  <div class="section-header">
-    <span class="section-num">02</span>
-    <h2 class="section-title">Romantik &amp; Beziehungen</h2>
-  </div>
-
-  <div class="ranking-grid" id="grid-s2"></div>
-
-  <!-- SMASH / PASS -->
-  <h3 style="font-size:1rem;font-family:'DM Mono',monospace;color:var(--text-dim);letter-spacing:0.08em;margin:2.5rem 0 1rem;text-transform:uppercase">Smash or Pass</h3>
-  <div class="sp-grid" id="grid-sp"></div>
-
-  <details class="raw-toggle">
-    <summary>Rohdaten anzeigen — Romantik &amp; Beziehungen</summary>
-    <div class="raw-content">
-      <table id="raw-s2-table"></table>
-    </div>
-  </details>
-</section>
-
-<!-- ════════════════════════════════════
-     SECTION 3 – APOKALYPSE & ÜBERLEBEN
-     ════════════════════════════════════ -->
-<section id="s3">
-  <div class="section-header">
-    <span class="section-num">03</span>
-    <h2 class="section-title">Apokalypse &amp; Überleben</h2>
-  </div>
-
-  <div class="ranking-grid" id="grid-s3"></div>
-
-  <h3 style="font-size:1rem;font-family:'DM Mono',monospace;color:var(--text-dim);letter-spacing:0.08em;margin:2.5rem 0 1rem;text-transform:uppercase">Würdest du überleben? (anonym)</h3>
-  <div id="survive-donut" style="display:flex;gap:2rem;flex-wrap:wrap;align-items:center"></div>
-
-  <details class="raw-toggle">
-    <summary>Rohdaten anzeigen — Apokalypse &amp; Überleben</summary>
-    <div class="raw-content">
-      <table id="raw-s3-table"></table>
-    </div>
-  </details>
-</section>
-
-<!-- ════════════════════════════════════
-     SECTION 4 – JA / NEIN FRAGEN (persönlich)
-     ════════════════════════════════════ -->
-<section id="s4">
-  <div class="section-header">
-    <span class="section-num">04</span>
-    <h2 class="section-title">Persönliche Fragen</h2>
-  </div>
-  <p style="color:var(--text-dim);font-size:0.9rem;margin-bottom:2rem;font-family:'DM Mono',monospace">Fragen mit <span style="color:var(--mint)">C / T</span> Markierung — Antworten werden mit Namen angezeigt.</p>
-
-  <div class="personal-table-wrap">
-    <table id="personal-table">
-      <thead><tr id="personal-thead"></tr></thead>
-      <tbody id="personal-tbody"></tbody>
-    </table>
-  </div>
-
-  <h3 style="font-size:1rem;font-family:'DM Mono',monospace;color:var(--text-dim);letter-spacing:0.08em;margin:2.5rem 0 1rem;text-transform:uppercase">Anonyme Ja/Nein Übersicht</h3>
-  <div class="pie-grid" id="grid-pie"></div>
-
-  <details class="raw-toggle">
-    <summary>Rohdaten anzeigen — Ja/Nein Fragen</summary>
-    <div class="raw-content">
-      <table id="raw-s4-table"></table>
-    </div>
-  </details>
-</section>
-
-<!-- ════════════════════════════════════
-     SECTION 5 – OFFENE ANTWORTEN
-     ════════════════════════════════════ -->
-<section id="s5">
-  <div class="section-header">
-    <span class="section-num">05</span>
-    <h2 class="section-title">Offene Antworten</h2>
-  </div>
-  <p style="color:var(--text-dim);font-size:0.9rem;margin-bottom:2rem;font-family:'DM Mono',monospace">Alle Freitextantworten. Zombie-Taktiken, Tiere, Dates, Superkräfte und mehr.</p>
-  <div class="answers-grid" id="open-grid"></div>
-
-  <details class="raw-toggle">
-    <summary>Rohdaten anzeigen — Offene Antworten</summary>
-    <div class="raw-content">
-      <table id="raw-s5-table"></table>
-    </div>
-  </details>
-</section>
-
-<footer>
-  <span>Umfrage-Auswertung</span> · Alle Antworten anonym, außer C/T-Fragen
-</footer>
+<div class="grid" id="grid"></div>
+<footer>Erstellt aus den Umfrage-Ergebnissen 🌊</footer>
 
 <script>
-// ─── DATA ─────────────────────────────────────────────────────────────────────
-const participants = [
-  "Shin","Leonard","Daniels","Jonas","Miles","Milo","Malte","Mauro",
-  "Eric","Robel","Julian","Burak","Finn","Martin","Bosbach","Lukas","Leo"
+const PALETTE = ['#06b6d4','#f59e0b','#10b981','#ec4899','#7c3aed','#ef4444','#3b82f6','#a78bfa','#f472b6','#34d399','#60a5fa','#fbbf24','#fb7185','#818cf8','#4ade80','#38bdf8','#c084fc','#e879f9','#fb923c','#a3e635','#22d3ee'];
+let cid = 0;
+
+// All raw answers – names replaced with anonymous markers
+const RAW = {
+  "Wer wird für immer Single bleiben?": ["Robel","Niemand ❤️","Daniels","Daniels","Eric","Daniels","Mauro","Jonas","Finn","Burak","Jonathan","ich glaube sogar acually niemand ❤️","Leo"],
+  "Wer ist zurzeit am Reichsten?": ["Malte","Lukas","Lukas","Bosbach","Leonard","Milo","Lukas","Bosbach","Milo","Bosbach","Bosbach","Lukas","Bosbach"],
+  "Wer wird am meisten Kinder haben?": ["Milo","Daniels","Julian","Robel","Jonas","Burak","Mauro","Burak","Robel","Mauro","Burak","Jonas","Jonas"],
+  "Wer hat den schlechtesten Geschmack in Romantischen Partnern?": ["Eric","Daniels","Kp","Mauro","Malte","Martin","Milo","Daniels","Daniels","Alle außer mir","Shin","Robel"],
+  "Wer hat am meisten Erfolg bei Frauen?": ["Finn","Leo","Leo","Mauro","Lukas","Finn","Bosbach","Finn","Finn","Martin","Lukas","Finn"],
+  "Wer heiratet zuerst?": ["Finn","Mauro","Julian","Finn","Martin","Julian","Lukas","Burak","Julian","Burak","Mauro","Burak","Julian"],
+  "Wer ist der größte Simp?": ["Mauro","Robel","Julian","Milo","Eric","Eric","Milo","Eric","Milo","Eric","Mauro","Mauro","(leer)"],
+  "Wer ist am verlässlichsten?": ["Malte","Leonard","Leo","Burak","Lukas","Leo","Lukas","Milo","Jonas","Milo","Robel","Leo","(leer)"],
+  "Wer würde am ehesten in einer Zombie Apokalypse überleben?": ["Robel","Leonard","Daniels","Daniels","Lukas","Milo","Lukas","Milo","Milo","Milo","Daniels","Milo","Leo"],
+  "Wer wird am ehesten berühmt?": ["Jonathan","Milo","Jonas","Robel","Eric & malte wegen Pubg","Robel","Daniels","Robel","Leonard","Lukas","Leo","Eric","Daniels"],
+  "Mit wem von uns sollte man niemals in einer Beziehung sein?": ["Jonathan","Lukas","Jonas","Eric","die youtuber","Robel","Jeder hat seine Stärken das ist mies asozial","Bwo keine Ahnung","die yter","Mauro","Burak","Leo","(leer)"],
+  "Mit wem von uns hätte man die beste Beziehung?": ["Jonathan","Daniels","Julian","Milo und Jonas","Daniels","Leonard","Mauro","Jonathan","Finn","Julian","Leonard","Leonard","Julian"],
+  "Wer ist am Lustigsten?": ["Leo","Kp","Keine Ahnung","Julian","Eric","Finn","Mauro","Shin","Wir sind alle unlustig","Jonas","Jonas","(leer)","(leer)"],
+  "Wer gibt die schlechtesten Tipps?": ["Jonas","Lukas","Niemand","Lukas","Tarek","Daniels","Eric","Burak","Lukas","Robel","Daniels","Bosbach","Leonard"],
+  "Wer verliebt sich am schnellsten?": ["Eric","Eric","Keine Ahnung","Eric","Daniels","Martin","Finn","Milo","Martin","Eric","Robel","Martin","Leonard"],
+  "Wer kann am besten Geheimnisse behalten?": ["Eric","Mauro","Keine Ahnung","Mauro","Jonathan","Eric","Burak","Lukas","Finn","Burak","Milo","Milo","Daniels"],
+  "Bester Style?": ["Malte","Robel","Daniels","Bosbach","Shin","Lukas","Lukas","Eric","Lukas","Leo","Leo","Leo","(leer)"],
+  "Wer ist am lustigsten?": ["(doppelte Frage)","Leo","Leo","Bosbach","Martin","Ich idiot hab die Frage 2 mal reingemacht","Milo","Eric","Jonas","Jonathan","Finn","Leo","Jonathan"],
+  "Wer ist am Gemeinsten?": ["Jonas","Lukas","Kein Plan","Burak","Eric","Milo","Shin","Malte","Milo","Milo","Shin","Robel","(leer)"],
+  "Wer ist am nettesten?": ["Lukas","Zu gemein","Julian","Mauro","Leo","Burak","Bosbach","Malte","Finn","Eric","Burak","Malte","Finn"],
+  "Wer ist am lautesten?": ["Leo","Burak","Burak","Robel","Milo","Milo","Julian","Finn","Robel","Lukas","Jonas","Finn","Robel"],
+  "Wer würde sich am ehesten prügeln?": ["Eric","Bosbach","Daniels","Lukas","Robel","Robel","Daniels","Shin","Mauro","Mauro","Robel","Jonas","Daniels"],
+  "Wer wird keine Chance im Berufsleben haben?": ["Shin","Robel","Daniels","Mauro","Leo","Shin","Daniels","Shin","Daniels","Burak","Shin","Burak","Jonas"],
+  "Wer ist am stärksten?": ["Bosbach","Eric","Jonathan","Eric","Daniels","Daniels","Eric","Burak","Milo","Milo","Robel","Martin","Jonas"],
+  "Wer hat am meisten Talent?": ["Milo","Milo","Niemand","Bosbach","Martin","Daniels","Milo","Robel","Burak","Robel","Milo","Robel","Daniels"],
+  "Wer ist der krasseste Yapper?": ["Robel","Burak","Keiner","Finn","im goonen! Daniels","Malte","Mauro","Robel","Burak","Robel","Robel","Robel","Martin"],
+  "Wer begeht am ehesten einen Islamistischen Terroranschlag?": ["Robel","Robel","(keine Antwort)","Robel","Robel","Robel","Burak","Robel","Robel","Robel","Burak","Robel","Burak"],
+  "Wer würde am ehesten jemanden töten?": ["Daniels","Robel","Leonard","Burak","Robel","Burak","Burak","Robel","Robel","Daniels","Robel","Robel","Burak"],
+  "… der Vater": ["Jonathan","Daniels","Daniels","Bosbach","Daniels","Mauro","Jonas","Daniels","Milo","Jonas","Burak","Jonas","Bosbach"],
+  "… die Mutter": ["Daniels","Julian","Julian","Julian","Burak","Bosbach","Julian","Burak","Lukas","Martin","Daniels","Daniels","Daniels"],
+  "… das Baby": ["Milo","Jonas","Finn","Burak","Daniels","Jonas","Burak","Robel","Martin","Eric","Jonas","Shin","Jonas"],
+  "… die Schwester": ["Eric","Jonathan","Jonathan","Julian","Eric","Shin","Mauro","Jonathan","Shin","Leonard","Mauro","Mauro","Jonathan"],
+  "… der Bruder": ["Jonas","Mauro","Burak","Milo","Malte","Leonard","Milo","Mauro","Daniels","Leo","Jonas","Shin","Leo"],
+  "… der Großvater?": ["Finn","Leo","Finn","Robel","Finn","Malte","Finn","Milo","Milo","Robel","Finn","Finn","Bosbach"],
+  "… der Onkel den man nicht zum Familienfest einladen will?": ["Burak","Malte","Bosbach","Bosbach","Leo","Bosbach","Daniels","Leo","Robel","Eric","Daniels","Milo","Bosbach"],
+  "… adoptiert?": ["Milo","Leonard","Shin","Mauro","Jonas","Julian","Burak","Jonathan","Mauro","Shin","Eric","Bosbach","Shin"],
+  "Gefielen dir die Fragen bis jetzt?": ["Ja","Ja","Ja","Nein","Sie sind perfekt","Ja","Ja","Ja","Ja","Ja","Ja","Nein","Nein"],
+  "Sollten wir das Azteken reich wieder aufbauen?": ["Ja","Ja","Nein","Ja","Nein","Ja","Nein","Nein","Nein","Ja","Ja","Nein","Ja"],
+  "Sollten wir wieder an die Nordischen Götter glauben?": ["Ja","Ja","Ja","Nein","Au ja Thor Odin Loki","Ich bevorzuge die griechischen","Ja","Ja","Ja","Nein","Björn","Nein","Ja"],
+  "Hattest du schon deinen ersten Kuss?": ["Nein","Keine Angabe","Nein","Keine Angabe","Ja","Ja","Ja","Ja","Ja","Keine Angabe","Ja","Keine Angabe","Keine Angabe"],
+  "Hattest du schon dein erstes Mal?": ["Nein","Nein","Nein","Nein","Hell fuckin nah","Nein","Nein","Nein","Ja","Keine Angabe","Keine Angabe","Keine Angabe","Keine Angabe"],
+  "Würdest du in einer (Zombie) Apokalypse überleben?": ["Nein","Ja","Ja","Nein","Nein","Ja","Ja","Ja","Ja","Ja","Nein","Ja","Ja"],
+  "Würdest du mit einer Trans-Person eine Beziehung anfangen?": ["Nein","Ja","Ja","Ja","Nein","Nein","Ja","Nein","Ja","Nein","Nein","Nein","Nein"],
+  "Würdest du für 1.000.000€ eine dir unbekannte Person umbringen?": ["Nein","Nein","Nein","Hell year","Auf jeden diggi scheiß auf den einen bastard","Nein","Nein","Ja","Nein","Ja","Ja","Ja","Nein"],
+  "Würdest du dich für 100.000€ einmalig prostituieren?": ["Nein","Nein","Nein","Nein","Nein","Ja","Ja","Nein","Ja","Nein","Nein","Nein","Nein"],
+  "Würdest du für 500.000€ zu einer Frau werden?": ["Nein","Nein","Nein","Nein","Nein ich will mit Rechten leben broski","Ja","Ja","Nein","Ja","Nein","Nein","Nein","Ja"],
+  "Was wäre deine Taktik in einer Zombie Apokalypse?": [
+    "Selber umbringen",
+    "Hai, aber der von Ikea",
+    "Ich würde mir eine sicheren Ort suchen an einem süßwasser See/Fluss und diesen befestigen und für Vorräte sorgen wie Waffen, Munition und Medizinische Hilfsgüter. An Personen würde ich nur mit welchen agieren denen ich vertrauen kann und am besten welche mit Kenntnissen die mir helfen wie Medizinische.",
+    "Irgendwo eine Farmaufbauen (gerne mit Hanf-plantage) und wenn es soweit ist einfach akzeptieren",
+    "Laufen, Laufen, Laufen, sterben",
+    "Schwert und Rüstung um nicht auf verbrauchbare Resourcen angewiesen zu sein",
+    "Standort mit Garten Fläche und Grundwasser Brunnen suchen. Waffen horten. Solarpanele klauen und an meine base bauen. Haus komplett abriegeln und verriegeln. Sicherheitsmaßnahmen aufbauen.",
+    "Digga es ist so over irgendein Bunker klauen und dann ganz viele Nukes abwerfen.",
+    "Ich Kletter auf nen Hochaus und baue mir auf dem Dach eine eigene Kultur an. Lebe vegan und chillen meine Eier...",
+    "broskis ahh überlebt keinen tag – sonst einen kleinen demokratischen klan gründen und den lebensstil des frühen menschen annehmen",
+    "Ok ok, das hängt stark davon ab bis wohin die Zombies schon vorgedrungen sind und wie sie angezogen werden. Wenn es so walking dead mäßig ist, würde ich mich mit sehr viel Essen irgendwo verschanzen, in einem Penthouse oder ähnliches, mit Hubschrauber auf dem Dach für die Flucht und sämtliche Wege nach unten blockieren...",
+    "Bevor eine kohärente Überlebensstrategie entwickelt werden kann, ist eine präzise Modellierung des Bedrohungsprofils unabdingbar... [lange akademische Analyse]",
+    "wie in pubg",
+    "Gar nicht",
+    "Brd ich hab ein ganzes Handbuch davon also frag einfach in der Schule"
+  ],
+  "Wenn du ein Tier wärst, welches wärst du?": ["Yo mama","Hai, aber der von Ikea","Gorilla","Pottwal lowkey tuff","Giraffeeeee","Affe","Wolf","Waschbären sind dumm, süß und können alles essen.","Pinguin","bonobo","Entweder ein Wassertier oder eine Gepard, die waren schon immer geil.","Vogel wegen fliegen","Dawg","Löwe","Capybara","Löwe"],
+  "Welche Person würdest du nicht vermissen, wenn sie auf 'wundersame' Weise für immer verschwindet?": ["Meine Freundin weil sie nicht existiert","Liste an Politikern wäre zu lang","Eigentlich MIEHLKE aber wundersam wäre nicht qual voll genug","Milo Skottke es ist Milo.","Malte","Trump","Putin, Trump","Eine Person, die ich nicht kenne? Isn't that trivial?","Vladimir Putin","trump, elon, etc (basic aber ist so)","Donald j. Trump","Donald Trump","Keine :)","Mauro","Frau Hingst","Keine :)"],
+  "Was wäre für dich ein perfektes Date?": ["Wat dat","(keine Antwort)","Eins wonach man sich erneut treffen möchte","Eins Miles Gray","Candlelight dinner unter den Sternen mit dem einzigen DADDY HOLLANDS😍","Einen ganzen Tag miteinander verbringen, egal wie!","Romantisches Dinner mit Spaziergang","Erst zusammen in die Bib lesen dort oder woanders Kaffee Tee oder so mit einem Stück Kuchen dann zusammen im Park viben und im Anschluss zu einem von beiden nach Hause. Edibles wären auch tuff...","Mit einer Person, mit der man auf einem Level ist und beide sich wohlfühlen ❣️","late night gaming session auf discord","Mit Jonas und einer Flasche veganen, alkoholfreien Bier oder Wein den Sonnenuntergang gucken.","Spazieren dann dem Abend seinen Lauf lassen😉","An soetwas glaube ich nicht","Hmm… 1000 Players Simulate: Rich vs Poor Civilization","Liebe","Spazieren gehen und Sonnenuntergang (romantisch)"],
+  "Welche Superkraft hättest du am liebsten?": ["/gamemode creative","Ich kann mir jeden Wunsch erfüllen","Supergeschwindigkeit (mit dem Ausmaß von Flash)","Posion of the turtel master","Unsichtbar (für Frauenumkleide und so)","Fliegen!!!","Gedankenlesen bzw. die Fähigkeit haben zu wissen was andere denken und wollen","Keine Ahnung :sob:","Zeit kontrollieren","naruto ahh klonen","Superschnelligkeit.","Teleportation auch zu mir unbekannten Orten","X-Ray Vision","Glück beeinflussen oder wissen was ich machen muss...","Character Customization","Robel den Mund schnüren"],
+  "Was willst du später als Job machen?": ["Pharmazie, will lwk krankheit heilen","Finance weil Geld","Lehrer, da ich gut im Umgang mit Kindern bin und man verbeamtet wird und gut verdient","Prostitution","Lehrer, um POV von Herr Hoppe nachvollziehen zu können","Lehrer um eine vernünftige Abwechslung im Beruf zu haben","Eine eigene Praxis für plastische Rekonstruktive und ästhetische Chirurgie besitzen...","Forscher entweder Philosophie oder theoretische Informatik.","Keine Ahnung, Leck Eier","idk bro irgendwas mit mathe oder youtube/animation ig weil warum nicht","Realistisch: HR- Manager einer sehr großen Firma... Unrealistisch: Owner von einer selbstgegründeten Firma...","Berater für Import und Export und Finanzdiagramm bei erneuerbaren Energien im globalen Spektrum","Etwas mit Finanzen bin noch nicht zu entschlossen","Sound Engineer für foh, weil technik team :)","Anwalt","Arzt -> Menschen helfen, geldu"],
+  "Was wären Fragen die du gerne gehabt hättest?": ["Season3?","(keine)","Wärst du rein hypothetisch dabei einen Attentat auf Miehlke zu verüben","Keine Angaben","Wie viele Kinder jeder bzw wer wird in der Zukunft 10 Kinder haben und dann die Namen","(keine)","n/a","Kann ich Milos Katze essen?","Offen für alles","wer ist der beste in geometry dash hehe","Wer von uns hatte einen geheimen Boyfriend?","Keine","Keine :-)","Twin alle Amazing ❤️","War Napoleon gut?","(keine)"],
+  "Wie hat es dir gefallen?": ["Ja","Gut","Gut","Smash","Im Namen des englischen Königreichs: es war eine glorreiche und zugleich lustige Umfrage 🔥","(˶ˆᗜˆ˵)","Subba :))","Peak","Hab drauf gegoont so gut war es","n/a","Sehr stark","Horny","Joa nh","War geil","W speed","Sehr schöne Arbeit ;)"]
+};
+
+// Trans/Cis Frage answers with names
+const TRANS_DATA = [
+  { label: "Trans Frau", votes: ["Smash","Smash","Pass","Smash","Pass","Smash","Pass","Pass","Pass","Pass","Pass","Pass","Smash","Smash","Smash","Pass"] },
+  { label: "Cis Frau",   votes: ["Smash","Smash","Smash","Pass","Smash","Pass","Smash","Pass","Pass","Smash","Smash","Smash","Pass","Smash","Pass","Pass"] },
+  { label: "Trans Frau", votes: ["Smash","Pass","Pass","Pass","Pass","Pass","Pass","Pass","Pass","Pass","Smash","Pass","Smash","Pass","Pass","Pass"] },
+  { label: "Trans Mann", votes: ["Pass","Pass","Pass","Pass","Smash","Pass","Pass","Pass","Pass","Smash","Pass","Pass","Pass","Pass","Pass","Pass"] },
+  { label: "Cis Frau",   votes: ["Smash","Smash","Pass","Smash","Pass","Pass","Pass","Pass","Pass","Pass","Pass","Pass","Pass","Pass","Pass","Pass"] },
+  { label: "Cis Milo",   votes: ["Smash","Smash","Pass","Smash","Smash","Pass","Pass","Pass","Smash","Smash","Smash","Smash","Pass","Pass","Smash","Pass"] },
+  { label: "Trans Frau", votes: ["Pass","Pass","Pass","Pass","Smash","Pass","Pass","Pass","Pass","Pass","Pass","Pass","Pass","Pass","Pass","Pass"] }
 ];
 
-// Raw answer rows: each is an object
-// columns order from CSV (0-based after Zeitstempel):
-// 0 Single, 1 Reichsten, 2 Kinder(viele), 3 schlechterGeschmack, 4 ErfolgFrauen,
-// 5 HeiratenZuerst, 6 Simp, 7 Verlässlichsten, 8 ZombieÜberleben, 9 Berühmt,
-// 10 NiemalsBeziehung, 11 BesteBeziehung, 12 Lustigsten_a, 13 SchlechtesteRatschläge,
-// 14 VerliebSchnell, 15 Geheimnisse, 16 BesterStyle,
-// 17 Lustigsten_b [doppelt], 18 Gemeinsten, 19 Nettesten, 20 Lautesten,
-// 21 PrügelBereit, 22 KeineBerufschancen, 23 Stärksten, 24 MeistTalent, 25 Yapper,
-// 26 Terroranschlag, 27 Töten,
-// FAMILIE: 28 Vater, 29 Mutter, 30 Baby, 31 Schwester, 32 Bruder, 33 Großvater, 34 Onkel, 35 Adoptiert
-// 36 FragenGefallen, 37 Azteken, 38 NordischeGötter,
-// JA/NEIN: 39 ErsterKuss, 40 Erstesmal_1, 41 ErstesmalIgnore, 42 ZombieÜberleben_self,
-// 43 TransBeziehung, 44 Umbringen, 45 Prostituieren, 46 ZurFrauWerden,
-// C/T personal: 47=T, 48=C, 49=T, 50=T_M, 51=C, 52=C_M, 53=T
-// SMASH/PASS: cols vary per person
-// OPEN: Zombie-Taktik, Tier, Person, Date, Superkraft, Job, WunschFragen, Fazit
+// Respondent names for trans section only
+const RESPONDENTS = ["Person 1","Person 2","Person 3","Person 4","Person 5","Person 6","Person 7","Person 8","Person 9","Person 10","Person 11","Person 12","Person 13","Person 14","Person 15","Person 16"];
 
-const rawData = [
- { name:"Shin",    ranking:[["Robel"],["Malte"],["Milo"],["Eric"],["Finn"],["Finn"],["Mauro"],["Malte"],["Robel"],["Jonathan"],["Jonathan"],["Leo"],["Jonas"],["Eric"],["Eric"],["Malte"],[""],["Jonas"],["Lukas"],["Leo"],["Eric"],["Shin"],["Bosbach"],["Milo"],["Robel"],["Robel"],["Daniels"],["Jonathan"],["Daniels"],["Milo"],["Eric"],["Jonas"],["Finn"],["Burak"],["Milo"],["Leonard"]], fragen:{gefallen:"Ja",azteken:"Ja",nordisch:"Ja"}, jnFields:{kuss:"Nein",erstesmal:"Nein",zombie:"Nein",trans:"Nein",umbringen:"Nein",prostituieren:"Nein",frauWerden:"Nein"}, personal:{T:"Smash",C:"Smash",T2:"Smash",TM:"Pass",C2:"Smash",CM:"Smash",T3:"Pass"}, open:{zombie:"Selber umbringen",tier:"Yo mama",person:"Meine Freundin weil sie nicht exestiert",date:"Wat dat",kraft:"/gamemode creative",job:"Pharmazie, will lwk krankheit heilen",wunsch:"Season3?",fazit:"Ja"} },
- { name:"Leonard", ranking:[["Daniels"],["Lukas"],["Daniels"],["Mauro"],["Leo"],["Mauro"],["Robel"],["Leonard"],["Milo"],["Lukas"],["Daniels"],["Kp"],["Lukas"],["Eric"],["Mauro"],["Robel"],["Leo"],["Lukas"],["Zu gemein"],["Burak"],["Bosbach"],["Robel"],["Eric"],["Milo"],["Burak"],["Robel"],["Robel"],["Daniels"],["Daniels"],["Daniels"],["Julian"],["Mauro"],["Leo"],["Malte"],[""],["Shin"]], fragen:{gefallen:"Ja",azteken:"Ja",nordisch:"Ja"}, jnFields:{kuss:"Keine Angabe",erstesmal:"Nein",zombie:"Ja",trans:"Ja",umbringen:"Nein",prostituieren:"Nein",frauWerden:"Nein"}, personal:{T:"",C:"",T2:"",TM:"",C2:"",CM:"",T3:""}, open:{zombie:"Hai, aber der von Ikea",tier:"",person:"Liste an Politikern wäre zu lang",date:"",kraft:"Ich kann mir jeden Wunsch erfüllen",job:"Finance weil Geld",wunsch:"",fazit:"Gut"} },
- { name:"Daniels", ranking:[["Daniels"],["Lukas"],["Julian"],["Kp"],["Leo"],["Julian"],["Julian"],["Leo"],["Daniels"],["Jonas"],["Daniels"],["Keine Ahnung"],["Niemand"],["Keine Ahnung"],["Keine Ahnung"],["Daniels"],["Leo"],["Kein plan"],["Julian"],["Burak"],["Daniels"],["Daniels"],["Jonathan"],["Niemand"],["Keiner"],[""],["Leonard"],["Daniels"],["Julian"],["Jonas"],["Jonathan"],["Burak"],["Finn"],["Keine Ahnung"],["Daniels"],["Shin"]], fragen:{gefallen:"Ja",azteken:"Nein",nordisch:"Ja"}, jnFields:{kuss:"Nein",erstesmal:"Nein",zombie:"Ja",trans:"Nein",umbringen:"Nein",prostituieren:"Nein",frauWerden:"Nein"}, personal:{T:"Pass",C:"Smash",T2:"Pass",TM:"Pass",C2:"Pass",CM:"",T3:"Pass"}, open:{zombie:'Ich würde mir eine sicheren Ort suchen an einem süßwasser See/Fluss und diesen befestigen und für Vorräte sorgen wie Waffen, Munition und Medizinische Hilfsgüter. An Personen würde ich nur mit welchen agieren denen ich vertrauen kann.',tier:"Gorilla",person:"MIEHLKE",date:"Eins wonach man sich erneut treffen möchte",kraft:"Supergeschwindigkeit (Flash-Level)",job:"Lehrer, gut im Umgang mit Kindern, verbeamtet und gut verdient",wunsch:"Wärst du rein hypothetisch dabei einen Attentat auf Miehlke zu verüben",fazit:"Gut"} },
- { name:"Jonas",   ranking:[["Daniels"],["Bosbach"],["Milo"],["Mauro"],["Mauro"],["Finn"],["Milo"],["Burak"],["Daniels"],["Robel"],["Eric"],["Julian"],["Burak"],["Lukas"],["Mauro"],["Burak"],["Bosbach"],["Burak"],["Mauro"],["Burak"],["Lukas"],["Mauro"],["Eric"],["Bosbach"],["Finn"],["Robel"],["Burak"],["Bosbach"],["Julian"],["Burak"],["Julian"],["Milo"],["Robel"],["Bosbach"],["Mauro"],["Mauro"]], fragen:{gefallen:"Nein",azteken:"Ja",nordisch:"Nein"}, jnFields:{kuss:"Keine Angabe",erstesmal:"Nein",zombie:"Nein",trans:"Ja",umbringen:"Hell year",prostituieren:"Nein",frauWerden:"Nein"}, personal:{T:"",C:"",T2:"",TM:"",C2:"",CM:"",T3:""}, open:{zombie:"Irgendwo eine Farm aufbauen (gerne mit Hanfplantage) und wenn es soweit ist einfach akzeptieren",tier:"Pottwal lowkey tuff",person:"Finde diese Frage schwer – das Ergebnis könnte eine Person sehr verletzen. Daher muss ich sagen Milo Skottke es ist Milo.",date:"Eins Miles Gray",kraft:"Poison of the turtle master",job:"Prostitution",wunsch:"Keine Angaben",fazit:"Smash"} },
- { name:"Miles",   ranking:[["Daniels"],["Leonard"],["Jonas"],["Malte"],["Lukas"],["Martin"],["Burak"],["Lukas"],["Jonas"],["Robel"],["Daniels"],["Eric"],["Tarek"],["Daniels"],["Jonathan"],["Shin"],["Martin"],["Eric"],["Leo"],["Milo"],["Robel"],["Leo"],["Daniels"],["Martin"],["Daniels im goonen!"],["Robel"],["Burak"],["Daniels"],["Burak"],["Daniels"],["Eric"],["Malte"],["Finn"],["Leo"],["Jonas"],["Julian"]], fragen:{gefallen:"Sie sind perfekt",azteken:"Nein die Spanier hatten recht",nordisch:"Au ja Thor Odin Loki"}, jnFields:{kuss:"Ja",erstesmal:"Hell fuckin nah",zombie:"Nein",trans:"Nein",umbringen:"Auf jeden diggi scheiß auf den einen bastard",prostituieren:"Nein",frauWerden:"Nein ich will mit Rechten leben"}, personal:{T:"Pass",C:"Smash",T2:"Pass",TM:"Smash",C2:"Pass",CM:"Smash",T3:"Smash"}, open:{zombie:"Laufen, Laufen, Laufen, sterben",tier:"Giraffeeeee",person:"Malte",date:"Candlelight dinner unter den Sternen mit dem einzigen DADDY HOLLANDS😍",kraft:"Unsichtbar (für Frauenumkleide und so)",job:"Lehrer, um POV von Herr Hoppe nachvollziehen zu können",wunsch:"Wie viele Kinder jeder bzw wer wird in der Zukunft 10 Kinder haben und dann die Namen",fazit:"Im Namen des englischen Königreichs: es war eine glorreiche und zugleich lustige Umfrage 🔥"} },
- { name:"Milo",    ranking:[["Eric"],["Bosbach"],["Milo"],["Martin"],["Finn"],["Max und Emma ❤️❤️"],["Eric"],["Lukas"],["Milo"],["Robel"],["Mauro"],["Milo"],["Wir sind alle unlustig"],["Lukas"],["Martin"],["Burak"],["Lukas"],["Ich idiot hab die Frage 2 mal reingemacht"],["Milo"],["Burak"],["Robel"],["Mauro"],["Eric"],["Daniels"],["Burak"],["Robel"],["Robel"],["Milo"],["Burak"],["Lukas"],["Martin"],["Daniels"],["Milo"],["Robel"],["Mauro"],["Shin"]], fragen:{gefallen:"Ja",azteken:"Ja",nordisch:"Ich bevorzuge die griechischen"}, jnFields:{kuss:"Ja",erstesmal:"Nein",zombie:"Ja",trans:"Ja",umbringen:"Ja",prostituieren:"Ja",frauWerden:"Ja"}, personal:{T:"",C:"",T2:"",TM:"",C2:"",CM:"",T3:""}, open:{zombie:"Schwert und Rüstung um nicht auf verbrauchbare Ressourcen angewiesen zu sein",tier:"Affe",person:"Trump",date:"Einen ganzen Tag miteinander verbringen, egal wie!",kraft:"Fliegen!!!",job:"Lehrer um eine vernünftige Abwechslung im Beruf zu haben",wunsch:"",fazit:"(˶ˆᗜˆ˵)"} },
- { name:"Malte",   ranking:[["Daniels"],["Malte"],["Burak"],["Bosbach"],["Eric"],["Burak"],["Rüthlein"],["Lukas"],["Daniels"],["Die yter"],["Milo"],["Malte"],["Shin"],["Eric"],["Malte"],["Lukas"],["Eric"],["Shin"],["Malte"],["Finn"],["Eric"],["Shin"],["Eric"],["Finn"],["Malte"],["Robel"],["Robel"],["Daniels"],["Der unc. Malte oder Burak"],["Jonas"],["Jonathan"],["Bosbach"],["Jonas"],["Leo"],["Daniels"],["Mauro"]], fragen:{gefallen:"Ja",azteken:"Ja",nordisch:"Ja"}, jnFields:{kuss:"Ja",erstesmal:"Ja, leider mit lotta lol (is sowieso öffentlich)",zombie:"",zombie2:"Nein",trans:"Nein",umbringen:"Nein",prostituieren:"Nein",frauWerden:"Nein"}, personal:{T:"Pass",C:"Smash",T2:"Smash",TM:"Pass",C2:"Pass",CM:"Smash",T3:"Pass"}, open:{zombie:"wie in pubg",tier:"keine Ahnung",person:"Robel",date:"Gibt mehrere Optionen und orte kp",kraft:"kp",job:"Sound Engineer für foh, weil technik team :)",wunsch:"alles drin :)",fazit:"Subba :))"} },
- { name:"Mauro",   ranking:[["Daniels"],["Lukas"],["Mauro"],["Milo"],["Bosbach"],["Lukas"],["Milo"],["Lukas"],["Daniels"],["Robel"],["Jeder hat seine Stärken"],["Mauro"],[""],[""],[""],["Mauro"],["Leo"],[""],["Bosbach"],["Julian"],["Daniels"],["Daniels"],["Eric"],["Milo"],["Mauro"],["Robel"],["Burak"],[""],["Julian"],["Jonas"],["Shin"],["Milo"],["Finn"],["Daniels"],["Eric"],["Burak"]], fragen:{gefallen:"Ja",azteken:"Nein",nordisch:"Ja"}, jnFields:{kuss:"Ja",erstesmal:"Ja",zombie:"Nein",trans:"Nein",umbringen:"Nein",prostituieren:"Nein",frauWerden:"Hübsche Baddie oder hässlich?"}, personal:{T:"Smash",C:"Smash",T2:"Pass",TM:"Pass",C2:"Pass",CM:"",T3:"Pass"}, open:{zombie:"Standort mit Gartenfläche und Grundwasserbrunnen suchen. Waffen horten. Solarpanele klauen. Haus komplett abriegeln. Sicherheitsmaßnahmen aufbauen.",tier:"Wolf",person:"Putin, Trump",date:"Romantisches Dinner mit Spaziergang",kraft:"Gedankenlesen und -kontrolle (mit moralischen Grenzen)",job:"Eigene Praxis für plastische, rekonstruktive und ästhetische Chirurgie",wunsch:"",fazit:"Peak"} },
- { name:"Eric",    ranking:[["Daniels"],["Lukas"],["Burak"],["Daniels"],["Finn"],["Finn"],["Martin"],["Malte"],["Eric & malte wegen Pubg"],["die youtuber"],["Daniels"],["Eric"],["Malte"],["Shin"],["Eric"],["Malte"],["Eric"],["Malte"],["Milo"],["Lukas"],["Shin"],["Shin"],["Robel"],["Milo"],["Eric und Malte die beiden bastard youtuber"],["Robel"],["Robel"],["Daniels"],["Burak"],["Jonas"],["Shin"],["Lukas"],["Finn"],["Bosbach"],["Daniels"],["Jonathan"]], fragen:{gefallen:"Ja",azteken:"Ja",nordisch:"Nein"}, jnFields:{kuss:"Keine Angabe",erstesmal:"Keine Angabe",zombie:"Ja",trans:"Nein",umbringen:"Nein",prostituieren:"Nein",frauWerden:"Nein"}, personal:{T:"Smash",C:"Smash",T2:"Pass",TM:"Pass",C2:"Pass",CM:"",T3:"Pass"}, open:{zombie:'Bevor eine kohärente Überlebensstrategie entwickelt werden kann, ist eine präzise Modellierung des Bedrohungsprofils unabdingbar. [Detaillierte akademische Analyse mit SIR-Modell, Gruppenkomposition, Ressourcenlogistik, Staatsbildung etc. — vollständige Version in Rohdaten]',tier:"Vogel wegen fliegen",person:"Robel & Daniels",date:"Spazieren gehen und Sonnenuntergang (romantisch)",kraft:"Robel den Mund schnüren",job:"Berater für Import und Export und Finanzdiagramm bei erneuerbaren Energien",wunsch:"Kann ich Milos Katze essen?",fazit:"Hab drauf gegoont so gut war es"} },
- { name:"Robel",   ranking:[["Jonas"],["Bosbach"],["Robel"],["Mauro"],["Martin"],["Lukas"],["Burak"],["Milo"],["Eric"],["Robel"],["Milo und Jonas"],["Bosbach"],["Lukas"],["Eric"],["Eric"],["Milo"],["Burak"],["Lukas"],["Mauro"],["Robel"],["Robel"],["Mauro"],["Shin"],["Milo"],["Robel"],["Robel"],["Burak"],["Mauro"],["Bosbach"],["Robel"],["Martin"],["Mauro"],["Milo"],["Leo"],["Lukas"],["Shin"]], fragen:{gefallen:"Ja",azteken:"Nein",nordisch:"Nein"}, jnFields:{kuss:"Keine Angabe",erstesmal:"Nein",zombie:"Nein",trans:"Ja",umbringen:"Ja",prostituieren:"Ja",frauWerden:"Ja"}, personal:{T:"",C:"",T2:"",TM:"",C2:"",CM:"",T3:""}, open:{zombie:"Digga es ist so over irgendein Bunker klauen und dann ganz viele Nukes abwerfen.",tier:"Waschbären sind dumm, süß und können alles essen.",person:"Eine Person, die ich nicht kenne? Isn't that trivial?",date:"Erst zusammen in die Bib lesen dann Kaffee/Tee mit Kuchen dann zusammen im Park viben. Edibles wären auch tuff...",kraft:"Keine Ahnung :sob:",job:"Forscher, entweder Philosophie oder theoretische Informatik",wunsch:"n/a",fazit:"n/a"} },
- { name:"Julian",  ranking:[["Daniels"],["Bosbach"],["Burak"],["Daniels"],["Finn"],["Finn"],[""],["Leo"],["Jonas"],["Lukas"],["Jonathan"],["Finn"],["Jonas"],["Eric"],["Jonas"],["Mauro"],["Mauro"],["Jonas"],["Mauro"],["Jonas"],["Robel"],["Daniels"],["Shin"],["Daniels"],["Malte"],["Robel"],["Burak"],["Daniels"],["Julian"],["Finn"],["Jonas"],["Jonathan"],["Bosbach"],["Daniels"],["Mauro"],["Leonard"]], fragen:{gefallen:"Ja",azteken:"Ja",nordisch:"Ja"}, jnFields:{kuss:"Ja",erstesmal:"Nein",zombie:"Ja",trans:"Nein",umbringen:"Nein",prostituieren:"Nein",frauWerden:"Nein"}, personal:{T:"Pass",C:"Pass",T2:"Pass",TM:"Pass",C2:"Pass",CM:"Smash",T3:"Pass"}, open:{zombie:"Ich klettere auf ein Hochhaus und baue mir auf dem Dach eine eigene Kultur an. Lebe vegan und chille meine Eier...",tier:"Pinguin",person:"Vladimir Putin",date:"Mit einer Person, mit der man auf einem Level ist und beide sich wohlfühlen ❣️",kraft:"Zeit kontrollieren",job:"Keine Ahnung, Leck Eier",wunsch:"Offen für alles",fazit:"Sehr stark"} },
- { name:"Burak",   ranking:[["Burak"],["Bosbach"],["Burak"],["Martin"],["Bosbach"],["Mauro"],["Eric"],["Milo"],["Milo"],["Robel"],["Alle"],["Julian"],["Lukas"],["Burak"],["Milo"],["Lukas"],["Eric"],["Jonas"],["Milo"],["Eric"],["Lukas"],["Shin"],["Burak"],["Milo"],["Robel"],["Robel"],["Robel"],["Robel"],["Burak"],["Jonas"],["Robel"],["Mauro"],["Lukas"],["Daniels"],["Eric"],["Leonard"]], fragen:{gefallen:"Ja",azteken:"Ja",nordisch:"Ja"}, jnFields:{kuss:"Nein",erstesmal:"Nein",zombie:"Nein",trans:"Ja",umbringen:"Nein",prostituieren:"Ja",frauWerden:"Ja"}, personal:{T:"",C:"",T2:"",TM:"",C2:"",CM:"",T3:""}, open:{zombie:"broskis ahh überlebt keinen tag\n\nsonst einen kleinen demokratischen klan gründen und den lebensstil des frühen menschen annehmen",tier:"bonobo",person:"trump, elon, etc (basic aber ist so)",date:"late night gaming session auf discord",kraft:"naruto ahh klonen",job:"idk bro irgendwas mit mathe oder youtube/animation ig weil warum nicht",wunsch:"wer ist der beste in geometry dash hehe",fazit:"Horny"} },
- { name:"Finn",    ranking:[["Burak"],["Milo"],["Mauro"],["Keiner"],["Finn"],["Julian"],["Milo"],["Jonas"],["Daniels"],["Leonard"],["Robel"],["Jonas"],["Milo"],["Bosbach"],["Finn"],["Mauro"],["Leo"],["Milo"],["Bosbach"],["Shin"],["Lukas"],["Mauro"],["Eric"],["Milo"],["Burak"],["Robel"],["Robel"],["Daniels"],["Milo"],["Jonas"],["Eric"],["Leonard"],["Mauro"],["Malte"],["Robel"],["Burak"]], fragen:{gefallen:"Ja",azteken:"Ja",nordisch:"Ja"}, jnFields:{kuss:"Ja",erstesmal:"Ja",zombie:"Ja",trans:"Ja",umbringen:"Ja",prostituieren:"Ja",frauWerden:"Nein"}, personal:{T:"",C:"",T2:"",TM:"",C2:"",CM:"",T3:""}, open:{zombie:"Ok ok, das hängt stark davon ab bis wohin die Zombies schon vorgedrungen sind. Wenn es so walking dead mäßig ist, würde ich mich mit sehr viel Essen irgendwo verschanzen, in einem Penthouse mit Hubschrauber auf dem Dach. Wären die Zombies zu aggressiv dann kommt eine reine Flucht nach vorne.",tier:"Entweder ein Wassertier oder ein Gepard",person:"Donald J. Trump",date:"Mit Jonas und einer Flasche veganen, alkoholfreien Bier oder Wein den Sonnenuntergang gucken.",kraft:"Superschnelligkeit.",job:"Realistisch: HR-Manager einer sehr großen Firma. Unrealistisch: Owner einer selbstgegründeten Firma.",wunsch:"Wer von uns hatte einen geheimen Boyfriend?",fazit:":)"} },
- { name:"Martin",  ranking:[["Mauro"],["Lukas"],["Burak"],["Alle außer mir"],["Martin"],["Burak"],["Eric"],["Milo"],["Milo"],["Lukas"],["Mauro"],["Finn"],["Finn"],["Robel"],["Eric"],["Finn"],["Leo"],["Eric"],["Milo"],["Finn"],["Lukas"],["Eric"],["Daniels"],["Martin"],["Martin"],["Robel"],["Burak"],["Daniels"],["Burak"],["Milo"],["Eric"],["Leonard"],["Leo"],["Daniels"],["Mauro"],["Jonathan"]], fragen:{gefallen:"Nein",azteken:"Nein",nordisch:"Nein"}, jnFields:{kuss:"Ja",erstesmal:"Nein",zombie:"Ja",trans:"Nein",umbringen:"Ja",prostituieren:"Ja",frauWerden:"Nein"}, personal:{T:"Smash",C:"Pass",T2:"Pass",TM:"Smash",C2:"Pass",CM:"Smash",T3:"Pass"}, open:{zombie:"Gar nicht",tier:"Löwe",person:"Mauro",date:"Spazieren dann dem Abend seinen Lauf lassen😉",kraft:"Teleportation auch zu mir unbekannten Orten",job:"Arzt -> Menschen helfen, geld",wunsch:"Keine",fazit:"Joa nh"} },
- { name:"Bosbach", ranking:[["Jonathan"],["Leonard"],["Mauro"],["Shin"],["Lukas"],["Mauro"],["Eric"],["Robel"],["Daniels"],["Leo"],["Bwo keine Ahnung"],["Lukas"],["Jonas"],["Daniels"],[""],["Robel"],["Leo"],["Affe du hast die Frage vorher schon gestellt"],[""],["Robel"],["Bosbach"],["Daniels"],["Eric"],["Milo"],["Robel"],["Robel"],["Burak"],["Daniels"],["Leo"],["Julian"],["Mauro"],["Jonas"],["Robel"],["Burak"],["Eric"],["Mauro"]], fragen:{gefallen:"Ja",azteken:"Nein",nordisch:"Björn"}, jnFields:{kuss:"Ja",erstesmal:"Keine Angabe",zombie:"Nein",trans:"Nein",umbringen:"Ja",prostituieren:"Nein",frauWerden:"Nein"}, personal:{T:"Smash",C:"Smash",T2:"Smash",TM:"",C2:"Pass",CM:"Smash",T3:"Pass"}, open:{zombie:"Der Strick",tier:"Capybara",person:"Donald Trump",date:"An sowas glaube ich nicht",kraft:"X-Ray Vision",job:"Etwas mit Finanzen, bin noch nicht entschlossen",wunsch:"",fazit:"War geil"} },
- { name:"Lukas",   ranking:[["Ich glaube sogar acually niemand ❤️"],["Lukas"],["Jonas"],["Martin"],["Finn"],["Julian"],["Mauro"],["Leo"],["Milo"],["Eric"],["Burak"],["Leonard"],["Leonard"],["Bosbach"],["Martin"],["Milo"],["Leo"],["Finn"],["Shin"],["Malte"],["Finn"],["Jonas"],["Burak"],["Milo"],["Robel"],["Robel"],["Robel"],["Jonas"],["Burak"],["Jonas"],["Mauro"],["Shin"],["Finn"],["Milo"],["Mauro"],["Bosbach"]], fragen:{gefallen:"Ja",azteken:"Nein",nordisch:"Nein"}, jnFields:{kuss:"Keine Angabe",erstesmal:"Keine Angabe",zombie:"Ja",trans:"Nein",umbringen:"Ja",prostituieren:"Nein",frauWerden:"Ja"}, personal:{T:"Smash",C:"Smash",T2:"Pass",TM:"Smash",C2:"Pass",CM:"Smash",T3:"Pass"}, open:{zombie:"Brd ich hab ein ganzes Handbuch davon also frag einfach MrPandaMaan in der Schule",tier:"Dawg",person:"Frau Hingst",date:"Hmm… 1000 Players Simulate: Rich vs Poor Civilization",kraft:"Glück beeinflussen oder wissen was ich machen muss um mit einer Chain-Reaction was zu verursachen",job:"Asset Management C-Suite. Warum: Geld",wunsch:"Twin alle Amazing ❤️",fazit:"W speed"} },
- { name:"Leo",     ranking:[[""],["Bosbach"],["Jonas"],["Robel"],[""],["Burak"],[""],["Leo"],["Daniels"],["Malte"],["Jonas"],[""],["Julian"],["Leonard"],["Eric"],["Daniels"],[""],["Jonathan"],[""],["Finn"],["Robel"],["Daniels"],["Jonas"],["Daniels"],["Martin"],["Robel"],["Burak"],["Daniels"],["Bosbach"],["Daniels"],["Jonas"],["Jonathan"],["Leo"],["Bosbach"],["Mauro"],["Shin"]], fragen:{gefallen:"Nein",azteken:"Ja",nordisch:"Ja"}, jnFields:{kuss:"Keine Angabe",erstesmal:"Keine Angabe",zombie:"Ja",trans:"Nein",umbringen:"Nein",prostituieren:"Nein",frauWerden:"Nein"}, personal:{T:"Pass",C:"Smash",T2:"Pass",TM:"Pass",C2:"Pass",CM:"Smash",T3:"Pass"}, open:{zombie:"Überleben",tier:"Löwe",person:"Keine :)",date:"Liebe",kraft:"Character Customization",job:"Anwalt",wunsch:"War Napoleon gut?",fazit:"Sehr schöne Arbeit, Milo ;)"} }
-];
-
-// ─── SECTION 1 QUESTIONS ─────────────────────────────────────────────────────
-const s1Questions = [
-  {key:12, label:"Am Lustigsten", color:"mint"},
-  {key:6,  label:"Größter Simp", color:"rose"},
-  {key:7,  label:"Am Verlässlichsten", color:"mint"},
-  {key:25, label:"Größter Yapper", color:"lav"},
-  {key:18, label:"Am Gemeinsten", color:"rose"},
-  {key:19, label:"Am Nettesten", color:"mint"},
-  {key:20, label:"Am Lautesten", color:"gold"},
-  {key:15, label:"Kann Geheimnisse behalten", color:"mint"},
-  {key:16, label:"Bester Style", color:"gold"},
-  {key:24, label:"Meistes Talent", color:"gold"},
-  {key:13, label:"Schlechteste Tipps", color:"rose"},
-];
-
-// ─── SECTION 2 QUESTIONS ─────────────────────────────────────────────────────
-const s2Questions = [
-  {key:0,  label:"Für immer Single", color:"rose"},
-  {key:5,  label:"Heiratet zuerst", color:"gold"},
-  {key:2,  label:"Meiste Kinder", color:"mint"},
-  {key:4,  label:"Erfolg bei Frauen", color:"mint"},
-  {key:3,  label:"Schlechtester Geschmack", color:"rose"},
-  {key:10, label:"Niemals Beziehung", color:"rose"},
-  {key:11, label:"Beste Beziehung", color:"mint"},
-  {key:14, label:"Verliebt sich am schnellsten", color:"gold"},
-];
-
-// ─── SECTION 3 QUESTIONS ─────────────────────────────────────────────────────
-const s3Questions = [
-  {key:8,  label:"Zombie-Überlebenschance", color:"mint"},
-  {key:9,  label:"Am ehesten berühmt", color:"gold"},
-  {key:26, label:"Islamistischer Terroranschlag", color:"rose"},
-  {key:27, label:"Würde jemanden töten", color:"rose"},
-  {key:22, label:"Keine Berufschancen", color:"lav"},
-  {key:23, label:"Am stärksten", color:"mint"},
-  {key:21, label:"Würde sich prügeln", color:"rose"},
-];
-
-// ─── YES/NO QUESTIONS ────────────────────────────────────────────────────────
-const ynQuestions = [
-  {key:"kuss",       label:"Erster Kuss"},
-  {key:"erstesmal",  label:"Erstes Mal"},
-  {key:"zombie",     label:"Würde Zombie-Apokalypse überleben"},
-  {key:"trans",      label:"Beziehung mit Trans-Person"},
-  {key:"umbringen",  label:"Für 1.000.000€ umbringen"},
-  {key:"prostituieren", label:"Für 100.000€ prostituieren"},
-  {key:"frauWerden", label:"Für 500.000€ zur Frau werden"},
-];
-
-// Personal (C/T) questions
-const personalQs = [
-  {key:"T",   label:"T"},
-  {key:"C",   label:"C"},
-  {key:"T2",  label:"T"},
-  {key:"TM",  label:"T M"},
-  {key:"C2",  label:"C"},
-  {key:"CM",  label:"C M"},
-  {key:"T3",  label:"T"},
-];
-
-// Smash/Pass — per person, 7 scenarios
-// The scenarios in order from the raw CSV
-const spScenarios = ["1","2","3","4","5","6","7"];
-// We parse them per person
-const spLabels = ["Szenario A","Szenario B","Szenario C","Szenario D","Szenario E","Szenario F","Szenario G"];
-
-// ─── HELPERS ─────────────────────────────────────────────────────────────────
-function countVotes(questionIdx) {
-  const counts = {};
-  rawData.forEach(p => {
-    const ans = p.ranking[questionIdx];
-    if (!ans || !ans[0]) return;
-    const name = ans[0].trim();
-    if (!name || name.toLowerCase() === "kp" || name.toLowerCase() === "keine ahnung" || name.toLowerCase() === "niemand" || name.toLowerCase() === "keiner") return;
-    // anonymize — just use initials or "Teilnehmer X"
-    counts[name] = (counts[name] || 0) + 1;
-  });
-  return Object.entries(counts).sort((a,b) => b[1]-a[1]).slice(0, 5);
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-function makeBarCard(question, colorClass) {
-  const votes = countVotes(question.key);
-  if (!votes.length) return null;
-  const max = votes[0][1];
-  const card = document.createElement("div");
-  card.className = "ranking-card";
-  card.innerHTML = `<h3>${question.label}</h3><div class="bar-container"></div>`;
-  const bc = card.querySelector(".bar-container");
-  votes.forEach(([name, count], i) => {
-    const pct = Math.round((count/max)*100);
-    const row = document.createElement("div");
-    row.className = "bar-row";
-    row.innerHTML = `
-      <span class="bar-label">${name}</span>
-      <div class="bar-track"><div class="bar-fill ${i===0?colorClass:''}" style="width:${pct}%"></div></div>
-      <span class="bar-count">${count}</span>
-    `;
-    bc.appendChild(row);
-  });
-  if (votes[0]) {
-    const tag = document.createElement("div");
-    tag.className = "winner-tag";
-    tag.textContent = "★ " + votes[0][0];
-    card.appendChild(tag);
-  }
-  return card;
+function makeRawPanel(answers, showNames=false) {
+  const id = 'raw_' + (cid++);
+  const listHTML = answers.map((a, i) =>
+    `<div class="raw-item"><span class="raw-num">#${i+1}</span>${escHtml(a)}</div>`
+  ).join('');
+  return `
+    <button class="raw-toggle" onclick="toggleRaw(this)" aria-expanded="false">
+      <span>📋 Alle ${answers.length} Rohantworten anzeigen</span>
+      <span class="arrow">▼</span>
+    </button>
+    <div class="raw-panel" id="${id}">
+      <div class="raw-list">${listHTML}</div>
+    </div>`;
 }
 
-function buildRankingGrid(gridId, questions) {
-  const grid = document.getElementById(gridId);
-  questions.forEach(q => {
-    const card = makeBarCard(q, q.color === "mint" ? "" : q.color === "rose" ? "rose" : q.color === "gold" ? "gold" : "lav");
-    if (card) grid.appendChild(card);
+function toggleRaw(btn) {
+  const panel = btn.nextElementSibling;
+  const open = panel.classList.toggle('open');
+  btn.classList.toggle('open', open);
+  btn.setAttribute('aria-expanded', open);
+  btn.querySelector('span:first-child').textContent =
+    open ? `📋 Rohantworten schließen` : `📋 Alle ${panel.querySelectorAll('.raw-item').length} Rohantworten anzeigen`;
+}
+
+function makeChart(canvasId, labels, values, type='pie') {
+  const ctx = document.getElementById(canvasId).getContext('2d');
+  new Chart(ctx, {
+    type,
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        backgroundColor: type==='bar' ? PALETTE.slice(0,labels.length).map(c=>c+'cc') : PALETTE.slice(0,labels.length),
+        borderColor: type==='bar' ? PALETTE.slice(0,labels.length) : '#0f0f1a',
+        borderWidth: 2, borderRadius: type==='bar' ? 6 : 0
+      }]
+    },
+    options: {
+      responsive: true,
+      indexAxis: type==='bar' ? 'y' : undefined,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: c => ` ${c.label}: ${c.parsed.x ?? c.parsed} Stimmen` } }
+      },
+      scales: type==='bar' ? {
+        x: { ticks:{color:'#94a3b8'}, grid:{color:'#2d2d4a'} },
+        y: { ticks:{color:'#94a3b8',font:{size:11}}, grid:{display:false} }
+      } : {}
+    }
   });
 }
 
-function buildSmashPass() {
-  const grid = document.getElementById("grid-sp");
-  // collect smash/pass counts per scenario index (0-6)
-  const scenarioKeys = ["T","C","T2","TM","C2","CM","T3"];
-  const scenarioLabels = ["Szenario 1","Szenario 2","Szenario 3","Szenario 4","Szenario 5","Szenario 6","Szenario 7"];
-  const smashCounts = Array(7).fill(0);
-  const passCounts  = Array(7).fill(0);
+function makeLegend(labels, values) {
+  return labels.map((l,j) => `
+    <div class="legend-item">
+      <div class="legend-dot" style="background:${PALETTE[j]}"></div>
+      <span class="legend-label">${l}</span>
+      <span class="legend-count">${values[j]}</span>
+    </div>`).join('');
+}
 
-  rawData.forEach(p => {
-    const keys = ["T","C","T2","TM","C2","CM","T3"];
-    keys.forEach((k, i) => {
-      const v = (p.personal[k] || "").toLowerCase();
-      if (v === "smash") smashCounts[i]++;
-      else if (v === "pass") passCounts[i]++;
-    });
-  });
-
-  // One card per scenario
-  scenarioKeys.forEach((k, i) => {
-    const total = smashCounts[i] + passCounts[i];
-    if (!total) return;
-    const maxH = 55;
-    const card = document.createElement("div");
-    card.className = "sp-card";
-    const smashH = Math.round((smashCounts[i]/total)*maxH);
-    const passH  = Math.round((passCounts[i]/total)*maxH);
-    card.innerHTML = `
-      <h3>${scenarioLabels[i]}</h3>
-      <div class="sp-bars">
-        <div class="sp-bar-group">
-          <span class="sp-count">${smashCounts[i]}</span>
-          <div class="sp-bar smash" style="height:${smashH}px"></div>
-          <span class="sp-bar-label">Smash</span>
-        </div>
-        <div class="sp-bar-group">
-          <span class="sp-count">${passCounts[i]}</span>
-          <div class="sp-bar pass" style="height:${passH}px"></div>
-          <span class="sp-bar-label">Pass</span>
-        </div>
+function addPieCard(cat, title, data, chartType='pie') {
+  const labels = Object.keys(data), values = Object.values(data);
+  const id = 'chart_' + (cid++);
+  const isBar = chartType==='bar';
+  const card = document.createElement('div');
+  card.className = 'card'; card.dataset.cat = cat;
+  const rawKey = title.replace(/ [^\w\s].*$/,'').trim();
+  const rawAnswers = RAW[Object.keys(RAW).find(k => title.includes(k.split('?')[0]) || k.includes(title.split('?')[0])) || title] || [];
+  card.innerHTML = `
+    <div class="card-inner">
+      <h2>${title}</h2>
+      <div class="chart-wrap" style="max-width:${isBar?'100%':'260px'}">
+        <canvas id="${id}" ${isBar?'height="200"':''}></canvas>
       </div>
-    `;
-    grid.appendChild(card);
-  });
-}
-
-function buildDonut(container, yesCount, noCount, kaCount, label) {
-  const total = yesCount + noCount + kaCount;
-  const r = 38, cx = 50, cy = 50, circ = 2 * Math.PI * r;
-  const yesFrac = yesCount / total;
-  const noFrac  = noCount  / total;
-  const kaFrac  = kaCount  / total;
-
-  const yesD = yesFrac * circ;
-  const noD  = noFrac  * circ;
-  const kaD  = kaFrac  * circ;
-
-  let offset = 0;
-  function dash(d, color, off) {
-    return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${color}" stroke-width="12" stroke-dasharray="${d} ${circ-d}" stroke-dashoffset="${-off}" />`;
-  }
-
-  const svg = `<svg viewBox="0 0 100 100" width="100" height="100">
-    ${dash(yesD, '#7fffd4', offset)}
-    ${dash(noD, '#f4907a', offset + yesD)}
-    ${dash(kaD, '#a89fd8', offset + yesD + noD)}
-  </svg>`;
-
-  const wrap = document.createElement("div");
-  wrap.className = "pie-card";
-  wrap.innerHTML = `
-    <h3>${label}</h3>
-    <div class="donut-wrap">${svg}<div class="donut-center">${total}</div></div>
-    <div class="pie-legend">
-      <span><span class="legend-dot" style="background:#7fffd4"></span>Ja ${yesCount}</span>
-      <span><span class="legend-dot" style="background:#f4907a"></span>Nein ${noCount}</span>
-      ${kaCount ? `<span><span class="legend-dot" style="background:#a89fd8"></span>k.A. ${kaCount}</span>` : ''}
+      <div class="legend">${makeLegend(labels,values)}</div>
     </div>
-  `;
-  container.appendChild(wrap);
+    ${makeRawPanel(rawAnswers)}`;
+  document.getElementById('grid').appendChild(card);
+  setTimeout(() => makeChart(id, labels, values, chartType), 50);
 }
 
-function buildPieGrid() {
-  const grid = document.getElementById("grid-pie");
-  ynQuestions.forEach(q => {
-    let yes = 0, no = 0, ka = 0;
-    rawData.forEach(p => {
-      const v = (p.jnFields[q.key] || "").toLowerCase();
-      if (v.includes("ja") || v.includes("hell") || v.includes("auf jeden") || v.includes("leider")) yes++;
-      else if (v.includes("nein") || v.includes("nah") || v.includes("nicht")) no++;
-      else if (v.includes("angabe") || v.includes("keine") || v === "" || v === "undefined") ka++;
-      else no++;
-    });
-    buildDonut(grid, yes, no, ka, q.label);
-  });
+function addFreeCard(cat, title) {
+  const answers = RAW[title] || [];
+  const card = document.createElement('div');
+  card.className = 'card freetext'; card.dataset.cat = cat;
+  const listHTML = answers.map((a, i) =>
+    `<div class="raw-item"><span class="raw-num">#${i+1}</span>${escHtml(a)}</div>`
+  ).join('');
+  card.innerHTML = `
+    <div class="card-inner" style="align-items:flex-start">
+      <h2 style="text-align:left;min-height:unset">${title}</h2>
+      <p style="font-size:.78rem;color:var(--muted);margin-bottom:.5rem">${answers.length} Antworten – alle sichtbar</p>
+      <div style="max-height:320px;overflow-y:auto;width:100%;display:flex;flex-direction:column;gap:.4rem;padding-right:4px">
+        ${listHTML}
+      </div>
+    </div>`;
+  document.getElementById('grid').appendChild(card);
 }
 
-function buildSurviveDonut() {
-  const container = document.getElementById("survive-donut");
-  let yes = 0, no = 0, ka = 0;
-  rawData.forEach(p => {
-    const v = (p.jnFields.zombie || "").toLowerCase();
-    if (v.includes("ja") || v.includes("überleben")) yes++;
-    else if (v.includes("nein")) no++;
-    else ka++;
-  });
-  buildDonut(container, yes, no, ka, "Würdest du überleben?");
+function addYesNoCard(cat, title, rawKey, yesCount, noCount, total) {
+  const answers = RAW[rawKey] || [];
+  const id = 'chart_' + (cid++);
+  const card = document.createElement('div');
+  card.className = 'card'; card.dataset.cat = cat;
+  card.innerHTML = `
+    <div class="card-inner">
+      <h2>${title}</h2>
+      <div class="chart-wrap"><canvas id="${id}"></canvas></div>
+      <div class="legend">${makeLegend(['Ja','Nein','Keine Angabe'],[yesCount,noCount,total-yesCount-noCount])}</div>
+    </div>
+    ${makeRawPanel(answers)}`;
+  document.getElementById('grid').appendChild(card);
+  const other = total - yesCount - noCount;
+  setTimeout(() => makeChart(id, ['Ja','Nein','Keine Angabe'], [yesCount, noCount, other]), 50);
 }
 
-function buildPersonalTable() {
-  const thead = document.getElementById("personal-thead");
-  const tbody = document.getElementById("personal-tbody");
+function addTransCard() {
+  // Each of the 7 people gets a photo slot + their smash/pass breakdown
+  const card = document.createElement('div');
+  card.className = 'card'; card.dataset.cat = 'trans';
+  
+  const peopleHTML = TRANS_DATA.map((person, idx) => {
+    const smash = person.votes.filter(v => v === 'Smash').length;
+    const pass = person.votes.filter(v => v === 'Pass').length;
+    const total = person.votes.length;
+    const smashPct = Math.round(smash / total * 100);
+    return `
+      <div class="trans-person">
+        <div class="trans-photo">👤</div>
+        <div class="trans-label">Person ${idx + 1}</div>
+        <div class="trans-type">${person.label}</div>
+        <div style="width:100%;margin-top:.3rem">
+          <div style="font-size:.68rem;color:var(--muted);display:flex;justify-content:space-between;margin-bottom:2px">
+            <span>Smash</span><span>${smash}</span>
+          </div>
+          <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden">
+            <div style="height:100%;width:${smashPct}%;background:#06b6d4;border-radius:3px"></div>
+          </div>
+          <div style="font-size:.68rem;color:var(--muted);display:flex;justify-content:space-between;margin-top:2px">
+            <span>Pass</span><span>${pass}</span>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
 
-  // Header
-  const thName = document.createElement("th");
-  thName.textContent = "Name";
-  thead.appendChild(thName);
-  personalQs.forEach(q => {
-    const th = document.createElement("th");
-    th.textContent = q.label;
-    thead.appendChild(th);
-  });
+  // Raw answers with names for trans section
+  const rawRows = TRANS_DATA.map((person, idx) => {
+    const votes = person.votes.map((v, i) => `${RESPONDENTS[i]}: ${v}`).join(' · ');
+    return `<div class="raw-item"><span class="raw-num">Person ${idx+1} (${person.label})</span> ${escHtml(votes)}</div>`;
+  }).join('');
 
-  // Body
-  rawData.forEach(p => {
-    const tr = document.createElement("tr");
-    const tdName = document.createElement("td");
-    tdName.className = "name-cell";
-    tdName.textContent = p.name;
-    tr.appendChild(tdName);
-    personalQs.forEach(q => {
-      const td = document.createElement("td");
-      const v = p.personal[q.key] || "—";
-      if (v === "Smash") td.innerHTML = `<span class="yn-yes">Smash</span>`;
-      else if (v === "Pass") td.innerHTML = `<span class="yn-no">Pass</span>`;
-      else td.textContent = v;
-      tr.appendChild(td);
-    });
-    tbody.appendChild(tr);
-  });
+  const rawId = 'raw_' + (cid++);
+
+  card.innerHTML = `
+    <div class="card-inner">
+      <h2>Smash or Pass – Trans/Cis Personen 🏳️‍⚧️</h2>
+      <div class="trans-grid">${peopleHTML}</div>
+    </div>
+    <button class="raw-toggle" onclick="toggleRaw(this)" aria-expanded="false">
+      <span>📋 Alle Rohantworten mit Namen anzeigen</span>
+      <span class="arrow">▼</span>
+    </button>
+    <div class="raw-panel" id="${rawId}">
+      <div class="raw-list">${rawRows}</div>
+    </div>`;
+  document.getElementById('grid').appendChild(card);
 }
 
-function buildOpenAnswers() {
-  const grid = document.getElementById("open-grid");
-  const openKeys = [
-    {key:"zombie",  label:"Zombie-Taktik", long: true},
-    {key:"tier",    label:"Welches Tier wärst du?"},
-    {key:"person",  label:"Wen würdest du nicht vermissen?"},
-    {key:"date",    label:"Perfektes Date"},
-    {key:"kraft",   label:"Lieblings-Superkraft"},
-    {key:"job",     label:"Berufswunsch"},
-    {key:"fazit",   label:"Fazit zur Umfrage"},
+function addFamilienCard() {
+  // "Du bist der/die..." family role cards combined
+  const roles = [
+    { key: "… der Vater", title: "… der Vater 👨", data: {"Daniels":3,"Jonas":3,"Bosbach":2,"Jonathan":2,"Milo":1,"Mauro":1,"Burak":1} },
+    { key: "… die Mutter", title: "… die Mutter 👩", data: {"Julian":4,"Daniels":3,"Burak":2,"Jonas":1,"Bosbach":1,"Martin":1,"Lukas":1} },
+    { key: "… das Baby", title: "… das Baby 🍼", data: {"Jonas":4,"Burak":2,"Milo":2,"Eric":1,"Finn":1,"Martin":1,"Robel":1,"Shin":1} },
+    { key: "… die Schwester", title: "… die Schwester 👧", data: {"Jonathan":3,"Mauro":3,"Shin":2,"Eric":2,"Julian":1,"Leonard":1} },
+    { key: "… der Bruder", title: "… der Bruder 👦", data: {"Milo":2,"Leo":2,"Jonas":2,"Mauro":2,"Leonard":1,"Lukas":1,"Shin":1,"Daniels":1} },
+    { key: "… der Großvater?", title: "… der Großvater 👴", data: {"Finn":6,"Milo":2,"Robel":2,"Leo":1,"Malte":1,"Bosbach":1} },
+    { key: "… der Onkel den man nicht einladen will?", title: "… der Onkel 🙅 (nicht einladen)", data: {"Bosbach":4,"Daniels":2,"Leo":2,"Milo":1,"Robel":1,"Malte":1,"Eric":1} },
+    { key: "… adoptiert?", title: "… adoptiert? 🏷️", data: {"Shin":3,"Mauro":2,"Jonas":1,"Julian":1,"Burak":1,"Leonard":1,"Eric":1,"Bosbach":1,"Jonathan":1} }
   ];
 
-  openKeys.forEach(ok => {
-    const block = document.createElement("div");
-    block.className = "answer-block";
-    block.innerHTML = `<div class="answer-qheader">${ok.label}</div><div class="answer-entries" id="ae-${ok.key}"></div>`;
-    grid.appendChild(block);
-
-    const ae = block.querySelector(`#ae-${ok.key}`);
-    rawData.forEach((p, i) => {
-      const text = p.open[ok.key];
-      if (!text || text.trim() === "" || text === "n/a") return;
-      const entry = document.createElement("div");
-      entry.className = "answer-entry";
-      entry.innerHTML = `
-        <span class="anon-badge">anon</span>
-        <span class="answer-text${ok.long?' long':''}">${text.replace(/\n/g,'<br>')}</span>
-      `;
-      ae.appendChild(entry);
-    });
+  roles.forEach(role => {
+    const id = 'chart_' + (cid++);
+    const card = document.createElement('div');
+    card.className = 'card'; card.dataset.cat = 'person';
+    const labels = Object.keys(role.data), values = Object.values(role.data);
+    card.innerHTML = `
+      <div class="card-inner">
+        <h2>${role.title}</h2>
+        <div class="chart-wrap"><canvas id="${id}"></canvas></div>
+        <div class="legend">${makeLegend(labels,values)}</div>
+      </div>
+      ${makeRawPanel(RAW[role.key] || [])}`;
+    document.getElementById('grid').appendChild(card);
+    setTimeout(() => makeChart(id, labels, values, 'pie'), 50);
   });
 }
 
-// ─── RAW DATA TABLES ─────────────────────────────────────────────────────────
-function buildRawTable(tableId, rows) {
-  const tbl = document.getElementById(tableId);
-  if (!rows.length) return;
-  const keys = Object.keys(rows[0]);
-  const thead = document.createElement("thead");
-  const hrow = document.createElement("tr");
-  ["Name", ...keys.slice(1)].forEach(k => {
-    const th = document.createElement("th");
-    th.textContent = k;
-    hrow.appendChild(th);
-  });
-  thead.appendChild(hrow);
-  tbl.appendChild(thead);
-  const tbody = document.createElement("tbody");
-  rows.forEach(row => {
-    const tr = document.createElement("tr");
-    Object.values(row).forEach((val, i) => {
-      const td = document.createElement("td");
-      td.textContent = Array.isArray(val) ? val.join(", ") : (val || "—");
-      if (i === 0) td.className = "name-cell";
-      tr.appendChild(td);
-    });
-    tbody.appendChild(tr);
-  });
-  tbl.appendChild(tbody);
+function build() {
+  // PERSONEN
+  addPieCard('person','Wer wird für immer Single bleiben? 💔',{"Daniels":3,"Robel":1,"Eric":1,"Mauro":1,"Jonas":1,"Finn":1,"Niemand":2,"(leer)":1});
+  addPieCard('person','Wer ist zurzeit am Reichsten? 💸',{"Bosbach":5,"Lukas":4,"Milo":2,"Malte":1,"Leonard":1});
+  addPieCard('person','Wer wird am meisten Kinder haben? 👶',{"Burak":3,"Jonas":2,"Mauro":2,"Milo":2,"Robel":2,"Julian":1,"Daniels":1});
+  addPieCard('person','Wer hat den schlechtesten Geschmack in Partnern? 💔',{"Daniels":3,"Mauro":2,"Eric":1,"Kp":1,"Milo":1,"Martin":1,"Alle außer mir":1,"Shin":1,"Robel":1});
+  addPieCard('person','Wer hat am meisten Erfolg bei Frauen? 🌹',{"Finn":5,"Leo":2,"Mauro":2,"Lukas":2,"Martin":1,"Bosbach":1});
+  addPieCard('person','Wer heiratet zuerst? 💍',{"Julian":4,"Burak":3,"Mauro":2,"Finn":2,"Martin":1,"Lukas":1});
+  addPieCard('person','Wer ist der größte Simp? 🥺',{"Eric":4,"Milo":3,"Mauro":2,"Robel":1,"Julian":1});
+  addPieCard('person','Wer ist am verlässlichsten? 🤝',{"Leo":3,"Lukas":2,"Milo":2,"Burak":1,"Leonard":1,"Jonas":1,"Robel":1,"(leer)":1});
+  addPieCard('person','Wer würde am ehesten Zombie-Apokalypse überleben? 🧟',{"Milo":5,"Daniels":3,"Lukas":2,"Leonard":1,"Robel":1,"Jonas":1});
+  addPieCard('person','Wer wird am ehesten berühmt? ⭐',{"Robel":3,"Daniels":2,"Leonard":1,"Jonas":1,"Eric":1,"Milo":1,"Lukas":1,"Leo":1,"(youtuber)":1,"Malte":1});
+  addPieCard('liebe','Mit wem sollte man niemals in einer Beziehung sein? ❌',{"Robel":2,"Jonas":2,"Eric":1,"Lukas":1,"Jonathan":1,"Burak":1,"Die Youtuber":2,"Mauro":1,"Leo":1});
+  addPieCard('liebe','Mit wem hätte man die beste Beziehung? 💞',{"Julian":3,"Leonard":2,"Jonathan":2,"Daniels":2,"Finn":1,"Mauro":1,"Milo und Jonas":1,"(leer)":1});
+  addPieCard('person','Wer ist am Lustigsten? 😂',{"Jonas":2,"Julian":1,"Leo":1,"Finn":1,"Eric":1,"Mauro":1,"Wir sind alle unlustig":1});
+  addPieCard('person','Wer gibt die schlechtesten Tipps? 🙈',{"Lukas":3,"Daniels":2,"Eric":1,"Jonas":1,"Burak":1,"Mauro":1,"Bosbach":1,"Robel":1,"Leonard":1});
+  addPieCard('liebe','Wer verliebt sich am schnellsten? 💘',{"Eric":4,"Martin":3,"Finn":1,"Daniels":1,"Milo":1,"Robel":1,"Leonard":1});
+  addPieCard('person','Wer kann am besten Geheimnisse behalten? 🤫',{"Mauro":2,"Burak":2,"Eric":2,"Milo":2,"Finn":1,"Jonathan":1,"Lukas":1,"Daniels":1});
+  addPieCard('person','Bester Style? 👕',{"Leo":3,"Lukas":3,"Robel":1,"Daniels":1,"Bosbach":1,"Shin":1,"Eric":1,"Malte":1});
+  addPieCard('person','Wer ist am Gemeinsten? 😈',{"Milo":3,"Shin":2,"Jonas":1,"Lukas":1,"Burak":1,"Eric":1,"Malte":1,"Robel":1});
+  addPieCard('person','Wer ist am nettesten? 😊',{"Burak":2,"Malte":2,"Finn":2,"Mauro":2,"Leo":1,"Julian":1,"Bosbach":1,"Eric":1});
+  addPieCard('person','Wer ist am lautesten? 📢',{"Robel":3,"Finn":2,"Burak":2,"Milo":2,"Leo":1,"Jonas":1,"Julian":1});
+  addPieCard('person','Wer würde sich am ehesten prügeln? 👊',{"Robel":3,"Daniels":3,"Mauro":2,"Shin":1,"Lukas":1,"Jonas":1,"Bosbach":1,"Eric":1});
+  addPieCard('person','Wer wird keine Chance im Berufsleben haben? 😬',{"Shin":4,"Daniels":3,"Robel":1,"Mauro":1,"Leo":1,"Burak":2,"Jonas":1});
+  addPieCard('person','Wer ist am stärksten? 💪',{"Eric":3,"Milo":2,"Bosbach":2,"Daniels":2,"Martin":1,"Burak":1,"Robel":1,"Shin":1});
+  addPieCard('person','Wer hat am meisten Talent? 🎯',{"Milo":4,"Robel":3,"Daniels":2,"Bosbach":1,"Martin":1,"Burak":1});
+  addPieCard('person','Wer ist der krasseste Yapper? 🗣️',{"Robel":5,"Burak":2,"Finn":2,"Mauro":2,"Malte":1,"Martin":1});
+  addPieCard('person','Wer begeht am ehesten einen Islamistischen Terroranschlag? 💣',{"Robel":8,"Burak":3,"(leer)":1});
+  addPieCard('person','Wer würde am ehesten jemanden töten? ☠️',{"Robel":5,"Burak":4,"Daniels":2,"Leonard":1,"Mauro":1,"Jonas":1});
+
+  // FAMILIEN ROLLEN
+  addFamilienCard();
+
+  // JA/NEIN DEBATTEN
+  addYesNoCard('janeindebatte','Gefielen dir die Fragen bis jetzt? ✅','Gefielen dir die Fragen bis jetzt?',10,3,13);
+  addYesNoCard('janeindebatte','Sollten wir das Azteken Reich wieder aufbauen? 🪶','Sollten wir das Azteken reich wieder aufbauen?',7,6,13);
+  addYesNoCard('janeindebatte','Sollten wir wieder an die Nordischen Götter glauben? ⚡','Sollten wir wieder an die Nordischen Götter glauben',9,3,13);
+  addYesNoCard('janeindebatte','Hattest du schon deinen ersten Kuss? 💋','Hattest du schon deinen ersten Kuss?',6,3,13);
+  addYesNoCard('janeindebatte','Hattest du schon dein erstes Mal? 🔞','Hattest du schon dein erstes Mal?',3,7,13);
+  addYesNoCard('janeindebatte','Würdest du in einer Zombie Apokalypse überleben? 🧟','Würdest du in einer (Zombie) Apokalypse überleben?',9,4,13);
+  addYesNoCard('janeindebatte','Würdest du mit einer Trans-Person eine Beziehung anfangen? 🏳️‍⚧️','Würdest du mit einer Trans-Person eine Beziehung anfangen?',4,8,13);
+  addYesNoCard('janeindebatte','Für 1.000.000€ eine unbekannte Person umbringen? 💀','Würdest du für 1.000.000€ eine dir unbekannte Person umbringen?',5,7,13);
+  addYesNoCard('janeindebatte','Für 100.000€ einmalig prostituieren? 💰','Würdest du dich für 100.000€ einmalig prostituieren?',3,9,13);
+  addYesNoCard('janeindebatte','Für 500.000€ zur Frau werden? 🔄','Würdest du für 500.000€ zu einer Frau werden?',4,9,13);
+
+  // TRANS/CIS SMASH OR PASS
+  addTransCard();
+
+  // KREATIVES / FREITEXT
+  addFreeCard('creative','Was wäre deine Taktik in einer Zombie Apokalypse?');
+  addFreeCard('creative','Wenn du ein Tier wärst, welches wärst du?');
+  addFreeCard('creative','Welche Person würdest du nicht vermissen, wenn sie auf \'wundersame\' Weise für immer verschwindet?');
+  addFreeCard('creative','Was wäre für dich ein perfektes Date?');
+  addFreeCard('creative','Welche Superkraft hättest du am liebsten?');
+  addFreeCard('creative','Was willst du später als Job machen?');
+  addFreeCard('creative','Was wären Fragen die du gerne gehabt hättest?');
+
+  // SONSTIGES
+  addFreeCard('other','Wie hat es dir gefallen?');
 }
 
-function buildAllRawTables() {
-  // Section 1 raw: ranking questions
-  const s1Raw = rawData.map(p => {
-    const obj = {Name: p.name};
-    s1Questions.forEach(q => {
-      obj[q.label] = (p.ranking[q.key] || [""])[0];
-    });
-    return obj;
+function filterCards(cat, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.card').forEach(card => {
+    card.style.display = (cat==='all' || card.dataset.cat===cat) ? '' : 'none';
   });
-  buildRawTable("raw-s1-table", s1Raw);
-
-  // Section 2 raw
-  const s2Raw = rawData.map(p => {
-    const obj = {Name: p.name};
-    s2Questions.forEach(q => { obj[q.label] = (p.ranking[q.key] || [""])[0]; });
-    return obj;
-  });
-  buildRawTable("raw-s2-table", s2Raw);
-
-  // Section 3 raw
-  const s3Raw = rawData.map(p => {
-    const obj = {Name: p.name};
-    s3Questions.forEach(q => { obj[q.label] = (p.ranking[q.key] || [""])[0]; });
-    return obj;
-  });
-  buildRawTable("raw-s3-table", s3Raw);
-
-  // Section 4 raw (ja/nein + personal)
-  const s4Raw = rawData.map(p => {
-    const obj = {Name: p.name};
-    ynQuestions.forEach(q => { obj[q.label] = p.jnFields[q.key] || "—"; });
-    personalQs.forEach(q => { obj["["+q.label+"]"] = p.personal[q.key] || "—"; });
-    return obj;
-  });
-  buildRawTable("raw-s4-table", s4Raw);
-
-  // Section 5 raw
-  const s5Raw = rawData.map(p => {
-    return {
-      Name: p.name,
-      "Zombie-Taktik": p.open.zombie,
-      "Tier": p.open.tier,
-      "Person": p.open.person,
-      "Date": p.open.date,
-      "Superkraft": p.open.kraft,
-      "Job": p.open.job,
-      "Wunschfragen": p.open.wunsch,
-      "Fazit": p.open.fazit,
-    };
-  });
-  buildRawTable("raw-s5-table", s5Raw);
 }
 
-// ─── INIT ─────────────────────────────────────────────────────────────────────
-buildRankingGrid("grid-s1", s1Questions);
-buildRankingGrid("grid-s2", s2Questions);
-buildRankingGrid("grid-s3", s3Questions);
-buildSmashPass();
-buildSurviveDonut();
-buildPieGrid();
-buildPersonalTable();
-buildOpenAnswers();
-buildAllRawTables();
+build();
 </script>
 </body>
 </html>
