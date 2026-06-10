@@ -1,9 +1,10 @@
+cat << 'HEREDOC' > /mnt/user-data/outputs/enten2.html
 <!DOCTYPE html>
 <html lang="de">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Freundes Umfrage 2 – Ergebnisse</title>
+  <title>Extendet Enten 2 – Ergebnisse</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <style>
     :root {
@@ -98,7 +99,7 @@
     /* Trans/Cis person cards */
     .trans-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
       gap: 1rem;
       width: 100%;
       margin-top: .5rem;
@@ -107,11 +108,11 @@
       display: flex; flex-direction: column; align-items: center; gap: .4rem;
     }
     .trans-photo {
-      width: 80px; height: 80px; border-radius: 50%;
-      background: var(--border); border: 2px solid var(--accent);
+      width: 90px; height: 90px; border-radius: 50%;
+      border: 2px solid var(--accent);
       display: flex; align-items: center; justify-content: center;
-      font-size: 1.8rem; color: var(--muted); overflow: hidden;
-      flex-shrink: 0;
+      font-size: 2rem; color: var(--muted); overflow: hidden;
+      flex-shrink: 0; background: var(--border);
     }
     .trans-photo img { width:100%; height:100%; object-fit:cover; }
     .trans-label {
@@ -120,19 +121,6 @@
     .trans-type {
       font-size: .68rem; color: var(--muted); text-align: center;
     }
-    .trans-votes {
-      font-size: .72rem; background: var(--accent); color: #000;
-      padding: .1rem .4rem; border-radius: 9999px; font-weight: 700;
-    }
-
-    .yesno-bar {
-      width: 100%; margin-top: .8rem; display: flex; flex-direction: column; gap: .5rem;
-    }
-    .yesno-row { display: flex; align-items: center; gap: .5rem; font-size: .82rem; }
-    .yesno-track { flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
-    .yesno-fill { height: 100%; border-radius: 4px; transition: width .6s ease; }
-    .yesno-label { width: 80px; color: var(--muted); text-align: right; }
-    .yesno-count { width: 24px; text-align: right; font-weight: 600; color: var(--text); }
 
     footer { text-align:center; padding:2rem; color:var(--muted); font-size:.85rem; border-top:1px solid var(--border); margin-top:2rem; }
   </style>
@@ -142,7 +130,7 @@
 <header>
   <h1>🎉 Extendet Enten 2</h1>
   <p>So ihr kenjecks sorry für die wartezeit aber viel spaß beim schauen</p>
-  <span class="badge">16 Stimmen · 58 Fragen</span>
+  <span class="badge">17 Stimmen · 58 Fragen</span>
 </header>
 
 <div class="filters">
@@ -162,106 +150,91 @@
 const PALETTE = ['#06b6d4','#f59e0b','#10b981','#ec4899','#7c3aed','#ef4444','#3b82f6','#a78bfa','#f472b6','#34d399','#60a5fa','#fbbf24','#fb7185','#818cf8','#4ade80','#38bdf8','#c084fc','#e879f9','#fb923c','#a3e635','#22d3ee'];
 let cid = 0;
 
-// All raw answers – names replaced with anonymous markers
+// Raw answers per question (anonymized – no names attached to values)
 const RAW = {
-  "Wer wird für immer Single bleiben?": ["Robel","Niemand ❤️","Daniels","Daniels","Eric","Daniels","Mauro","Jonas","Finn","Burak","Jonathan","ich glaube sogar acually niemand ❤️","Leo"],
-  "Wer ist zurzeit am Reichsten?": ["Malte","Lukas","Lukas","Bosbach","Leonard","Milo","Lukas","Bosbach","Milo","Bosbach","Bosbach","Lukas","Bosbach"],
-  "Wer wird am meisten Kinder haben?": ["Milo","Daniels","Julian","Robel","Jonas","Burak","Mauro","Burak","Robel","Mauro","Burak","Jonas","Jonas"],
-  "Wer hat den schlechtesten Geschmack in Romantischen Partnern?": ["Eric","Daniels","Kp","Mauro","Malte","Martin","Milo","Daniels","Daniels","Alle außer mir","Shin","Robel"],
-  "Wer hat am meisten Erfolg bei Frauen?": ["Finn","Leo","Leo","Mauro","Lukas","Finn","Bosbach","Finn","Finn","Martin","Lukas","Finn"],
-  "Wer heiratet zuerst?": ["Finn","Mauro","Julian","Finn","Martin","Julian","Lukas","Burak","Julian","Burak","Mauro","Burak","Julian"],
-  "Wer ist der größte Simp?": ["Mauro","Robel","Julian","Milo","Eric","Eric","Milo","Eric","Milo","Eric","Mauro","Mauro","(leer)"],
-  "Wer ist am verlässlichsten?": ["Malte","Leonard","Leo","Burak","Lukas","Leo","Lukas","Milo","Jonas","Milo","Robel","Leo","(leer)"],
-  "Wer würde am ehesten in einer Zombie Apokalypse überleben?": ["Robel","Leonard","Daniels","Daniels","Lukas","Milo","Lukas","Milo","Milo","Milo","Daniels","Milo","Leo"],
-  "Wer wird am ehesten berühmt?": ["Jonathan","Milo","Jonas","Robel","Eric & malte wegen Pubg","Robel","Daniels","Robel","Leonard","Lukas","Leo","Eric","Daniels"],
-  "Mit wem von uns sollte man niemals in einer Beziehung sein?": ["Jonathan","Lukas","Jonas","Eric","die youtuber","Robel","Jeder hat seine Stärken das ist mies asozial","Bwo keine Ahnung","die yter","Mauro","Burak","Leo","(leer)"],
-  "Mit wem von uns hätte man die beste Beziehung?": ["Jonathan","Daniels","Julian","Milo und Jonas","Daniels","Leonard","Mauro","Jonathan","Finn","Julian","Leonard","Leonard","Julian"],
-  "Wer ist am Lustigsten?": ["Leo","Kp","Keine Ahnung","Julian","Eric","Finn","Mauro","Shin","Wir sind alle unlustig","Jonas","Jonas","(leer)","(leer)"],
-  "Wer gibt die schlechtesten Tipps?": ["Jonas","Lukas","Niemand","Lukas","Tarek","Daniels","Eric","Burak","Lukas","Robel","Daniels","Bosbach","Leonard"],
-  "Wer verliebt sich am schnellsten?": ["Eric","Eric","Keine Ahnung","Eric","Daniels","Martin","Finn","Milo","Martin","Eric","Robel","Martin","Leonard"],
-  "Wer kann am besten Geheimnisse behalten?": ["Eric","Mauro","Keine Ahnung","Mauro","Jonathan","Eric","Burak","Lukas","Finn","Burak","Milo","Milo","Daniels"],
-  "Bester Style?": ["Malte","Robel","Daniels","Bosbach","Shin","Lukas","Lukas","Eric","Lukas","Leo","Leo","Leo","(leer)"],
-  "Wer ist am lustigsten?": ["(doppelte Frage)","Leo","Leo","Bosbach","Martin","Ich idiot hab die Frage 2 mal reingemacht","Milo","Eric","Jonas","Jonathan","Finn","Leo","Jonathan"],
-  "Wer ist am Gemeinsten?": ["Jonas","Lukas","Kein Plan","Burak","Eric","Milo","Shin","Malte","Milo","Milo","Shin","Robel","(leer)"],
-  "Wer ist am nettesten?": ["Lukas","Zu gemein","Julian","Mauro","Leo","Burak","Bosbach","Malte","Finn","Eric","Burak","Malte","Finn"],
-  "Wer ist am lautesten?": ["Leo","Burak","Burak","Robel","Milo","Milo","Julian","Finn","Robel","Lukas","Jonas","Finn","Robel"],
-  "Wer würde sich am ehesten prügeln?": ["Eric","Bosbach","Daniels","Lukas","Robel","Robel","Daniels","Shin","Mauro","Mauro","Robel","Jonas","Daniels"],
-  "Wer wird keine Chance im Berufsleben haben?": ["Shin","Robel","Daniels","Mauro","Leo","Shin","Daniels","Shin","Daniels","Burak","Shin","Burak","Jonas"],
-  "Wer ist am stärksten?": ["Bosbach","Eric","Jonathan","Eric","Daniels","Daniels","Eric","Burak","Milo","Milo","Robel","Martin","Jonas"],
-  "Wer hat am meisten Talent?": ["Milo","Milo","Niemand","Bosbach","Martin","Daniels","Milo","Robel","Burak","Robel","Milo","Robel","Daniels"],
-  "Wer ist der krasseste Yapper?": ["Robel","Burak","Keiner","Finn","im goonen! Daniels","Malte","Mauro","Robel","Burak","Robel","Robel","Robel","Martin"],
-  "Wer begeht am ehesten einen Islamistischen Terroranschlag?": ["Robel","Robel","(keine Antwort)","Robel","Robel","Robel","Burak","Robel","Robel","Robel","Burak","Robel","Burak"],
-  "Wer würde am ehesten jemanden töten?": ["Daniels","Robel","Leonard","Burak","Robel","Burak","Burak","Robel","Robel","Daniels","Robel","Robel","Burak"],
-  "… der Vater": ["Jonathan","Daniels","Daniels","Bosbach","Daniels","Mauro","Jonas","Daniels","Milo","Jonas","Burak","Jonas","Bosbach"],
-  "… die Mutter": ["Daniels","Julian","Julian","Julian","Burak","Bosbach","Julian","Burak","Lukas","Martin","Daniels","Daniels","Daniels"],
-  "… das Baby": ["Milo","Jonas","Finn","Burak","Daniels","Jonas","Burak","Robel","Martin","Eric","Jonas","Shin","Jonas"],
-  "… die Schwester": ["Eric","Jonathan","Jonathan","Julian","Eric","Shin","Mauro","Jonathan","Shin","Leonard","Mauro","Mauro","Jonathan"],
-  "… der Bruder": ["Jonas","Mauro","Burak","Milo","Malte","Leonard","Milo","Mauro","Daniels","Leo","Jonas","Shin","Leo"],
-  "… der Großvater?": ["Finn","Leo","Finn","Robel","Finn","Malte","Finn","Milo","Milo","Robel","Finn","Finn","Bosbach"],
-  "… der Onkel den man nicht zum Familienfest einladen will?": ["Burak","Malte","Bosbach","Bosbach","Leo","Bosbach","Daniels","Leo","Robel","Eric","Daniels","Milo","Bosbach"],
-  "… adoptiert?": ["Milo","Leonard","Shin","Mauro","Jonas","Julian","Burak","Jonathan","Mauro","Shin","Eric","Bosbach","Shin"],
-  "Gefielen dir die Fragen bis jetzt?": ["Ja","Ja","Ja","Nein","Sie sind perfekt","Ja","Ja","Ja","Ja","Ja","Ja","Nein","Nein"],
-  "Sollten wir das Azteken reich wieder aufbauen?": ["Ja","Ja","Nein","Ja","Nein","Ja","Nein","Nein","Nein","Ja","Ja","Nein","Ja"],
-  "Sollten wir wieder an die Nordischen Götter glauben?": ["Ja","Ja","Ja","Nein","Au ja Thor Odin Loki","Ich bevorzuge die griechischen","Ja","Ja","Ja","Nein","Björn","Nein","Ja"],
-  "Hattest du schon deinen ersten Kuss?": ["Nein","Keine Angabe","Nein","Keine Angabe","Ja","Ja","Ja","Ja","Ja","Keine Angabe","Ja","Keine Angabe","Keine Angabe"],
-  "Hattest du schon dein erstes Mal?": ["Nein","Nein","Nein","Nein","Hell fuckin nah","Nein","Nein","Nein","Ja","Keine Angabe","Keine Angabe","Keine Angabe","Keine Angabe"],
-  "Würdest du in einer (Zombie) Apokalypse überleben?": ["Nein","Ja","Ja","Nein","Nein","Ja","Ja","Ja","Ja","Ja","Nein","Ja","Ja"],
-  "Würdest du mit einer Trans-Person eine Beziehung anfangen?": ["Nein","Ja","Ja","Ja","Nein","Nein","Ja","Nein","Ja","Nein","Nein","Nein","Nein"],
-  "Würdest du für 1.000.000€ eine dir unbekannte Person umbringen?": ["Nein","Nein","Nein","Hell year","Auf jeden diggi scheiß auf den einen bastard","Nein","Nein","Ja","Nein","Ja","Ja","Ja","Nein"],
-  "Würdest du dich für 100.000€ einmalig prostituieren?": ["Nein","Nein","Nein","Nein","Nein","Ja","Ja","Nein","Ja","Nein","Nein","Nein","Nein"],
-  "Würdest du für 500.000€ zu einer Frau werden?": ["Nein","Nein","Nein","Nein","Nein ich will mit Rechten leben broski","Ja","Ja","Nein","Ja","Nein","Nein","Nein","Ja"],
-  "Was wäre deine Taktik in einer Zombie Apokalypse?": [
-    "Selber umbringen",
-    "Hai, aber der von Ikea",
-    "Ich würde mir eine sicheren Ort suchen an einem süßwasser See/Fluss und diesen befestigen und für Vorräte sorgen wie Waffen, Munition und Medizinische Hilfsgüter. An Personen würde ich nur mit welchen agieren denen ich vertrauen kann und am besten welche mit Kenntnissen die mir helfen wie Medizinische.",
-    "Irgendwo eine Farmaufbauen (gerne mit Hanf-plantage) und wenn es soweit ist einfach akzeptieren",
-    "Laufen, Laufen, Laufen, sterben",
-    "Schwert und Rüstung um nicht auf verbrauchbare Resourcen angewiesen zu sein",
-    "Standort mit Garten Fläche und Grundwasser Brunnen suchen. Waffen horten. Solarpanele klauen und an meine base bauen. Haus komplett abriegeln und verriegeln. Sicherheitsmaßnahmen aufbauen.",
-    "Digga es ist so over irgendein Bunker klauen und dann ganz viele Nukes abwerfen.",
-    "Ich Kletter auf nen Hochaus und baue mir auf dem Dach eine eigene Kultur an. Lebe vegan und chillen meine Eier...",
-    "broskis ahh überlebt keinen tag – sonst einen kleinen demokratischen klan gründen und den lebensstil des frühen menschen annehmen",
-    "Ok ok, das hängt stark davon ab bis wohin die Zombies schon vorgedrungen sind und wie sie angezogen werden. Wenn es so walking dead mäßig ist, würde ich mich mit sehr viel Essen irgendwo verschanzen, in einem Penthouse oder ähnliches, mit Hubschrauber auf dem Dach für die Flucht und sämtliche Wege nach unten blockieren...",
-    "Bevor eine kohärente Überlebensstrategie entwickelt werden kann, ist eine präzise Modellierung des Bedrohungsprofils unabdingbar... [lange akademische Analyse]",
-    "wie in pubg",
-    "Gar nicht",
-    "Brd ich hab ein ganzes Handbuch davon also frag einfach in der Schule"
-  ],
-  "Wenn du ein Tier wärst, welches wärst du?": ["Yo mama","Hai, aber der von Ikea","Gorilla","Pottwal lowkey tuff","Giraffeeeee","Affe","Wolf","Waschbären sind dumm, süß und können alles essen.","Pinguin","bonobo","Entweder ein Wassertier oder eine Gepard, die waren schon immer geil.","Vogel wegen fliegen","Dawg","Löwe","Capybara","Löwe"],
-  "Welche Person würdest du nicht vermissen, wenn sie auf 'wundersame' Weise für immer verschwindet?": ["Meine Freundin weil sie nicht existiert","Liste an Politikern wäre zu lang","Eigentlich MIEHLKE aber wundersam wäre nicht qual voll genug","Milo Skottke es ist Milo.","Malte","Trump","Putin, Trump","Eine Person, die ich nicht kenne? Isn't that trivial?","Vladimir Putin","trump, elon, etc (basic aber ist so)","Donald j. Trump","Donald Trump","Keine :)","Mauro","Frau Hingst","Keine :)"],
-  "Was wäre für dich ein perfektes Date?": ["Wat dat","(keine Antwort)","Eins wonach man sich erneut treffen möchte","Eins Miles Gray","Candlelight dinner unter den Sternen mit dem einzigen DADDY HOLLANDS😍","Einen ganzen Tag miteinander verbringen, egal wie!","Romantisches Dinner mit Spaziergang","Erst zusammen in die Bib lesen dort oder woanders Kaffee Tee oder so mit einem Stück Kuchen dann zusammen im Park viben und im Anschluss zu einem von beiden nach Hause. Edibles wären auch tuff...","Mit einer Person, mit der man auf einem Level ist und beide sich wohlfühlen ❣️","late night gaming session auf discord","Mit Jonas und einer Flasche veganen, alkoholfreien Bier oder Wein den Sonnenuntergang gucken.","Spazieren dann dem Abend seinen Lauf lassen😉","An soetwas glaube ich nicht","Hmm… 1000 Players Simulate: Rich vs Poor Civilization","Liebe","Spazieren gehen und Sonnenuntergang (romantisch)"],
-  "Welche Superkraft hättest du am liebsten?": ["/gamemode creative","Ich kann mir jeden Wunsch erfüllen","Supergeschwindigkeit (mit dem Ausmaß von Flash)","Posion of the turtel master","Unsichtbar (für Frauenumkleide und so)","Fliegen!!!","Gedankenlesen bzw. die Fähigkeit haben zu wissen was andere denken und wollen","Keine Ahnung :sob:","Zeit kontrollieren","naruto ahh klonen","Superschnelligkeit.","Teleportation auch zu mir unbekannten Orten","X-Ray Vision","Glück beeinflussen oder wissen was ich machen muss...","Character Customization","Robel den Mund schnüren"],
-  "Was willst du später als Job machen?": ["Pharmazie, will lwk krankheit heilen","Finance weil Geld","Lehrer, da ich gut im Umgang mit Kindern bin und man verbeamtet wird und gut verdient","Prostitution","Lehrer, um POV von Herr Hoppe nachvollziehen zu können","Lehrer um eine vernünftige Abwechslung im Beruf zu haben","Eine eigene Praxis für plastische Rekonstruktive und ästhetische Chirurgie besitzen...","Forscher entweder Philosophie oder theoretische Informatik.","Keine Ahnung, Leck Eier","idk bro irgendwas mit mathe oder youtube/animation ig weil warum nicht","Realistisch: HR- Manager einer sehr großen Firma... Unrealistisch: Owner von einer selbstgegründeten Firma...","Berater für Import und Export und Finanzdiagramm bei erneuerbaren Energien im globalen Spektrum","Etwas mit Finanzen bin noch nicht zu entschlossen","Sound Engineer für foh, weil technik team :)","Anwalt","Arzt -> Menschen helfen, geldu"],
-  "Was wären Fragen die du gerne gehabt hättest?": ["Season3?","(keine)","Wärst du rein hypothetisch dabei einen Attentat auf Miehlke zu verüben","Keine Angaben","Wie viele Kinder jeder bzw wer wird in der Zukunft 10 Kinder haben und dann die Namen","(keine)","n/a","Kann ich Milos Katze essen?","Offen für alles","wer ist der beste in geometry dash hehe","Wer von uns hatte einen geheimen Boyfriend?","Keine","Keine :-)","Twin alle Amazing ❤️","War Napoleon gut?","(keine)"],
-  "Wie hat es dir gefallen?": ["Ja","Gut","Gut","Smash","Im Namen des englischen Königreichs: es war eine glorreiche und zugleich lustige Umfrage 🔥","(˶ˆᗜˆ˵)","Subba :))","Peak","Hab drauf gegoont so gut war es","n/a","Sehr stark","Horny","Joa nh","War geil","W speed","Sehr schöne Arbeit ;)"]
+  "Wer wird für immer Single bleiben?": ["Robel","Daniels","Daniels","Daniels","Daniels","Eric","Daniels","Daniels","Daniels","Jonas","Daniels","Burak","Burak","Mauro","Jonathan","Ich glaube sogar acually niemand",""],
+  "Wer ist zurzeit am Reichsten?": ["Malte","Lukas","Lukas","Bosbach","Leonard","Bosbach","Malte","Lukas","Lukas","Bosbach","Bosbach","Bosbach","Milo","Lukas","Leonard","Lukas","Bosbach"],
+  "Wer wird am meisten Kinder haben?": ["Milo","Daniels","Julian","Milo","Jonas","Milo","Burak","Mauro","Burak","Robel","Burak","Burak","Mauro","Burak","Mauro","Jonas","Jonas"],
+  "Wer hat den schlechtesten Geschmack in Romantischen Partnern?": ["Eric","Mauro","Kp","Mauro","Malte","Martin","Bosbach","Milo","Daniels","Mauro","Daniels","Martin","Keiner","Alle außer mir","Shin","Martin","Robel"],
+  "Wer hat am meisten Erfolg bei Frauen?": ["Finn","Leo","Leo","Mauro","Lukas","Finn","Eric","Bosbach","Finn","Martin","Finn","Bosbach","Finn","Martin","Lukas","Finn",""],
+  "Wer heiratet zuerst?": ["Finn","Mauro","Julian","Finn","Martin","Max und Emma","Burak","Lukas","Finn","Lukas","Finn","Mauro","Julian","Burak","Mauro","Julian","Burak"],
+  "Wer ist der größte Simp?": ["Mauro","Robel","Julian","Milo","Burak","Eric","Rüthlein","Milo","Martin","Burak","","Eric","Milo","Eric","Eric","Mauro",""],
+  "Wer ist am verlässlichsten?": ["Malte","Leonard","Leo","Burak","Lukas","Lukas","Lukas","Lukas","Malte","Milo","Leo","Milo","Jonas","Milo","Robel","Leo","Leo"],
+  "Wer würde am ehesten in einer Zombie Apokalypse überleben?": ["Robel","Milo","Daniels","Daniels","Jonas","Milo","Daniels","Daniels","Eric & Malte wegen Pubg","Eric","Jonas","Milo","Daniels","Milo","Daniels","Milo","Daniels"],
+  "Wer wird am ehesten berühmt?": ["Jonathan","Lukas","Jonas","Robel","Robel","Robel","Die yter","Robel","die youtuber","Robel","Lukas","Robel","Leonard","Lukas","Leo","Eric","Malte"],
+  "Mit wem von uns sollte man niemals in einer Beziehung sein?": ["Jonathan","Daniels","Daniels","Eric","Daniels","Mauro","Milo","Jeder hat seine Stärken das ist mies asozial","Daniels","Milo und Jonas","Jonathan","Alle","Robel","Mauro","Bwo keine Ahnung","Burak","Jonas"],
+  "Mit wem von uns hätte man die beste Beziehung?": ["Leo","Kp","Keine Ahnung","Julian","Eric","Milo","Malte","Mauro","Eric","Bosbach","Finn","Julian","Jonas","Finn","Lukas","Leonard",""],
+  "Wer ist am Lustigsten?": ["Jonas","Lukas","Niemand","Burak","Tarek","Wir sind alle unlustig","Shin","","Malte","Lukas","Jonas","Lukas","Milo","Finn","Jonas","Leonard","Julian"],
+  "Wer gibt die schlechtesten Tipps?": ["Eric","Eric","Keine Ahnung","Lukas","Daniels","Lukas","Eric","","Shin","Eric","Eric","Burak","Bosbach","Robel","Daniels","Bosbach","Leonard"],
+  "Wer verliebt sich am schnellsten?": ["Eric","Mauro","Keine Ahnung","Mauro","Jonathan","Martin","Malte","","Eric","Eric","Jonas","Milo","Finn","Eric","","Martin","Eric"],
+  "Wer kann am besten Geheimnisse behalten?": ["Malte","Robel","Daniels","Burak","Shin","Burak","Lukas","Mauro","Malte","Milo","Mauro","Lukas","Mauro","Finn","Robel","Milo","Daniels"],
+  "Bester Style?": ["","Leo","Leo","Bosbach","Martin","Lukas","Eric","Leo","Eric","Burak","Mauro","Eric","Leo","Leo","Leo","Leo",""],
+  "Wer ist am Gemeinsten?": ["Lukas","","Julian","Mauro","Leo","Milo","Malte","Bosbach","Milo","Mauro","Mauro","Milo","Bosbach","Milo","","Shin",""],
+  "Wer ist am nettesten?": ["Leo","Burak","Burak","Burak","Milo","Burak","Finn","Julian","Lukas","Robel","Jonas","Eric","Shin","Finn","Robel","Malte","Finn"],
+  "Wer ist am lautesten?": ["Eric","Bosbach","Daniels","Lukas","Robel","Robel","Eric","Daniels","Shin","Robel","Robel","Lukas","Lukas","Lukas","Bosbach","Finn","Robel"],
+  "Wer würde sich am ehesten prügeln?": ["Shin","Robel","Daniels","Mauro","Leo","Mauro","Shin","Daniels","Shin","Mauro","Daniels","Shin","Mauro","Eric","Daniels","Jonas","Daniels"],
+  "Wer wird keine Chance im Berufsleben haben?": ["Bosbach","Eric","Jonathan","Eric","Daniels","Eric","Eric","Eric","Robel","Shin","Shin","Burak","Eric","Daniels","Eric","Burak","Jonas"],
+  "Wer ist am stärksten?": ["Milo","Milo","Niemand","Bosbach","Martin","Daniels","Finn","Milo","Milo","Milo","Daniels","Milo","Milo","Martin","Milo","Milo","Daniels"],
+  "Wer hat am meisten Talent?": ["Robel","Burak","Keiner","Finn","Daniels im goonen!","Burak","Malte","Mauro","Eric und Malte die beiden bastard youtuber","Robel","Malte","Robel","Burak","Martin","Robel","Robel","Martin"],
+  "Wer ist der krasseste Yapper?": ["Robel","Robel","","Robel","Robel","Robel","Robel","Robel","Robel","Robel","Robel","Robel","Robel","Robel","Robel","Robel","Robel"],
+  "Wer begeht am ehesten einen Islamistischen Terroranschlag?": ["Daniels","Robel","Leonard","Burak","Burak","Robel","Robel","Burak","Robel","Burak","Burak","Robel","Robel","Burak","Burak","Robel","Burak"],
+  "Wer würde am ehesten jemanden töten?": ["Jonathan","Daniels","Daniels","Bosbach","Daniels","Milo","Daniels","","Daniels","Mauro","Daniels","Robel","Daniels","Daniels","Daniels","Jonas","Daniels"],
+  "der Vater": ["Daniels","Daniels","Julian","Julian","Burak","Burak","Der unc. Malte oder Burak","Julian","Burak","Bosbach","Julian","Burak","Milo","Burak","Leo","Burak","Bosbach"],
+  "die Mutter": ["Milo","Daniels","Jonas","Burak","Daniels","Lukas","Jonas","Jonas","Jonas","Robel","Finn","Jonas","Jonas","Milo","Julian","Jonas","Daniels"],
+  "das Baby": ["Eric","Julian","Jonathan","Julian","Eric","Martin","Jonathan","Shin","Shin","Martin","Jonas","Robel","Eric","Eric","Mauro","Mauro","Jonas"],
+  "die Schwester": ["Jonas","Mauro","Burak","Milo","Malte","Daniels","Bosbach","Milo","Lukas","Mauro","Jonathan","Mauro","Leonard","Leonard","Jonas","Shin","Jonathan"],
+  "der Bruder": ["Finn","Leo","Finn","Robel","Finn","Milo","Jonas","Finn","Finn","Milo","Bosbach","Lukas","Mauro","Leo","Robel","Finn","Leo"],
+  "der Großvater": ["Burak","Malte","Keine Ahnung","Bosbach","Leo","Robel","Leo","Daniels","Bosbach","Leo","Daniels","Daniels","Malte","Daniels","Burak","Milo","Bosbach"],
+  "der Onkel": ["Milo","","Daniels","Mauro","Jonas","Mauro","Daniels","Eric","Daniels","Lukas","Mauro","Eric","Robel","Mauro","Eric","Mauro","Mauro"],
+  "adoptiert": ["Leonard","Shin","Shin","Mauro","Julian","Shin","Mauro","Burak","Jonathan","Shin","Leonard","Leonard","Burak","Jonathan","Mauro","Bosbach","Shin"],
+  "Gefielen dir die Fragen?": ["Ja","Ja","Ja","Nein","Sie sind perfekt","Ja","Ja","Ja","Ja","Ja","Ja","Ja","Ja","Nein","Ja","Ja","Nein"],
+  "Azteken Reich wieder aufbauen?": ["Ja","Ja","Nein","Ja","Nein","Ja","Ja","Nein","Ja","Nein","Ja","Ja","Ja","Nein","Nein","Nein","Ja"],
+  "Nordische Götter?": ["Ja","Ja","Ja","Nein","Au ja Thor Odin Loki","Ich bevorzuge die griechischen","Ja","Ja","Nein","Nein","Ja","Ja","Ja","Nein","Björn","Nein","Ja"],
+  "Erster Kuss?": ["Nein","Keine Angabe","Nein","Keine Angabe","Ja","Ja","Ja leider mit lotta lol (is sowieso öffentlich)","Ja","Keine Angabe","Keine Angabe","Ja","Nein","Ja","Ja","Ja","Keine Angabe","Keine Angabe"],
+  "Erstes Mal?": ["Nein","Nein","Nein","Nein","Hell fuckin nah","Nein","Dazu sag ich nur.. :>>>>","","Keine Angabe","Nein","Nein","Nein","Ja","Nein","Keine Angabe","Keine Angabe","Keine Angabe"],
+  "Zombie Apokalypse überleben?": ["Nein","Ja","Ja","Nein","Nein","Ja","Nein","Ja","Ja","Nein","Ja","Nein","Ja","Ja","Nein","Ja","Ja"],
+  "Trans-Beziehung?": ["Nein","Ja","Nein","Ja","Nein","Ja","Nein","Nein","Nein","Ja","Nein","Ja","Ja","Nein","Nein","Nein","Nein"],
+  "Für 1Mio umbringen?": ["Nein","Nein","Nein","Nein","Auf jeden diggi scheiß auf den einen bastard","Ja","Nein","Nein","Nein","Ja","Nein","Nein","Ja","Ja","Ja","Ja","Nein"],
+  "Für 100k prostituieren?": ["Nein","Nein","Nein","Hell year","Nein","Ja","Nein","Nein","Nein","Ja","Nein","Ja","Ja","Ja","Nein","Nein","Nein"],
+  "Für 500k zur Frau?": ["Nein","Nein","Nein","Nein","Nein ich will mit Rechten leben broski","Ja","Nein","Hübsche Baddie oder hässlich?","Nein","Ja","Nein","Ja","Nein","Nein","Nein","Ja","Nein"],
+  "Was wäre deine Taktik in einer Zombie Apokalypse?": ["Selber umbringen","Hai, aber der von Ikea","Ich würde mir einen sicheren Ort suchen an einem Süßwasser See/Fluss und diesen befestigen und für Vorräte sorgen wie Waffen, Munition und Medizinische Hilfsgüter. An Personen würde ich nur mit welchen agieren denen ich vertrauen kann und am besten welche mit Kenntnissen die mir helfen wie Medizinische.","Irgendwo eine Farm aufbauen (gerne mit Hanf-Plantage) und wenn es soweit ist einfach akzeptieren","Laufen, Laufen, Laufen, sterben","Schwert und Rüstung um nicht auf verbrauchbare Resourcen angewiesen zu sein","wie in pubg","Standort mit Garten Fläche und Grundwasser Brunnen suchen. Waffen horten. Solarpanele klauen und an meine base bauen. Haus komplett abriegeln und verriegeln. Sicherheitsmaßnahmen aufbauen.","Lange akademische Zombie-Analyse (auf Anfrage verfügbar 😂)","Digga es ist so over irgendein Bunker klauen und dann ganz viele Nukes abwerfen.","Ich kletter auf nen Hochhaus und baue mir auf dem Dach eine eigene Kultur an. Lebe vegan und chillen meine Eier...","Broskis ahh überlebt keinen tag – sonst einen kleinen demokratischen Klan gründen und den Lebensstil des frühen Menschen annehmen","Penthouse verschanzen mit sehr viel Essen irgendwo, mit Hubschrauber auf dem Dach für die Flucht und sämtliche Wege nach unten blockieren.","Gar nicht","Der Strick","Brd ich hab ein ganzes Handbuch davon also frag einfach in der Schule","Überleben"],
+  "Wenn du ein Tier wärst, welches wärst du?": ["Yo mama","Liste an Politikern wäre zu lang","Gorilla","Pottwal lowkey tuff","Giraffeeeee","Affe","keine Ahnung","Wolf","Vogel wegen fliegen","Waschbären sind dumm, süß und können alles essen.","Pinguin","bonobo","Entweder ein Wassertier oder eine Gepard, die waren schon immer geil.","Löwe","Capybara","Dawg","Löwe"],
+  "Welche Person würdest du nicht vermissen?": ["Meine Freundin weil sie nicht exestiert","","Eigentlich MIEHLKE aber wundersam wäre nicht qual voll genug","Milo Skottke es ist Milo.","Malte","Trump","Robel","Putin, Trump","Robel & Daniels","Eine Person, die ich nicht kenne? Isn't that trivial?","Vladimir Putin","trump, elon, etc (basic aber ist so)","Donald j. Trump","Mauro","Donald Trump","Frau Hingst","Keine :)"],
+  "Was wäre für dich ein perfektes Date?": ["Wat dat","Ich kann mir jeden Wunsch erfüllen","Eins wonach man sich erneut treffen möchte","Eins Miles Gray","Candlelight dinner unter den Sternen mit dem einzigen DADDY HOLLANDS","Einen ganzen Tag miteinander verbringen, egal wie!","Gibt mehrere Optionen und orte kp","Romantisches Dinner mit Spaziergang","Spazieren gehen und Sonnenuntergang (romantisch)","Erst zusammen in die Bib lesen dort oder woanders Kaffee Tee oder so mit einem Stück Kuchen dann zusammen im Park viben und im Anschluss zu einem von beiden nach Hause. Edibles wären auch tuff...","Mit einer Person, mit der man auf einem Level ist und beide sich wohlfühlen","late night gaming session auf discord","Mit Jonas und einer Flasche veganen, alkoholfreien Bier oder Wein den Sonnenuntergang gucken.","Spazieren dann dem Abend seinen Lauf lassen","An soetwas glaube ich nicht","Hmm… 1000 Players Simulate: Rich vs Poor Civilization","Liebe"],
+  "Welche Superkraft hättest du am liebsten?": ["/gamemode creative","Finance weil Geld","Supergeschwindigkeit (mit dem Ausmaß von Flash)","Poison of the turtle master","Unsichtbar (für Frauenumkleide und so)","Fliegen!!!","kp","Gedankenlesen","Robel den Mund schnüren","Keine Ahnung :sob:","Zeit kontrollieren","naruto ahh klonen","Superschnelligkeit.","Teleportation auch zu mir unbekannten Orten","X-Ray Vision","Glück beeinflussen","Character Customization"],
+  "Was willst du später als Job machen?": ["Pharmazie, will lwk krankheit heilen","","Lehrer, da ich gut im Umgang mit Kindern bin und man verbeamtet wird und gut verdient","Prostitution","Lehrer, um POV von Herr Hoppe nachvollziehen zu können","Lehrer um eine vernünftige Abwechslung im Beruf zu haben","Sound Engineer für foh, weil technik team :)","Eine eigene Praxis für plastische Rekonstruktive und ästhetische Chirurgie besitzen","Berater für Import und Export und Finanzdiagramm bei erneuerbaren Energien im globalen Spektrum","Forscher entweder Philosophie oder theoretische Informatik.","Keine Ahnung, Leck Eier","idk bro irgendwas mit mathe oder youtube/animation ig weil warum nicht","Realistisch: HR-Manager einer sehr großen Firma.","Arzt -> Menschen helfen, geldu","Etwas mit Finanzen bin noch nicht zu entschlossen","Asset Management C-Suite","Anwalt"],
+  "Was wären Fragen die du gerne gehabt hättest?": ["Season3?","Gut","Wärst du rein hypothetisch dabei einen Attentat auf Miehlke zu verüben","Keine Angaben","Wie viele Kinder jeder bzw wer wird in der Zukunft 10 Kinder haben und dann die Namen","","alles drin :)","","Kann ich Milos Katze essen?","n/a","Offen für alles","wer ist der beste in geometry dash hehe","Wer von uns hatte einen geheimen Boyfriend?","Keine","","Twin alle Amazing","War Napoleon gut?"],
+  "Wie hat es dir gefallen?": ["Ja","","Gut","Smash","Im Namen des englischen Königreichs: es war eine glorreiche und zugleich lustige Umfrage","(˶ˆᗜˆ˵)","Subba :))","Peak","Hab drauf gegoont so gut war es","n/a","Sehr stark","Horny",":)","Joa nh","War geil","W speed","Sehr schöne Arbeit, Milo ;)"]
 };
 
-// Trans/Cis Frage answers with names
+// Trans/Cis Smash or Pass data with per-person votes
+// Names of respondents for the trans section only (shown in raw panel)
+const RESPONDENTS = ["Shin","Leonard","Daniels","Jonas","Miles","Milo","Malte","Mauro","Eric","Robel","Julian","Burak","Finn","Martin","Bosbach","Lukas","Leo"];
 const TRANS_DATA = [
-  { label: "Trans Frau", votes: ["Smash","Smash","Pass","Smash","Pass","Smash","Pass","Pass","Pass","Pass","Pass","Pass","Smash","Smash","Smash","Pass"] },
-  { label: "Cis Frau",   votes: ["Smash","Smash","Smash","Pass","Smash","Pass","Smash","Pass","Pass","Smash","Smash","Smash","Pass","Smash","Pass","Pass"] },
-  { label: "Trans Frau", votes: ["Smash","Pass","Pass","Pass","Pass","Pass","Pass","Pass","Pass","Pass","Smash","Pass","Smash","Pass","Pass","Pass"] },
-  { label: "Trans Mann", votes: ["Pass","Pass","Pass","Pass","Smash","Pass","Pass","Pass","Pass","Smash","Pass","Pass","Pass","Pass","Pass","Pass"] },
-  { label: "Cis Frau",   votes: ["Smash","Smash","Pass","Smash","Pass","Pass","Pass","Pass","Pass","Pass","Pass","Pass","Pass","Pass","Pass","Pass"] },
-  { label: "Cis Milo",   votes: ["Smash","Smash","Pass","Smash","Smash","Pass","Pass","Pass","Smash","Smash","Smash","Smash","Pass","Pass","Smash","Pass"] },
-  { label: "Trans Frau", votes: ["Pass","Pass","Pass","Pass","Smash","Pass","Pass","Pass","Pass","Pass","Pass","Pass","Pass","Pass","Pass","Pass"] }
+  { label: "Trans Frau 🏳️‍⚧️", emoji: "👩", votes: ["Smash","","Pass","","Pass","","Pass","Smash","Smash","","Pass","","","Smash","Smash","Smash","Pass"] },
+  { label: "Cis Frau 👧",      emoji: "👧", votes: ["Smash","","Smash","","Smash","","Smash","Smash","Smash","","Pass","","","Pass","Smash","Smash","Smash"] },
+  { label: "Trans Frau 🏳️‍⚧️", emoji: "👩", votes: ["Smash","","Pass","","Pass","","Smash","Pass","Pass","","Pass","","","Pass","Smash","Pass","Pass"] },
+  { label: "Trans Mann 🏳️‍⚧️", emoji: "👨", votes: ["Pass","","Pass","","Smash","","Pass","Pass","Pass","","Pass","","","Smash","","Smash","Pass"] },
+  { label: "Cis Frau 👧",      emoji: "👧", votes: ["Smash","","Pass","","Pass","","Pass","Pass","Pass","","Pass","","","Pass","Pass","Pass","Pass"] },
+  { label: "Cis Milo 🦆",      emoji: "🦆", votes: ["Smash","","","","Smash","","Smash","","","","Smash","","","Smash","Smash","Smash","Smash"] },
+  { label: "Trans Frau 🏳️‍⚧️", emoji: "👩", votes: ["Pass","","Pass","","Smash","","Pass","Pass","Pass","","Pass","","","Pass","Pass","Pass","Pass"] }
 ];
-
-// Respondent names for trans section only
-const RESPONDENTS = ["Person 1","Person 2","Person 3","Person 4","Person 5","Person 6","Person 7","Person 8","Person 9","Person 10","Person 11","Person 12","Person 13","Person 14","Person 15","Person 16"];
 
 function escHtml(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-function makeRawPanel(answers, showNames=false) {
+function makeRawPanel(answers) {
+  // Filter out empty answers
+  const filtered = answers.filter(a => a && a.trim());
+  if (filtered.length === 0) return '';
   const id = 'raw_' + (cid++);
-  const listHTML = answers.map((a, i) =>
+  const listHTML = filtered.map((a, i) =>
     `<div class="raw-item"><span class="raw-num">#${i+1}</span>${escHtml(a)}</div>`
   ).join('');
   return `
     <button class="raw-toggle" onclick="toggleRaw(this)" aria-expanded="false">
-      <span>📋 Alle ${answers.length} Rohantworten anzeigen</span>
+      <span>📋 Alle ${filtered.length} Rohantworten anzeigen</span>
       <span class="arrow">▼</span>
     </button>
     <div class="raw-panel" id="${id}">
@@ -274,8 +247,9 @@ function toggleRaw(btn) {
   const open = panel.classList.toggle('open');
   btn.classList.toggle('open', open);
   btn.setAttribute('aria-expanded', open);
+  const count = panel.querySelectorAll('.raw-item').length;
   btn.querySelector('span:first-child').textContent =
-    open ? `📋 Rohantworten schließen` : `📋 Alle ${panel.querySelectorAll('.raw-item').length} Rohantworten anzeigen`;
+    open ? `📋 Rohantworten schließen` : `📋 Alle ${count} Rohantworten anzeigen`;
 }
 
 function makeChart(canvasId, labels, values, type='pie') {
@@ -310,19 +284,18 @@ function makeLegend(labels, values) {
   return labels.map((l,j) => `
     <div class="legend-item">
       <div class="legend-dot" style="background:${PALETTE[j]}"></div>
-      <span class="legend-label">${l}</span>
+      <span class="legend-label">${escHtml(l)}</span>
       <span class="legend-count">${values[j]}</span>
     </div>`).join('');
 }
 
-function addPieCard(cat, title, data, chartType='pie') {
+function addPieCard(cat, title, data, rawKey, chartType='pie') {
   const labels = Object.keys(data), values = Object.values(data);
   const id = 'chart_' + (cid++);
   const isBar = chartType==='bar';
   const card = document.createElement('div');
   card.className = 'card'; card.dataset.cat = cat;
-  const rawKey = title.replace(/ [^\w\s].*$/,'').trim();
-  const rawAnswers = RAW[Object.keys(RAW).find(k => title.includes(k.split('?')[0]) || k.includes(title.split('?')[0])) || title] || [];
+  const rawAnswers = RAW[rawKey] || [];
   card.innerHTML = `
     <div class="card-inner">
       <h2>${title}</h2>
@@ -336,8 +309,8 @@ function addPieCard(cat, title, data, chartType='pie') {
   setTimeout(() => makeChart(id, labels, values, chartType), 50);
 }
 
-function addFreeCard(cat, title) {
-  const answers = RAW[title] || [];
+function addFreeCard(cat, title, rawKey) {
+  const answers = (RAW[rawKey||title] || []).filter(a => a && a.trim());
   const card = document.createElement('div');
   card.className = 'card freetext'; card.dataset.cat = cat;
   const listHTML = answers.map((a, i) =>
@@ -355,58 +328,64 @@ function addFreeCard(cat, title) {
 }
 
 function addYesNoCard(cat, title, rawKey, yesCount, noCount, total) {
-  const answers = RAW[rawKey] || [];
+  const answers = (RAW[rawKey] || []).filter(a => a && a.trim());
   const id = 'chart_' + (cid++);
   const card = document.createElement('div');
   card.className = 'card'; card.dataset.cat = cat;
+  const other = total - yesCount - noCount;
+  const legendItems = other > 0
+    ? makeLegend(['Ja','Nein','Keine Angabe'],[yesCount,noCount,other])
+    : makeLegend(['Ja','Nein'],[yesCount,noCount]);
+  const chartLabels = other > 0 ? ['Ja','Nein','Keine Angabe'] : ['Ja','Nein'];
+  const chartVals = other > 0 ? [yesCount,noCount,other] : [yesCount,noCount];
   card.innerHTML = `
     <div class="card-inner">
       <h2>${title}</h2>
       <div class="chart-wrap"><canvas id="${id}"></canvas></div>
-      <div class="legend">${makeLegend(['Ja','Nein','Keine Angabe'],[yesCount,noCount,total-yesCount-noCount])}</div>
+      <div class="legend">${legendItems}</div>
     </div>
     ${makeRawPanel(answers)}`;
   document.getElementById('grid').appendChild(card);
-  const other = total - yesCount - noCount;
-  setTimeout(() => makeChart(id, ['Ja','Nein','Keine Angabe'], [yesCount, noCount, other]), 50);
+  setTimeout(() => makeChart(id, chartLabels, chartVals), 50);
 }
 
 function addTransCard() {
-  // Each of the 7 people gets a photo slot + their smash/pass breakdown
   const card = document.createElement('div');
   card.className = 'card'; card.dataset.cat = 'trans';
-  
+
   const peopleHTML = TRANS_DATA.map((person, idx) => {
-    const smash = person.votes.filter(v => v === 'Smash').length;
-    const pass = person.votes.filter(v => v === 'Pass').length;
-    const total = person.votes.length;
-    const smashPct = Math.round(smash / total * 100);
+    const validVotes = person.votes.filter(v => v === 'Smash' || v === 'Pass');
+    const smash = validVotes.filter(v => v === 'Smash').length;
+    const pass = validVotes.filter(v => v === 'Pass').length;
+    const total = validVotes.length;
+    const smashPct = total > 0 ? Math.round(smash / total * 100) : 0;
     return `
       <div class="trans-person">
-        <div class="trans-photo">👤</div>
-        <div class="trans-label">Person ${idx + 1}</div>
-        <div class="trans-type">${person.label}</div>
-        <div style="width:100%;margin-top:.3rem">
-          <div style="font-size:.68rem;color:var(--muted);display:flex;justify-content:space-between;margin-bottom:2px">
+        <div class="trans-photo">${person.emoji}</div>
+        <div class="trans-label">${person.label}</div>
+        <div style="width:100%;margin-top:.4rem">
+          <div style="font-size:.68rem;color:#06b6d4;display:flex;justify-content:space-between;margin-bottom:2px">
             <span>Smash</span><span>${smash}</span>
           </div>
-          <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden">
-            <div style="height:100%;width:${smashPct}%;background:#06b6d4;border-radius:3px"></div>
+          <div style="height:8px;background:var(--border);border-radius:4px;overflow:hidden">
+            <div style="height:100%;width:${smashPct}%;background:#06b6d4;border-radius:4px;transition:width .8s ease"></div>
           </div>
-          <div style="font-size:.68rem;color:var(--muted);display:flex;justify-content:space-between;margin-top:2px">
+          <div style="font-size:.68rem;color:#94a3b8;display:flex;justify-content:space-between;margin-top:2px">
             <span>Pass</span><span>${pass}</span>
           </div>
         </div>
       </div>`;
   }).join('');
 
-  // Raw answers with names for trans section
-  const rawRows = TRANS_DATA.map((person, idx) => {
-    const votes = person.votes.map((v, i) => `${RESPONDENTS[i]}: ${v}`).join(' · ');
-    return `<div class="raw-item"><span class="raw-num">Person ${idx+1} (${person.label})</span> ${escHtml(votes)}</div>`;
-  }).join('');
-
+  // Raw panel WITH names (only for trans section)
   const rawId = 'raw_' + (cid++);
+  const rawRows = TRANS_DATA.map((person, idx) => {
+    const namedVotes = person.votes
+      .map((v, i) => v ? `${RESPONDENTS[i]}: ${v}` : null)
+      .filter(Boolean)
+      .join(' · ');
+    return `<div class="raw-item"><span class="raw-num">${person.label}</span> ${escHtml(namedVotes)}</div>`;
+  }).join('');
 
   card.innerHTML = `
     <div class="card-inner">
@@ -414,7 +393,7 @@ function addTransCard() {
       <div class="trans-grid">${peopleHTML}</div>
     </div>
     <button class="raw-toggle" onclick="toggleRaw(this)" aria-expanded="false">
-      <span>📋 Alle Rohantworten mit Namen anzeigen</span>
+      <span>📋 Alle Rohantworten anzeigen</span>
       <span class="arrow">▼</span>
     </button>
     <div class="raw-panel" id="${rawId}">
@@ -423,95 +402,82 @@ function addTransCard() {
   document.getElementById('grid').appendChild(card);
 }
 
-function addFamilienCard() {
-  // "Du bist der/die..." family role cards combined
+function addFamilyCards() {
   const roles = [
-    { key: "… der Vater", title: "… der Vater 👨", data: {"Daniels":3,"Jonas":3,"Bosbach":2,"Jonathan":2,"Milo":1,"Mauro":1,"Burak":1} },
-    { key: "… die Mutter", title: "… die Mutter 👩", data: {"Julian":4,"Daniels":3,"Burak":2,"Jonas":1,"Bosbach":1,"Martin":1,"Lukas":1} },
-    { key: "… das Baby", title: "… das Baby 🍼", data: {"Jonas":4,"Burak":2,"Milo":2,"Eric":1,"Finn":1,"Martin":1,"Robel":1,"Shin":1} },
-    { key: "… die Schwester", title: "… die Schwester 👧", data: {"Jonathan":3,"Mauro":3,"Shin":2,"Eric":2,"Julian":1,"Leonard":1} },
-    { key: "… der Bruder", title: "… der Bruder 👦", data: {"Milo":2,"Leo":2,"Jonas":2,"Mauro":2,"Leonard":1,"Lukas":1,"Shin":1,"Daniels":1} },
-    { key: "… der Großvater?", title: "… der Großvater 👴", data: {"Finn":6,"Milo":2,"Robel":2,"Leo":1,"Malte":1,"Bosbach":1} },
-    { key: "… der Onkel den man nicht einladen will?", title: "… der Onkel 🙅 (nicht einladen)", data: {"Bosbach":4,"Daniels":2,"Leo":2,"Milo":1,"Robel":1,"Malte":1,"Eric":1} },
-    { key: "… adoptiert?", title: "… adoptiert? 🏷️", data: {"Shin":3,"Mauro":2,"Jonas":1,"Julian":1,"Burak":1,"Leonard":1,"Eric":1,"Bosbach":1,"Jonathan":1} }
+    { key:"der Vater",     title:"… der Vater 👨",              data:{"Burak":6,"Julian":4,"Daniels":2,"Bosbach":2,"Der unc. Malte oder Burak":1,"Milo":1,"Leo":1} },
+    { key:"die Mutter",    title:"… die Mutter 👩",              data:{"Jonas":7,"Daniels":3,"Milo":2,"Burak":1,"Lukas":1,"Robel":1,"Finn":1,"Julian":1} },
+    { key:"das Baby",      title:"… das Baby 🍼",                data:{"Eric":4,"Julian":2,"Jonathan":2,"Martin":2,"Shin":2,"Jonas":2,"Mauro":2,"Robel":1} },
+    { key:"die Schwester", title:"… die Schwester 👧",           data:{"Mauro":3,"Milo":2,"Jonathan":2,"Leonard":2,"Jonas":2,"Burak":1,"Malte":1,"Daniels":1,"Bosbach":1,"Lukas":1,"Shin":1} },
+    { key:"der Bruder",    title:"… der Bruder 👦",              data:{"Finn":6,"Leo":3,"Robel":2,"Milo":2,"Jonas":1,"Bosbach":1,"Lukas":1,"Mauro":1} },
+    { key:"der Großvater", title:"… der Großvater 👴",           data:{"Daniels":4,"Leo":3,"Bosbach":3,"Burak":2,"Malte":2,"Robel":1,"Milo":1} },
+    { key:"der Onkel",     title:"… der Onkel 🙅 (nicht einladen)", data:{"Mauro":6,"Daniels":3,"Eric":3,"Milo":1,"Jonas":1,"Lukas":1,"Robel":1} },
+    { key:"adoptiert",     title:"… adoptiert? 🏷️",             data:{"Shin":5,"Leonard":3,"Mauro":3,"Burak":2,"Jonathan":2,"Julian":1,"Bosbach":1} }
   ];
-
   roles.forEach(role => {
-    const id = 'chart_' + (cid++);
-    const card = document.createElement('div');
-    card.className = 'card'; card.dataset.cat = 'person';
-    const labels = Object.keys(role.data), values = Object.values(role.data);
-    card.innerHTML = `
-      <div class="card-inner">
-        <h2>${role.title}</h2>
-        <div class="chart-wrap"><canvas id="${id}"></canvas></div>
-        <div class="legend">${makeLegend(labels,values)}</div>
-      </div>
-      ${makeRawPanel(RAW[role.key] || [])}`;
-    document.getElementById('grid').appendChild(card);
-    setTimeout(() => makeChart(id, labels, values, 'pie'), 50);
+    addPieCard('person', role.title, role.data, role.key, 'pie');
   });
 }
 
 function build() {
   // PERSONEN
-  addPieCard('person','Wer wird für immer Single bleiben? 💔',{"Daniels":3,"Robel":1,"Eric":1,"Mauro":1,"Jonas":1,"Finn":1,"Niemand":2,"(leer)":1});
-  addPieCard('person','Wer ist zurzeit am Reichsten? 💸',{"Bosbach":5,"Lukas":4,"Milo":2,"Malte":1,"Leonard":1});
-  addPieCard('person','Wer wird am meisten Kinder haben? 👶',{"Burak":3,"Jonas":2,"Mauro":2,"Milo":2,"Robel":2,"Julian":1,"Daniels":1});
-  addPieCard('person','Wer hat den schlechtesten Geschmack in Partnern? 💔',{"Daniels":3,"Mauro":2,"Eric":1,"Kp":1,"Milo":1,"Martin":1,"Alle außer mir":1,"Shin":1,"Robel":1});
-  addPieCard('person','Wer hat am meisten Erfolg bei Frauen? 🌹',{"Finn":5,"Leo":2,"Mauro":2,"Lukas":2,"Martin":1,"Bosbach":1});
-  addPieCard('person','Wer heiratet zuerst? 💍',{"Julian":4,"Burak":3,"Mauro":2,"Finn":2,"Martin":1,"Lukas":1,"Max und Emma":1});
-  addPieCard('person','Wer ist der größte Simp? 🥺',{"Eric":4,"Milo":3,"Mauro":2,"Robel":1,"Julian":1});
-  addPieCard('person','Wer ist am verlässlichsten? 🤝',{"Leo":3,"Lukas":2,"Milo":2,"Burak":1,"Leonard":1,"Jonas":1,"Robel":1,"(leer)":1});
-  addPieCard('person','Wer würde am ehesten Zombie-Apokalypse überleben? 🧟',{"Milo":5,"Daniels":3,"Lukas":2,"Leonard":1,"Robel":1,"Jonas":1});
-  addPieCard('person','Wer wird am ehesten berühmt? ⭐',{"Robel":3,"Daniels":2,"Leonard":1,"Jonas":1,"Eric":1,"Milo":1,"Lukas":1,"Leo":1,"(youtuber)":1,"Malte":1});
-  addPieCard('liebe','Mit wem sollte man niemals in einer Beziehung sein? ❌',{"Robel":2,"Jonas":2,"Eric":1,"Lukas":1,"Jonathan":1,"Burak":1,"Die Youtuber":2,"Mauro":1,"Leo":1});
-  addPieCard('liebe','Mit wem hätte man die beste Beziehung? 💞',{"Julian":3,"Leonard":2,"Jonathan":2,"Daniels":2,"Finn":1,"Mauro":1,"Milo und Jonas":1,"(leer)":1});
-  addPieCard('person','Wer ist am Lustigsten? 😂',{"Jonas":2,"Julian":1,"Leo":1,"Finn":1,"Eric":1,"Mauro":1,"Wir sind alle unlustig":1});
-  addPieCard('person','Wer gibt die schlechtesten Tipps? 🙈',{"Lukas":3,"Daniels":2,"Eric":1,"Jonas":1,"Burak":1,"Mauro":1,"Bosbach":1,"Robel":1,"Leonard":1});
-  addPieCard('liebe','Wer verliebt sich am schnellsten? 💘',{"Eric":4,"Martin":3,"Finn":1,"Daniels":1,"Milo":1,"Robel":1,"Leonard":1});
-  addPieCard('person','Wer kann am besten Geheimnisse behalten? 🤫',{"Mauro":2,"Burak":2,"Eric":2,"Milo":2,"Finn":1,"Jonathan":1,"Lukas":1,"Daniels":1});
-  addPieCard('person','Bester Style? 👕',{"Leo":3,"Lukas":3,"Robel":1,"Daniels":1,"Bosbach":1,"Shin":1,"Eric":1,"Malte":1});
-  addPieCard('person','Wer ist am Gemeinsten? 😈',{"Milo":3,"Shin":2,"Jonas":1,"Lukas":1,"Burak":1,"Eric":1,"Malte":1,"Robel":1});
-  addPieCard('person','Wer ist am nettesten? 😊',{"Burak":2,"Malte":2,"Finn":2,"Mauro":2,"Leo":1,"Julian":1,"Bosbach":1,"Eric":1});
-  addPieCard('person','Wer ist am lautesten? 📢',{"Robel":3,"Finn":2,"Burak":2,"Milo":2,"Leo":1,"Jonas":1,"Julian":1});
-  addPieCard('person','Wer würde sich am ehesten prügeln? 👊',{"Robel":3,"Daniels":3,"Mauro":2,"Shin":1,"Lukas":1,"Jonas":1,"Bosbach":1,"Eric":1});
-  addPieCard('person','Wer wird keine Chance im Berufsleben haben? 😬',{"Shin":4,"Daniels":3,"Robel":1,"Mauro":1,"Leo":1,"Burak":2,"Jonas":1});
-  addPieCard('person','Wer ist am stärksten? 💪',{"Eric":3,"Milo":2,"Bosbach":2,"Daniels":2,"Martin":1,"Burak":1,"Robel":1,"Shin":1});
-  addPieCard('person','Wer hat am meisten Talent? 🎯',{"Milo":4,"Robel":3,"Daniels":2,"Bosbach":1,"Martin":1,"Burak":1});
-  addPieCard('person','Wer ist der krasseste Yapper? 🗣️',{"Robel":5,"Burak":2,"Finn":2,"Mauro":2,"Malte":1,"Martin":1});
-  addPieCard('person','Wer begeht am ehesten einen Islamistischen Terroranschlag? 💣',{"Robel":8,"Burak":3,"(leer)":1});
-  addPieCard('person','Wer würde am ehesten jemanden töten? ☠️',{"Robel":5,"Burak":4,"Daniels":2,"Leonard":1,"Mauro":1,"Jonas":1});
+  addPieCard('person','Wer wird für immer Single bleiben? 💔',{"Daniels":8,"Burak":2,"Robel":1,"Eric":1,"Jonas":1,"Mauro":1,"Jonathan":1,"Niemand":1},'Wer wird für immer Single bleiben?');
+  addPieCard('person','Wer ist zurzeit am Reichsten? 💸',{"Lukas":6,"Bosbach":6,"Malte":2,"Leonard":2,"Milo":1},'Wer ist zurzeit am Reichsten?');
+  addPieCard('person','Wer wird am meisten Kinder haben? 👶',{"Burak":5,"Milo":3,"Jonas":3,"Mauro":3,"Daniels":1,"Julian":1,"Robel":1},'Wer wird am meisten Kinder haben?');
+  addPieCard('person','Wer hat den schlechtesten Geschmack in Partnern? 💔',{"Mauro":3,"Martin":3,"Daniels":2,"Eric":1,"Kp":1,"Malte":1,"Bosbach":1,"Milo":1,"Keiner":1,"Alle außer mir":1,"Shin":1,"Robel":1},'Wer hat den schlechtesten Geschmack in Romantischen Partnern?');
+  addPieCard('person','Wer hat am meisten Erfolg bei Frauen? 🌹',{"Finn":6,"Leo":2,"Lukas":2,"Bosbach":2,"Martin":2,"Mauro":1,"Eric":1},'Wer hat am meisten Erfolg bei Frauen?');
+  addPieCard('person','Wer heiratet zuerst? 💍',{"Finn":4,"Mauro":3,"Julian":3,"Burak":3,"Lukas":2,"Martin":1,"Max und Emma":1},'Wer heiratet zuerst?');
+  addPieCard('person','Wer ist der größte Simp? 🥺',{"Eric":4,"Milo":3,"Mauro":2,"Burak":2,"Robel":1,"Julian":1,"Rüthlein":1,"Martin":1},'Wer ist der größte Simp?');
+  addPieCard('person','Wer ist am verlässlichsten? 🤝',{"Leo":4,"Lukas":4,"Milo":3,"Malte":2,"Leonard":1,"Burak":1,"Jonas":1,"Robel":1},'Wer ist am verlässlichsten?');
+  addPieCard('person','Wer würde am ehesten Zombie-Apokalypse überleben? 🧟',{"Daniels":7,"Milo":5,"Jonas":2,"Robel":1,"Eric & Malte":1,"Eric":1},'Wer würde am ehesten in einer Zombie Apokalypse überleben?');
+  addPieCard('person','Wer wird am ehesten berühmt? ⭐',{"Robel":6,"Lukas":3,"Jonathan":1,"Jonas":1,"Die Youtuber":2,"Leonard":1,"Leo":1,"Eric":1,"Malte":1},'Wer wird am ehesten berühmt?');
+  addPieCard('liebe','Mit wem sollte man niemals in einer Beziehung sein? ❌',{"Daniels":4,"Jonathan":2,"Mauro":2,"Eric":1,"Milo":1,"Milo und Jonas":1,"Alle":1,"Robel":1,"Burak":1,"Jonas":1},'Mit wem von uns sollte man niemals in einer Beziehung sein?');
+  addPieCard('liebe','Mit wem hätte man die beste Beziehung? 💞',{"Eric":2,"Julian":2,"Finn":2,"Leo":1,"Milo":1,"Malte":1,"Mauro":1,"Bosbach":1,"Jonas":1,"Lukas":1,"Leonard":1},'Mit wem von uns hätte man die beste Beziehung?');
+  addPieCard('person','Wer ist am Lustigsten? 😂',{"Jonas":3,"Lukas":3,"Burak":1,"Shin":1,"Malte":1,"Milo":1,"Finn":1,"Leonard":1,"Julian":1},'Wer ist am Lustigsten?');
+  addPieCard('person','Wer gibt die schlechtesten Tipps? 🙈',{"Eric":5,"Lukas":2,"Daniels":2,"Bosbach":2,"Shin":1,"Burak":1,"Robel":1,"Leonard":1},'Wer gibt die schlechtesten Tipps?');
+  addPieCard('liebe','Wer verliebt sich am schnellsten? 💘',{"Eric":5,"Mauro":2,"Martin":2,"Jonathan":1,"Malte":1,"Jonas":1,"Milo":1,"Finn":1},'Wer verliebt sich am schnellsten?');
+  addPieCard('person','Wer kann am besten Geheimnisse behalten? 🤫',{"Mauro":3,"Malte":2,"Robel":2,"Daniels":2,"Burak":2,"Lukas":2,"Milo":2,"Shin":1,"Finn":1},'Wer kann am besten Geheimnisse behalten?');
+  addPieCard('person','Bester Style? 👕',{"Leo":7,"Eric":3,"Bosbach":1,"Martin":1,"Lukas":1,"Burak":1,"Mauro":1},'Bester Style?');
+  addPieCard('person','Wer ist am Gemeinsten? 😈',{"Milo":4,"Mauro":3,"Bosbach":2,"Lukas":1,"Julian":1,"Leo":1,"Malte":1,"Shin":1},'Wer ist am Gemeinsten?');
+  addPieCard('person','Wer ist am nettesten? 😊',{"Burak":4,"Finn":3,"Robel":2,"Leo":1,"Milo":1,"Julian":1,"Lukas":1,"Jonas":1,"Eric":1,"Shin":1,"Malte":1},'Wer ist am nettesten?');
+  addPieCard('person','Wer ist am lautesten? 📢',{"Robel":5,"Lukas":4,"Eric":2,"Bosbach":2,"Daniels":2,"Shin":1,"Finn":1},'Wer ist am lautesten?');
+  addPieCard('person','Wer würde sich am ehesten prügeln? 👊',{"Daniels":5,"Shin":4,"Mauro":4,"Robel":1,"Leo":1,"Eric":1,"Jonas":1},'Wer würde sich am ehesten prügeln?');
+  addPieCard('person','Wer wird keine Chance im Berufsleben haben? 😬',{"Eric":7,"Daniels":2,"Shin":2,"Burak":2,"Bosbach":1,"Jonathan":1,"Robel":1,"Jonas":1},'Wer wird keine Chance im Berufsleben haben?');
+  addPieCard('person','Wer ist am stärksten? 💪',{"Milo":9,"Daniels":3,"Martin":2,"Bosbach":1,"Finn":1},'Wer ist am stärksten?');
+  addPieCard('person','Wer hat am meisten Talent? 🎯',{"Robel":5,"Burak":3,"Malte":2,"Martin":2,"Finn":1,"Daniels":1,"Mauro":1},'Wer hat am meisten Talent?');
+  addPieCard('person','Wer ist der krasseste Yapper? 🗣️',{"Robel":16},'Wer ist der krasseste Yapper?');
+  addPieCard('person','Wer begeht am ehesten einen Islamistischen Terroranschlag? 💣',{"Burak":8,"Robel":7,"Daniels":1,"Leonard":1},'Wer begeht am ehesten einen Islamistischen Terroranschlag?');
+  addPieCard('person','Wer würde am ehesten jemanden töten? ☠️',{"Daniels":10,"Jonathan":1,"Bosbach":1,"Milo":1,"Mauro":1,"Robel":1,"Jonas":1},'Wer würde am ehesten jemanden töten?');
 
   // FAMILIEN ROLLEN
-  addFamilienCard();
+  addFamilyCards();
 
   // JA/NEIN DEBATTEN
-  addYesNoCard('janeindebatte','Gefielen dir die Fragen bis jetzt? ✅','Gefielen dir die Fragen bis jetzt?',10,3,13);
-  addYesNoCard('janeindebatte','Sollten wir das Azteken Reich wieder aufbauen? 🪶','Sollten wir das Azteken reich wieder aufbauen?',7,6,13);
-  addYesNoCard('janeindebatte','Sollten wir wieder an die Nordischen Götter glauben? ⚡','Sollten wir wieder an die Nordischen Götter glauben',9,3,13);
-  addYesNoCard('janeindebatte','Hattest du schon deinen ersten Kuss? 💋','Hattest du schon deinen ersten Kuss?',6,3,13);
-  addYesNoCard('janeindebatte','Hattest du schon dein erstes Mal? 🔞','Hattest du schon dein erstes Mal?',3,7,13);
-  addYesNoCard('janeindebatte','Würdest du in einer Zombie Apokalypse überleben? 🧟','Würdest du in einer (Zombie) Apokalypse überleben?',9,4,13);
-  addYesNoCard('janeindebatte','Würdest du mit einer Trans-Person eine Beziehung anfangen? 🏳️‍⚧️','Würdest du mit einer Trans-Person eine Beziehung anfangen?',4,8,13);
-  addYesNoCard('janeindebatte','Für 1.000.000€ eine unbekannte Person umbringen? 💀','Würdest du für 1.000.000€ eine dir unbekannte Person umbringen?',5,7,13);
-  addYesNoCard('janeindebatte','Für 100.000€ einmalig prostituieren? 💰','Würdest du dich für 100.000€ einmalig prostituieren?',3,9,13);
-  addYesNoCard('janeindebatte','Für 500.000€ zur Frau werden? 🔄','Würdest du für 500.000€ zu einer Frau werden?',4,9,13);
+  // Count from raw: Ja/Nein/Keine Angabe (treating unique answers as written)
+  addYesNoCard('janeindebatte','Gefielen dir die Fragen? ✅','Gefielen dir die Fragen?',14,3,17);
+  addYesNoCard('janeindebatte','Sollten wir das Azteken Reich wieder aufbauen? 🪶','Azteken Reich wieder aufbauen?',10,7,17);
+  addYesNoCard('janeindebatte','Sollten wir wieder an die Nordischen Götter glauben? ⚡','Nordische Götter?',9,4,17);
+  addYesNoCard('janeindebatte','Hattest du schon deinen ersten Kuss? 💋','Erster Kuss?',7,3,17);
+  addYesNoCard('janeindebatte','Hattest du schon dein erstes Mal? 🔞','Erstes Mal?',1,9,17);
+  addYesNoCard('janeindebatte','Würdest du in einer Zombie Apokalypse überleben? 🧟','Zombie Apokalypse überleben?',10,7,17);
+  addYesNoCard('janeindebatte','Würdest du mit einer Trans-Person eine Beziehung anfangen? 🏳️‍⚧️','Trans-Beziehung?',6,11,17);
+  addYesNoCard('janeindebatte','Für 1.000.000€ eine unbekannte Person umbringen? 💀','Für 1Mio umbringen?',6,10,17);
+  addYesNoCard('janeindebatte','Für 100.000€ einmalig prostituieren? 💰','Für 100k prostituieren?',5,11,17);
+  addYesNoCard('janeindebatte','Für 500.000€ zur Frau werden? 🔄','Für 500k zur Frau?',4,12,17);
 
   // TRANS/CIS SMASH OR PASS
   addTransCard();
 
   // KREATIVES / FREITEXT
-  addFreeCard('creative','Was wäre deine Taktik in einer Zombie Apokalypse?');
-  addFreeCard('creative','Wenn du ein Tier wärst, welches wärst du?');
-  addFreeCard('creative','Welche Person würdest du nicht vermissen, wenn sie auf \'wundersame\' Weise für immer verschwindet?');
-  addFreeCard('creative','Was wäre für dich ein perfektes Date?');
-  addFreeCard('creative','Welche Superkraft hättest du am liebsten?');
-  addFreeCard('creative','Was willst du später als Job machen?');
-  addFreeCard('creative','Was wären Fragen die du gerne gehabt hättest?');
+  addFreeCard('creative','Was wäre deine Taktik in einer Zombie Apokalypse? 🧟','Was wäre deine Taktik in einer Zombie Apokalypse?');
+  addFreeCard('creative','Wenn du ein Tier wärst, welches wärst du? 🐾','Wenn du ein Tier wärst, welches wärst du?');
+  addFreeCard('creative','Welche Person würdest du nicht vermissen? 👻','Welche Person würdest du nicht vermissen?');
+  addFreeCard('creative','Was wäre für dich ein perfektes Date? 💑','Was wäre für dich ein perfektes Date?');
+  addFreeCard('creative','Welche Superkraft hättest du am liebsten? ⚡','Welche Superkraft hättest du am liebsten?');
+  addFreeCard('creative','Was willst du später als Job machen? 💼','Was willst du später als Job machen?');
+  addFreeCard('creative','Was wären Fragen die du gerne gehabt hättest? 🤔','Was wären Fragen die du gerne gehabt hättest?');
 
   // SONSTIGES
-  addFreeCard('other','Wie hat es dir gefallen?');
+  addFreeCard('other','Wie hat es dir gefallen? 🎉','Wie hat es dir gefallen?');
 }
 
 function filterCards(cat, btn) {
@@ -526,3 +492,5 @@ build();
 </script>
 </body>
 </html>
+HEREDOC
+echo "Done, file size: $(wc -c < /mnt/user-data/outputs/enten2.html) bytes"
