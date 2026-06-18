@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Rollenverteiler</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  /* ═══════════════════════════════════════════════
+     EINSTELLUNGEN — hier anpassen
+  ═══════════════════════════════════════════════ */
+
+  /*
+    ROLLEN WERDEN IM JAVASCRIPT UNTEN DEFINIERT.
+    Scrolle zu: "// ▼▼▼ HIER ANPASSEN ▼▼▼"
+  */
+
+  /* ═══════════════════════════════════════════════
+     DESIGN TOKENS
+  ═══════════════════════════════════════════════ */
+  :root {
+    --bg:        #0d0f1a;
+    --surface:   #141728;
+    --border:    #2a2f4a;
+    --gold:      #c9a84c;
+    --gold-glow: #c9a84c44;
+    --text:      #e8e4d4;
+    --muted:     #6b7299;
+    --danger:    #e05c5c;
+    --card-back: #161b35;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    overflow: hidden;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100dvh;
+    padding: 24px 20px;
+  }
+
+  /* Stars background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 20% 30%, #ffffff22 0%, transparent 100%),
+      radial-gradient(1px 1px at 80% 10%, #ffffff18 0%, transparent 100%),
+      radial-gradient(1px 1px at 50% 70%, #ffffff1a 0%, transparent 100%),
+      radial-gradient(1px 1px at 10% 80%, #ffffff14 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 60%, #ffffff1c 0%, transparent 100%),
+      radial-gradient(1px 1px at 35% 15%, #ffffff20 0%, transparent 100%),
+      radial-gradient(1px 1px at 65% 85%, #ffffff16 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ─── Layout ─── */
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+  }
+
+  /* ─── Header ─── */
+  header {
+    text-align: center;
+  }
+
+  header h1 {
+    font-family: 'Cinzel', serif;
+    font-weight: 800;
+    font-size: clamp(1.6rem, 6vw, 2.2rem);
+    letter-spacing: 0.08em;
+    color: var(--gold);
+    text-shadow: 0 0 32px var(--gold-glow);
+    line-height: 1.1;
+  }
+
+  header p {
+    margin-top: 8px;
+    font-size: 0.85rem;
+    color: var(--muted);
+    font-weight: 300;
+    letter-spacing: 0.04em;
+  }
+
+  /* ─── Card flip ─── */
+  .card-scene {
+    width: 260px;
+    height: 340px;
+    perspective: 900px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .card-scene:focus-visible .card { outline: 2px solid var(--gold); }
+
+  .card {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.65s cubic-bezier(0.4, 0.2, 0.2, 1);
+    border-radius: 18px;
+  }
+
+  .card.is-flipped {
+    transform: rotateY(180deg);
+  }
+
+  .card-face {
+    position: absolute;
+    inset: 0;
+    border-radius: 18px;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+  }
+
+  /* Back of card (shown first) */
+  .card-back {
+    background: var(--card-back);
+    background-image:
+      repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 18px,
+        #ffffff04 18px,
+        #ffffff04 19px
+      );
+    gap: 14px;
+  }
+
+  .card-back .sigil {
+    font-size: 4rem;
+    opacity: 0.9;
+    filter: drop-shadow(0 0 16px var(--gold-glow));
+    animation: pulse 3s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.7; transform: scale(1); }
+    50%       { opacity: 1;   transform: scale(1.05); }
+  }
+
+  .card-back .prompt {
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.15em;
+    color: var(--gold);
+    text-transform: uppercase;
+    opacity: 0.75;
+  }
+
+  /* Front of card (shown after flip) */
+  .card-front {
+    transform: rotateY(180deg);
+    background: var(--surface);
+    flex-direction: column;
+    gap: 12px;
+    padding: 28px 24px;
+    text-align: center;
+  }
+
+  .card-front .role-icon {
+    font-size: 3.2rem;
+    filter: drop-shadow(0 0 20px var(--gold-glow));
+  }
+
+  .card-front .role-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  .card-front .role-name {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1.3rem, 5vw, 1.7rem);
+    font-weight: 800;
+    color: var(--gold);
+    line-height: 1.2;
+    text-shadow: 0 0 24px var(--gold-glow);
+  }
+
+  .card-front .role-desc {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.5;
+    font-weight: 300;
+    max-width: 200px;
+  }
+
+  .card-front .tap-again {
+    margin-top: 6px;
+    font-size: 0.7rem;
+    color: var(--border);
+    letter-spacing: 0.1em;
+  }
+
+
+
+  /* ─── Reset button ─── */
+  .btn-reset {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    padding: 10px 24px;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+    text-transform: uppercase;
+  }
+
+  .btn-reset:hover, .btn-reset:focus-visible {
+    border-color: var(--gold);
+    color: var(--gold);
+    outline: none;
+  }
+
+  /* ─── "Alle verteilt" state ─── */
+  .done-banner {
+    display: none;
+    text-align: center;
+    padding: 20px;
+    border: 1px solid var(--gold);
+    border-radius: 14px;
+    background: var(--gold-glow);
+    width: 100%;
+  }
+
+  .done-banner p {
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    color: var(--gold);
+  }
+
+  .done-banner.visible { display: block; }
+
+  /* ─── Shake animation for empty pool ─── */
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%       { transform: translateX(-8px); }
+    40%       { transform: translateX(8px); }
+    60%       { transform: translateX(-5px); }
+    80%       { transform: translateX(5px); }
+  }
+
+  .card-scene.shake .card {
+    animation: shake 0.4s ease;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+
+  <header>
+    <h1>Rollenverteiler</h1>
+    <p>Tippe die Karte, um deine Rolle zu enthüllen</p>
+  </header>
+
+  <div class="card-scene" id="cardScene" tabindex="0" role="button" aria-label="Rolle aufdecken">
+    <div class="card" id="card">
+
+      <!-- Rückseite (Karte verdeckt) -->
+      <div class="card-face card-back">
+        <div class="sigil">🎴</div>
+        <div class="prompt">Aufdecken</div>
+      </div>
+
+      <!-- Vorderseite (Rolle) -->
+      <div class="card-face card-front" id="cardFront">
+        <div class="role-icon" id="resultIcon"></div>
+        <div class="role-label">Deine Rolle</div>
+        <div class="role-name" id="resultName"></div>
+        <div class="role-desc" id="resultDesc"></div>
+        <div class="tap-again">↩ Tippe zum Zurückklappen</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="done-banner" id="doneBanner">
+    <p>✦ Alle Rollen wurden verteilt ✦</p>
+  </div>
+
+  <button class="btn-reset" id="btnReset">Neu starten</button>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// ▼▼▼ HIER ANPASSEN ▼▼▼
+// ═══════════════════════════════════════════════════════
+
+const ROLLEN = [
+  {
+    name:   "Detektiv",          // Titel der Rolle
+    anzahl: 3,                   // Wie viele Personen diese Rolle bekommen
+    icon:   "🔍",                // Emoji-Symbol
+    beschreibung: "Finde die Wahrheit – beobachte und befrage."
+  },
+  {
+    name:   "Zeuge",
+    anzahl: 5,
+    icon:   "👁️",
+    beschreibung: "Du hast etwas gesehen. Was verrätst du?"
+  },
+  {
+    name:   "Verdächtiger",
+    anzahl: 2,
+    icon:   "🎭",
+    beschreibung: "Bleib ruhig – und verrate dich nicht."
+  },
+];
+
+// ▲▲▲ ENDE DER EINSTELLUNGEN ▲▲▲
+// ═══════════════════════════════════════════════════════
+
+
+// ─── State ───────────────────────────────────────────
+let pool = [];      // verfügbare Rollen-Indizes
+let current = null; // aktuell gezogene Rolle
+let isFlipped = false;
+
+function buildPool() {
+  pool = [];
+  ROLLEN.forEach((rolle, i) => {
+    for (let k = 0; k < rolle.anzahl; k++) pool.push(i);
+  });
+  // Zufällig mischen (Fisher-Yates)
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+}
+
+// ─── DOM-Referenzen ───────────────────────────────────
+const cardScene  = document.getElementById('cardScene');
+const card       = document.getElementById('card');
+const cardFront  = document.getElementById('cardFront');
+const resultIcon = document.getElementById('resultIcon');
+const resultName = document.getElementById('resultName');
+const resultDesc = document.getElementById('resultDesc');
+const doneBanner = document.getElementById('doneBanner');
+const btnReset   = document.getElementById('btnReset');
+
+// ─── Karten-Logik ─────────────────────────────────────
+function drawRole() {
+  if (pool.length === 0) {
+    // Alle verteilt → schütteln
+    cardScene.classList.remove('shake');
+    void cardScene.offsetWidth; // reflow
+    cardScene.classList.add('shake');
+    return;
+  }
+  const idx = pool.pop();
+  current = idx;
+  const rolle = ROLLEN[idx];
+  resultIcon.textContent = rolle.icon;
+  resultName.textContent = rolle.name;
+  resultDesc.textContent = rolle.beschreibung;
+}
+
+function flipCard() {
+  if (!isFlipped) {
+    // Aufdecken
+    drawRole();
+    if (current === null && pool.length === 0) return;
+    card.classList.add('is-flipped');
+    isFlipped = true;
+    if (pool.length === 0) {
+      doneBanner.classList.add('visible');
+    }
+  } else {
+    // Zurückklappen
+    card.classList.remove('is-flipped');
+    isFlipped = false;
+    current = null;
+  }
+}
+
+cardScene.addEventListener('click', flipCard);
+cardScene.addEventListener('keydown', e => {
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flipCard(); }
+});
+
+// ─── Reset ────────────────────────────────────────────
+function reset() {
+  card.classList.remove('is-flipped');
+  isFlipped = false;
+  current = null;
+  doneBanner.classList.remove('visible');
+  buildPool();
+}
+
+btnReset.addEventListener('click', reset);
+
+// ─── Init ─────────────────────────────────────────────
+reset();
+</script>
+</body>
+</html>
