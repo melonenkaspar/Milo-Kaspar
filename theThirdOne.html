@@ -1,3 +1,628 @@
-nothing here yet you buffon
-<br><br>
-Ihr müsst erstmal alle Antworten!
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stufenumfrage – Auswertung</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EDEAE0; --paper-2:#F7F5EE; --ink:#16181F;
+    --blue:#2438D8; --red:#FF3355; --line:rgba(22,24,31,.16);
+    --display:'Archivo Black','Helvetica Neue',Impact,sans-serif;
+    --body:'Space Grotesk','Helvetica Neue',Arial,sans-serif;
+    --mono:'Space Mono',ui-monospace,'Courier New',monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);
+    background-image:radial-gradient(rgba(22,24,31,.10) 1px, transparent 1px);background-size:22px 22px}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+
+  header.top{padding:64px 0 34px}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--blue)}
+  .eyebrow b{color:var(--red)}
+  h1{font-family:var(--display);line-height:.86;margin:14px 0 0;font-size:clamp(52px,11vw,124px);
+    letter-spacing:-.02em;color:var(--blue);text-shadow:4px 4px 0 var(--red);mix-blend-mode:multiply}
+  .lede{max-width:54ch;margin:22px 0 0;font-size:17px;line-height:1.5}
+  .stats{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+  .stat{font-family:var(--mono);font-size:12px;border:1.5px solid var(--ink);padding:7px 12px;background:var(--paper-2)}
+  .stat b{color:var(--red)}
+
+  nav{position:sticky;top:0;z-index:30;background:var(--ink);margin-top:34px}
+  nav .wrap{display:flex;gap:4px;overflow-x:auto;padding:0 20px}
+  nav a{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--paper);
+    text-decoration:none;padding:14px;white-space:nowrap;border-bottom:3px solid transparent}
+  nav a:hover,nav a:focus-visible{color:var(--red);border-bottom-color:var(--red);outline:none}
+
+  section{padding:70px 0 20px;border-top:1.5px solid var(--line)}
+  section:first-of-type{border-top:none}
+  .sec-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:8px}
+  .sec-head h2{font-family:var(--display);font-size:clamp(30px,5.5vw,52px);margin:0;letter-spacing:-.01em}
+  .sec-head .tag{font-family:var(--mono);font-size:12px;background:var(--red);color:#fff;padding:4px 9px}
+  .sec-sub{font-family:var(--mono);font-size:13px;color:rgba(22,24,31,.62);margin:0 0 34px;line-height:1.6}
+
+  .q{border:1.5px solid var(--ink);background:var(--paper-2);margin-bottom:18px}
+  .q-head{display:flex;gap:14px;align-items:flex-start;padding:16px 18px;cursor:pointer;background:var(--paper-2);
+    border:none;width:100%;text-align:left;font:inherit;color:inherit}
+  .q-head:hover{background:#fff}
+  .q-head:focus-visible{outline:3px solid var(--blue);outline-offset:-3px}
+  .q-head::after{content:'+';font-family:var(--mono);font-size:16px;color:var(--red);padding-top:1px}
+  .q.open > .q-head::after{content:'–'}
+  .toggle-all{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
+    border:1.5px solid var(--ink);background:var(--paper-2);color:var(--ink);padding:8px 12px;cursor:pointer;margin:0 0 26px}
+  .toggle-all:hover{background:var(--ink);color:var(--paper)}
+  .toggle-all:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+  .q-num{font-family:var(--mono);font-size:12px;color:var(--red);padding-top:3px;min-width:28px}
+  .q-text{font-weight:700;font-size:16.5px;line-height:1.35;flex:1}
+  .q-meta{font-family:var(--mono);font-size:11px;color:rgba(22,24,31,.5);white-space:nowrap;padding-top:4px}
+  .q-viz{padding:4px 18px 18px;border-top:1.5px dashed var(--line)}
+  .q-body{display:none;border-top:1.5px dashed var(--line);padding:6px 0}
+  .q.open .q-body{display:block}
+  .q.open{box-shadow:5px 5px 0 var(--blue)}
+  .a{padding:9px 18px;display:flex;gap:10px}
+  .a + .a{border-top:1px solid rgba(22,24,31,.08)}
+  .a .dash{color:var(--red);font-family:var(--mono);flex:0 0 auto}
+  .a p{margin:0;font-size:15px;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere}
+  .money-list .a p{font-family:var(--mono);font-size:14px}
+
+  /* Charts */
+  .chart{display:flex;gap:26px;align-items:center;flex-wrap:wrap;padding-top:14px}
+  .chart svg{flex:0 0 auto}
+  .legend{list-style:none;margin:0;padding:0;display:grid;gap:6px;min-width:200px}
+  .legend li{display:flex;align-items:center;gap:9px;font-family:var(--mono);font-size:12.5px}
+  .swatch{width:12px;height:12px;flex:0 0 auto;border:1px solid var(--ink)}
+  .legend .pct{margin-left:auto;color:rgba(22,24,31,.55)}
+  .bars{display:grid;gap:7px;width:100%;padding-top:14px}
+  .bar-row{display:grid;grid-template-columns:minmax(72px,22%) 1fr auto;gap:10px;align-items:center;font-family:var(--mono);font-size:12.5px}
+  .bar-track{height:14px;background:rgba(22,24,31,.08)}
+  .bar-fill{height:100%;background:var(--blue)}
+  .bar-row:nth-child(2n) .bar-fill{background:var(--red)}
+  .bar-lab{overflow-wrap:anywhere}
+  .bar-val{color:rgba(22,24,31,.55)}
+  .viz-note{font-family:var(--mono);font-size:11px;color:rgba(22,24,31,.45);margin:12px 0 0}
+
+  /* Geld */
+  .money-stats{display:flex;gap:8px;flex-wrap:wrap;padding:14px 0 4px}
+  .ms{font-family:var(--mono);font-size:11.5px;border:1.5px solid var(--ink);padding:5px 9px;background:var(--paper)}
+  .ms b{color:var(--blue)}
+  .mbars{display:grid;gap:6px;padding-top:12px}
+  .mrow{display:grid;grid-template-columns:1fr minmax(120px,150px);gap:10px;align-items:center;font-family:var(--mono);font-size:12px}
+  .mtrack{height:16px;background:rgba(22,24,31,.07);position:relative}
+  .mfill{height:100%;background:linear-gradient(90deg,var(--blue),var(--red))}
+  .mtxt{color:rgba(22,24,31,.7);overflow-wrap:anywhere}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;padding-top:14px}
+  .chip{font-family:var(--mono);font-size:11.5px;border:1.5px dashed var(--red);color:var(--red);padding:4px 8px}
+  .chip.grey{border-color:rgba(22,24,31,.4);color:rgba(22,24,31,.55);border-style:dotted}
+
+  /* Smash */
+  .slots{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .slot{position:relative;aspect-ratio:3/4;border:2px dashed var(--ink);background:var(--paper-2);overflow:hidden;display:grid;place-items:center}
+  .slot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .slot .ph{font-family:var(--mono);font-size:12px;color:rgba(22,24,31,.45);text-align:center;padding:10px;line-height:1.5}
+  .slot .idx{position:absolute;top:0;left:0;background:var(--ink);color:var(--paper);font-family:var(--mono);font-size:11px;padding:3px 7px;z-index:2}
+  .slot input{position:absolute;inset:0;opacity:0;cursor:pointer}
+  .slot:focus-within{outline:3px solid var(--blue)}
+  .hint{font-family:var(--mono);font-size:12px;color:rgba(22,24,31,.6);margin:16px 0 26px;line-height:1.6}
+  .links{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:6px}
+  .links li{font-family:var(--mono);font-size:12px}
+  .links a{color:var(--blue);overflow-wrap:anywhere}
+
+  /* Ihr */
+  .picker{display:flex;flex-wrap:wrap;gap:8px}
+  .pick{font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.06em;
+    border:1.5px solid var(--ink);background:var(--paper-2);padding:8px 12px;cursor:pointer;color:var(--ink)}
+  .pick:hover{background:#fff}
+  .pick.anon{border-style:dashed;color:var(--red);border-color:var(--red)}
+  .pick[aria-pressed="true"]{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:3px 3px 0 var(--red)}
+  .group-label{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    color:rgba(22,24,31,.5);width:100%;margin:14px 0 2px}
+  .card{border:1.5px solid var(--ink);background:var(--paper-2);box-shadow:6px 6px 0 var(--blue);margin-top:26px}
+  .card-head{padding:18px;border-bottom:1.5px solid var(--ink);display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap}
+  .card-head h3{font-family:var(--display);font-size:28px;margin:0}
+  .card-head .sub{font-family:var(--mono);font-size:11.5px;color:rgba(22,24,31,.6);max-width:46ch}
+  .qa{display:grid;grid-template-columns:minmax(180px,34%) 1fr}
+  .qa > div{padding:11px 18px;border-top:1px solid rgba(22,24,31,.1)}
+  .qa .k{font-family:var(--mono);font-size:11.5px;color:rgba(22,24,31,.62);line-height:1.45}
+  .qa .v{font-size:15px;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere}
+  .qa .v.empty{color:rgba(22,24,31,.3)}
+  .empty-note{padding:22px 18px;font-family:var(--mono);font-size:13px;color:rgba(22,24,31,.6)}
+
+  footer{padding:60px 0 70px;font-family:var(--mono);font-size:11.5px;color:rgba(22,24,31,.5);border-top:1.5px solid var(--line);margin-top:60px}
+
+  @media (max-width:700px){
+    .qa{grid-template-columns:1fr}
+    .qa .k{padding-bottom:0}
+    .qa .v{padding-top:2px;border-top:none}
+    .slots{grid-template-columns:repeat(2,1fr)}
+    .mrow{grid-template-columns:1fr}
+    .bar-row{grid-template-columns:1fr;gap:2px}
+  }
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="eyebrow">Auswertung der Stufenumfrage · <b>ungefiltert</b></div>
+    <h1>WER<br>SEID<br>IHR?</h1>
+    <p class="lede">Alles vor der Namensfrage bleibt anonym: Antworten sind pro Frage neu gemischt, damit sich nichts zusammensetzen lässt. Ab „Wie heisst du?" gibt es Namen – oder eben nicht.</p>
+    <div class="stats">
+      <div class="stat">TEILNEHMER <b>15</b></div>
+      <div class="stat">FRAGEN <b>80</b></div>
+      <div class="stat">MIT NAMEN <b>8</b></div>
+      <div class="stat">ANONYM <b>7</b></div>
+      <div class="stat">MEISTGENANNT <b>ROBEL</b></div>
+    </div>
+  </div>
+</header>
+
+<nav>
+  <div class="wrap">
+    <a href="#fragen">Eure Fragen</a>
+    <a href="#geiz">Euer Geiz</a>
+    <a href="#smash">Smash or Pass?</a>
+    <a href="#ihr">Ihr</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <section id="fragen">
+    <div class="sec-head"><h2>Eure Fragen</h2><span class="tag">22 Fragen</span></div>
+    <p class="sec-sub">Diagramm, wo sich Antworten wiederholen. Frage anklicken für alle Antworten im Wortlaut – anonym und gemischt.</p>
+    <button class="toggle-all" data-target="fragen-list">Alle Antworten zeigen</button>
+    <div id="fragen-list"></div>
+  </section>
+
+  <section id="geiz">
+    <div class="sec-head"><h2>Euer Geiz</h2><span class="tag">13 Preise</span></div>
+    <p class="sec-sub">Preise auf logarithmischer Skala – sonst verschluckt die eine Milliarde alle 67 Cent.<br>Was sich nicht in Zahlen fassen ließ, steht als Chip darunter.</p>
+    <button class="toggle-all" data-target="geiz-section">Alle Antworten zeigen</button>
+    <div id="geiz-section"><div id="geld-list"></div>
+    <div id="geiz-txt" class="money-list"></div></div>
+  </section>
+
+  <section id="smash">
+    <div class="sec-head"><h2>Smash or Pass?</h2><span class="tag">9 Slots</span></div>
+    <p class="sec-sub">Neun leere Plätze, von euch hochgeladen, von Milo zu füllen.</p>
+    <p class="hint">Slot anklicken und ein Bild vom Gerät wählen – die Vorschau ist nur temporär.<br>Dauerhaft einsetzen: im Quelltext bei <code>data-slot="1"</code> das <code>src</code> des <code>&lt;img&gt;</code> auf den Bildpfad setzen.</p>
+    <div class="slots" id="slots"></div>
+    <p class="hint" style="margin-top:26px">Eingereichtes Material (anonym, gemischt):</p>
+    <ul class="links" id="smash-links"></ul>
+  </section>
+
+  <section id="ihr">
+    <div class="sec-head"><h2>Ihr</h2><span class="tag">44 Fragen</span></div>
+    <p class="sec-sub">Ab hier zählt die Antwort auf „Wie heisst du?". Wer keinen Namen genannt hat, bleibt Anonym – ohne Nummer, in zufälliger Reihenfolge.</p>
+    <div class="picker" id="picker"></div>
+    <div id="person-card"></div>
+  </section>
+
+</main>
+
+<footer class="wrap">
+  Stufenumfrage · 15 Teilnehmer · 80 Fragen · Antworten unverändert übernommen, Reihenfolge gemischt.
+</footer>
+
+<script>
+const DATA = {"meta": {"people": 15, "questions": 80, "named": 8, "anon": 7}, "fragen": [{"n": 1, "q": "Wärst du bei einem Attentat auf den von Daniels meist gehassten Lehrer dabei? Im spiel natürlich", "answers": ["Nein, dass ist Illegal", "Immer, Weg mit dem Wixxer, Bitte mit Folter", "Nein, dass ist Illegal", "Nein, dass ist Illegal", "Immer", "Immer, Weg mit dem Wixxer, Bitte mit Folter", "Immer, Weg mit dem Wixxer, Bitte mit Folter", "Nein, dass ist Illegal", "Nein, dass ist Illegal", "Nein, dass ist Illegal", "Nein, dass ist Illegal", "Nein, dass ist Illegal", "Immer, Weg mit dem Wixxer, Bitte mit Folter", "Immer, Bitte mit Folter", "Nein, dass ist Illegal"], "chart": {"type": "bar", "items": [{"label": "Nein, dass ist Illegal", "count": 9}, {"label": "Immer", "count": 6}, {"label": "Bitte mit Folter", "count": 5}, {"label": "Weg mit dem Wixxer", "count": 4}], "multi": true, "base": 15}}, {"n": 2, "q": "Wie viele Kinder willst du haben", "answers": ["3", "Alle", "2", "4", "2-3", "2", "1-4", "Es ist wichtig nachzudenken, ob es sinnvoll ist, Kinder in diese Welt zu setzen und wie sich die Situation in der Zukunft entwickelt. Ansonsten wäre es zwei.", "0!!!", "2", "1-2", "Alle", "2", "4."], "chart": null}, {"n": 3, "q": "Wer ist der Beste in Geometry Dash?", "answers": ["Burak", "Burak und milo", "Burak", "Burak", "Zoink", "Burak", "Burak", "Burak", "Burak", "Burak", "Burak", "Burak", "Burak", "Shin", "Burak"], "chart": {"type": "pie", "items": [{"label": "Burak", "count": 12}, {"label": "Zoink", "count": 1}, {"label": "Burak und milo", "count": 1}, {"label": "Shin", "count": 1}], "multi": false, "base": 15}}, {"n": 4, "q": "Darf ich Milo's Katze Essen?", "answers": ["Nein, Nope, Bitte nicht, nah, 🚫, nuh uh, Non, Option 8, No, ≽^•⩊•^≼ (+ ASCII-Katze)", "≽^•⩊•^≼", "Option 8, ≽^•⩊•^≼", "nuh uh", "🚫", "≽^•⩊•^≼", "ASCII-Katze", "Nein, Nope, Bitte nicht, nah, 🚫, nuh uh, Non, Option 8, No, ≽^•⩊•^≼ (+ ASCII-Katze)", "Nein", "Bitte nicht", "≽^•⩊•^≼", "nuh uh", "Option 8", "Option 8"], "chart": null}, {"n": 5, "q": "Würdest du mich noch lieben Wenn ich ein wurm wäre?", "answers": ["abhängig von länge", "Klar", "Nein.", "Ich liebe dich auch jetzt nicht", "Nein, ich würde dich zertreten", "Dich nicht", "Kommt drauf an, welche", "Nö", "Nah", "Ja immer ❤️ (außer links Wähler)", "Nein", "Ich bau dir eigenhändig ein Terrarium und hab dich immer bei mir", "Ne irgendwie nicht", "Ein Regenwurm?", "Klar bro :)"], "chart": null}, {"n": 6, "q": "War Napoleon Gut?", "answers": ["Napoleon war eine der entscheidendsten Figuren des 19 Jahrhunderts. Er hat die grundfeste der französischen Revolution wieder über den Haufen geworfen und völlig neue Grundsätze in Europa gesetzt. Also ja.", "Nö, er war Franzose", "Ambivalent, aber kritisch zu bewerten, weil seine Fortschritte stark an Machtpolitik und Gewalt gebunden waren. Er war ein Modernisierer mit autoritären, kriegerischen Mitteln. Er stärkte Rechtsordnung, Verwaltung und Reformen, zugleich führte er Eroberungskriege, unterdrückte politische Freiheit und verursachte massives Leid in Europa.", "Nein er war ein Franzose", "idk bro ich hab geschichte lowkey abgewählt", "Goat", "Naja", "Nein. [Erläuterung]", "Die historische Figur Napoleon Bonaparte hatte großen Teil an noblen Taten wie der Französischen Revolution. Allerdings überwiegt, zur bewertung der Person, hier die größe des Leids, welches er über west Europa gebracht hat.", "Nö er hat ver hindert dass das heilige deutsche Reich deutscher Nationen tausend Jahre besteht", "Absolut keine Ahnung.", "Nahhhh bro", "Er hat Menschen getötet und war Franzose ..also ja :)", "Nope wegen Krieg und so"], "chart": {"type": "pie", "items": [{"label": "Nein", "count": 7}, {"label": "Ja", "count": 3}, {"label": "Ambivalent", "count": 2}, {"label": "Weiß nicht", "count": 2}], "multi": false, "base": 14}}, {"n": 7, "q": "Wer Stirbt in einem Horrorfilm zuerst?", "answers": ["Daniels", "Burak", "Mauro", "Eric", "Jonathan", "Eric", "Eric", "Eric", "Jonathan", "Mauro", "Shin", "Robel", "Julian", "Julian", "Mauro"], "chart": {"type": "bar", "items": [{"label": "Eric", "count": 4}, {"label": "Mauro", "count": 3}, {"label": "Julian", "count": 2}, {"label": "Jonathan", "count": 2}, {"label": "Robel", "count": 1}, {"label": "Shin", "count": 1}, {"label": "Burak", "count": 1}, {"label": "Daniels", "count": 1}], "multi": false, "base": 15}}, {"n": 8, "q": "Würdest du eine Dunkelhäutige Person daten?", "answers": ["Ja", "Ja", "Ja", "Ja", "Warum nicht ?", "Nein", "Ja", "Ja", "Ja", "Ja", "Sry einf nicht mein Typ", "Nicht mein Type", "Nein", "NEIN!!!", "Ja"], "chart": {"type": "pie", "items": [{"label": "Ja", "count": 10}, {"label": "Nein", "count": 3}, {"label": "Anders", "count": 2}], "multi": false, "base": 15}}, {"n": 9, "q": "Was ist dein typ Frau?", "answers": ["Kp", "Schlau, Selbstbewusst und etwas verrückt", "Idc", "Overall Hübsch und guter Charakter", "Bruder wasn Typ? Keine Ahnung muss halt passen, hab kein Typ.", "sie trägt die hose", "Lebendig", "Milo", "Langhaarig, sportlich aktiv und ähnlich groß", "Lena", "Alles was mir in die Quere kommt U15", "5,7–5,9: nordafrikanische, arabische oder osmanische, politisch gebildete, akademisch(vorallem stem) versierte Baddie", "Offen", "Blond und blaue Augen", "Hot, Lustig"], "chart": null}, {"n": 10, "q": "Worauf achtest du bei einer Partnerin?", "answers": ["Interessen und Verhalten in Konflikt?", "Kompatible Zukunftsansichten, Werte", "Eigenständigkeit, Liebevoll, Kommunikativ", "Charakter", "Intelligenz und Geld", "Lebendig", "warum wird partnerin angenommen", "Hatte ich noch nicht 😭😭😭.....", "Ehrlichkeit, Humor, Zuverlässigkeit, Empathie, Bodenständigkeit, Kompromissbereitschaft, Unabhängigkeit, gemeinsame Interessen, Unterstützung bei Zielen, Vertrauen und natürlich (wie eric) brüste 😂 (spaß)", "Humor und so und die sichtbaren Sachen", "Personalität und Inteligenz", "Das es Milo ist", "T*****, A****, Gesicht :)", "Siehe oben du opfer", "Persönlichkeit 90% Aussehen 10%"], "chart": null}, {"n": 11, "q": "Wenn wir könnten, wer würde am ehesten schwanger werden?", "answers": ["Bosbach", "Eric", "Jonathan", "Bosbach", "Jonas", "Finn", "Mauro", "Bosbach", "Eric", "Jonas", "Eric", "Shin", "Finn", "Jonathan", "Daniels"], "chart": {"type": "bar", "items": [{"label": "Bosbach", "count": 3}, {"label": "Eric", "count": 3}, {"label": "Jonas", "count": 2}, {"label": "Jonathan", "count": 2}, {"label": "Finn", "count": 2}, {"label": "Shin", "count": 1}, {"label": "Daniels", "count": 1}, {"label": "Mauro", "count": 1}], "multi": false, "base": 15}}, {"n": 12, "q": "Wer würde am ehesten auf ein Schneeball oder Piramieden scam reinfallen?", "answers": ["Eric", "Shin", "Daniels", "Mauro", "Burak", "Mauro", "Eric", "Mauro", "Jonathan", "Eric", "Robel", "Eric", "Robel", "Shin"], "chart": {"type": "bar", "items": [{"label": "Eric", "count": 4}, {"label": "Mauro", "count": 3}, {"label": "Robel", "count": 2}, {"label": "Shin", "count": 2}, {"label": "Daniels", "count": 1}, {"label": "Jonathan", "count": 1}, {"label": "Burak", "count": 1}], "multi": false, "base": 14}}, {"n": 13, "q": "Wer Labert am meisten?", "answers": ["Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel"], "chart": {"type": "pie", "items": [{"label": "Robel", "count": 14}], "multi": false, "base": 14}}, {"n": 14, "q": "Wer Sollte mal ruhig bleiben?", "answers": ["Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel"], "chart": {"type": "pie", "items": [{"label": "Robel", "count": 14}], "multi": false, "base": 14}}, {"n": 15, "q": "Wer könnte auch mal  seine Fresse halten?", "answers": ["Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel"], "chart": {"type": "pie", "items": [{"label": "Robel", "count": 14}], "multi": false, "base": 14}}, {"n": 16, "q": "Wer sollte sich jetzt bei Robel entschuldigen?", "answers": ["Milo", "Robel", "Robel", "Milo", "Robel", "Milo", "Robel", "Robel", "Milo", "Milo", "Robel", "Robel", "Robel", "Robel", "Milo"], "chart": {"type": "pie", "items": [{"label": "Robel", "count": 9}, {"label": "Milo", "count": 6}], "multi": false, "base": 15}}, {"n": 17, "q": "Wenn du eine Frau wärst, was wär dein Name?", "answers": ["Demeter", "Josephine.", "Finja", "Johanna", "Maltina", "Larsiii", "burka", "So ne elisabeth wäre lustig", "Mimzy", "Reina (Unstable reference aber tuffer Name)", "Keine Ahnung", "Lara(von meinen Eltern) ich würde mir Sophie, Maria oder Sappho geben", "Cleopatra"], "chart": null}, {"n": 18, "q": "Wenn du eine Frau wärst, was wär deine Persöhnlichkeit?", "answers": ["Idk", "Nicht anderes", "Stripperin", "Lieb, nett, sympathisch", "Meine einfach <3 wahrscheinlich bisschen mehr girly aber", "So wie Miral vielleicht. Mit mehr Sport", "Nicht Eric.", "Zu deepe fragen für morgens auf dem Klo", "die selbe", "+20 aggresivität, -40 kraft,", "Offen, sozial,....", "Kp broski", "Keine Ahnung", "Königin Elisabeth"], "chart": null}, {"n": 19, "q": "Wenn wir ums Überleben kämpfen, dürfte ich  deinen toten Körper dann essen um zu überleben?", "answers": ["Ja, guten Appetit", "Du kannst mich immer gerne anknabern... wenn du weißt was ich meine 😏", "Ja, bin eh tot", "Mir egal.", "Ja ich bin sowieso tot und jucks mich wircklich nicht", "Nur Lars Ruben dürfte das .", "Warum wäre ich denen tot?", "Nein, solange ich nicht aktiv von dir umgebracht werde würde ich nicht als erstes sterben", "Nein, ich denke nicht, dass das für beide Seiten appetitlich wäre. :(", "Klar, guten Hunger!", "lowkey muss, gibt ja viel zu geben", "Wenn ich tot bin warum nicht. Juckt doch nicht.", "Ja, wenn ich schon tot bin. Ist auch schon desöfterem vorgekommen, das Menschen in Not ihre Familienmitglieder gegessen haben, um zu überleben. Legitim.", "Ja, weil the fuck wird sonst damit passieren? Willst du mich begraben? Wenn du da happy mit bist genieß es", "Ja safe. Ist rational"], "chart": {"type": "pie", "items": [{"label": "Ja", "count": 7}, {"label": "Anders", "count": 6}, {"label": "Nein", "count": 2}], "multi": false, "base": 15}}, {"n": 20, "q": "Wer von uns hätte einen geheimen Boyfriend?", "answers": ["Robel", "Eric, Jonathan, Mauro, Robel", "Jonas", "Jonathan", "Milo", "Burak, Malte, Mauro, Milo", "Eric, Jonas, Lukas, Mauro", "Jonas", "Bosbach, Jonas, Milo", "Jonas", "Milo, Robel", "Burak", "Eric", "Jonathan", "Daniels"], "chart": {"type": "bar", "items": [{"label": "Jonas", "count": 5}, {"label": "Milo", "count": 4}, {"label": "Mauro", "count": 3}, {"label": "Eric", "count": 3}, {"label": "Jonathan", "count": 3}, {"label": "Robel", "count": 3}, {"label": "Burak", "count": 2}, {"label": "Malte", "count": 1}, {"label": "Lukas", "count": 1}, {"label": "Daniels", "count": 1}, {"label": "Bosbach", "count": 1}], "multi": true, "base": 15}}, {"n": 21, "q": "Was sieht besser aus?", "answers": ["Post Cut", "Post Cut, Post Cut weil topless", "Pre Cut", "Post Cut", "Pre Cut", "Post cut. Aber nur weil du kein tshirt an hast.", "Letzteres weil ohne Shirt", "Pre Cut, zählt shirt?", "So nackt ist schon hot", "Pre Cut", "Pre Cut", "Pre Cut, Flash nie wieder 😞", "Pre Cut", "Post Cut"], "chart": {"type": "pie", "items": [{"label": "Pre Cut", "count": 7}, {"label": "Post Cut", "count": 6}, {"label": "Anders", "count": 1}], "multi": false, "base": 14}}, {"n": 22, "q": "Was ist deine Lieblings Minecraft Mod?", "answers": ["Small Ships Mod", "Solas Shader (ik ist shader, aber theoretisch auch ne Mod. Sonst Create)", "Timeless&Classics:Zero", "Create ultimate Factory", "Irgendwas mit tnt", "Create / Aeronautics", "Create", "Create", "Wem vanilla nicht ausreicht ist selber schult", "Keine", "luckytnt", "Origins, Portal oder ars nouveau", "Pokémon mod", "Gooner Mod (kp gibt's die?)"], "chart": null}], "geld": [{"n": 23, "q": "Für wie viel geld würdest du jemanden Umbringen", "values": [{"text": "1.000€ (nicht real, kann nd einschätzen)", "v": 1000.0}, {"text": "100.000€", "v": 100000.0}, {"text": "167189,99 Euro", "v": 167189.99}, {"text": "200.000€", "v": 200000.0}, {"text": "400k", "v": 400000.0}, {"text": "500 000.", "v": 500000.0}, {"text": "1000k", "v": 1000000.0}, {"text": "Eine mio", "v": 1000000.0}, {"text": "1mio", "v": 1000000.0}, {"text": "20 mio", "v": 20000000.0}, {"text": "22.000.000", "v": 22000000.0}], "other": [{"text": "∞", "kind": "inf"}, {"text": "Unendlich", "kind": "inf"}, {"text": "Kommt drauf an wie ich sie töten muss", "kind": "other"}, {"text": "∞", "kind": "inf"}], "median": 500000.0, "answers": ["500 000.", "∞", "200.000€", "20 mio", "1000k", "167189,99 Euro", "1.000€ (nicht real, kann nd einschätzen)", "Eine mio", "400k", "100.000€", "Unendlich", "Kommt drauf an wie ich sie töten muss", "22.000.000", "∞", "1mio"]}, {"n": 24, "q": "Für wie viel geld würdest du zu einer Frau werden?", "values": [{"text": "20 ct", "v": 0.2}, {"text": "20", "v": 20.0}, {"text": "1.000€", "v": 1000.0}, {"text": "100k", "v": 100000.0}, {"text": "100k", "v": 100000.0}, {"text": "200k", "v": 200000.0}, {"text": "500.000€", "v": 500000.0}, {"text": "1237295,67 Euro", "v": 1237295.67}, {"text": "1,5Mio (Gender Pay gap)", "v": 1500000.0}, {"text": "50 mio", "v": 50000000.0}, {"text": "Eine Milliarde", "v": 1000000000.0}, {"text": "4 Milliarden am liebsten gar nicht.", "v": 4000000000.0}], "other": [{"text": "Für kein Geld (unendlich)", "kind": "inf"}, {"text": "Gar nicht", "kind": "never"}, {"text": "Unendlich", "kind": "inf"}], "median": 350000.0, "answers": ["20", "1237295,67 Euro", "Für kein Geld (unendlich)", "1.000€", "100k", "20 ct", "4 Milliarden am liebsten gar nicht.", "200k", "500.000€", "Gar nicht", "1,5Mio (Gender Pay gap)", "50 mio", "100k", "Eine Milliarde", "Unendlich"]}, {"n": 25, "q": "Für wie viel geld würdest du mir 100$ geben?", "values": [{"text": "67 Cent :)", "v": 0.67}, {"text": "2,01", "v": 2.01}, {"text": "87,47", "v": 87.47}, {"text": "87,759429€ (stand 13.07)", "v": 87.759429}, {"text": "90", "v": 90.0}, {"text": "95€", "v": 95.0}, {"text": "100", "v": 100.0}, {"text": "100$", "v": 100.0}, {"text": "100$", "v": 100.0}, {"text": "100$", "v": 100.0}, {"text": "101", "v": 101.0}, {"text": "101$", "v": 101.0}, {"text": "110 € (10% Rendite)", "v": 110.0}, {"text": "200$", "v": 200.0}, {"text": "200€", "v": 200.0}], "other": [], "median": 100.0, "answers": ["100", "200$", "100$", "67 Cent :)", "100$", "101", "87,47", "90", "110 € (10% Rendite)", "2,01", "101$", "95€", "87,759429€ (stand 13.07)", "200€", "100$"]}, {"n": 26, "q": "Für wie viel geld würdest du Hund essen?", "values": [{"text": "Man bekommt geld dafür?", "v": 0}, {"text": "Nen Fünfer.", "v": 5.0}, {"text": "10€", "v": 10.0}, {"text": "20?", "v": 20.0}, {"text": "Das ist voll nicht ok #nicht_vegan_ist_nicht_ok!!! Aber für nen Zwani...", "v": 20.0}, {"text": "100", "v": 100.0}, {"text": "500€", "v": 500.0}, {"text": "500", "v": 500.0}, {"text": "600€", "v": 600.0}, {"text": "1000", "v": 1000.0}, {"text": "10.000", "v": 10000.0}, {"text": "500000", "v": 500000.0}], "other": [{"text": "∞", "kind": "inf"}, {"text": "Unendlich", "kind": "inf"}, {"text": "∞ (aber nur weil vegan)", "kind": "inf"}], "median": 300.0, "answers": ["10.000", "600€", "500€", "1000", "500", "500000", "20?", "∞", "100", "Unendlich", "Das ist voll nicht ok #nicht_vegan_ist_nicht_ok!!! Aber für nen Zwani...", "∞ (aber nur weil vegan)", "10€", "Nen Fünfer.", "Man bekommt geld dafür?"]}, {"n": 27, "q": "Für wie viel geld würdest du mit einem Mann Sex haben?", "values": [{"text": "Wenn er heiß ist 0 (Chris Hemsworth)", "v": 0.0}, {"text": "Geht auch gratis?😏", "v": 0}, {"text": "0€", "v": 0.0}, {"text": "10", "v": 10.0}, {"text": "20", "v": 20.0}, {"text": "10k", "v": 10000.0}, {"text": "100000", "v": 100000.0}, {"text": "500k", "v": 500000.0}, {"text": "8.000.000€ (500.000€ als Frau)", "v": 8000000.0}, {"text": "100.000.000€", "v": 100000000.0}], "other": [{"text": "Für kein Geld der Welt", "kind": "never"}, {"text": "∞", "kind": "inf"}, {"text": "Gar nicht.", "kind": "never"}, {"text": "Unendlich", "kind": "inf"}, {"text": "Gar nicht", "kind": "never"}], "median": 5010.0, "answers": ["Für kein Geld der Welt", "∞", "10k", "100.000.000€", "Gar nicht.", "Wenn er heiß ist 0 (Chris Hemsworth)", "500k", "20", "Geht auch gratis?😏", "Unendlich", "0€", "10", "Gar nicht", "8.000.000€ (500.000€ als Frau)", "100000"]}, {"n": 28, "q": "Für wie viel geld würdest du mit Ryan Reynolds Sex haben?", "values": [{"text": "For freeeeeeee!", "v": 0}, {"text": "Kostenlos", "v": 0}, {"text": "Ich Zahl dafür", "v": 0}, {"text": "10?", "v": 10.0}, {"text": "100€", "v": 100.0}, {"text": "8k", "v": 8000.0}, {"text": "50000 .€", "v": 50000.0}, {"text": "20mio", "v": 20000000.0}, {"text": "100.000.000€", "v": 100000000.0}], "other": [{"text": "Gar nicht.", "kind": "never"}, {"text": "Für kein Geld der Welt", "kind": "never"}, {"text": "-200€", "kind": "never"}, {"text": "Hälfte von unendlich", "kind": "inf"}, {"text": "Gar nicht", "kind": "never"}, {"text": "-∞", "kind": "inf"}], "median": 100.0, "answers": ["For freeeeeeee!", "10?", "20mio", "100€", "100.000.000€", "Gar nicht.", "Kostenlos", "Ich Zahl dafür", "Für kein Geld der Welt", "8k", "-200€", "Hälfte von unendlich", "50000 .€", "Gar nicht", "-∞"]}, {"n": 29, "q": "Für wie viel geld würdest du mit mir Sex haben?", "values": [{"text": "Mach ich schon", "v": 0}, {"text": "1  Euro", "v": 1.0}, {"text": "12,37 euro", "v": 12.37}, {"text": "21", "v": 21.0}, {"text": "50k", "v": 50000.0}, {"text": "10.000.000€", "v": 10000000.0}, {"text": "20mio", "v": 20000000.0}, {"text": "300.000.000€", "v": 300000000.0}], "other": [{"text": "Gar nicht", "kind": "never"}, {"text": "Für kein Geld der Welt", "kind": "never"}, {"text": "Drei mal unendlich", "kind": "inf"}, {"text": "N/A", "kind": "never"}, {"text": "So viel Geld hat keiner", "kind": "never"}, {"text": "∞", "kind": "inf"}, {"text": "Hell na", "kind": "never"}], "median": 25010.5, "answers": ["Gar nicht", "Für kein Geld der Welt", "Drei mal unendlich", "21", "10.000.000€", "20mio", "N/A", "50k", "So viel Geld hat keiner", "1  Euro", "∞", "12,37 euro", "300.000.000€", "Hell na", "Mach ich schon"]}, {"n": 30, "q": "Für wie viel geld würdest du mit mir Sex haben?", "values": [{"text": "For freee lil one", "v": 0}, {"text": "1 Euro", "v": 1.0}, {"text": "Opfer macht Frage 2 mal", "v": 2.0}, {"text": "5£", "v": 5.0}, {"text": "45k", "v": 45000.0}, {"text": "20mio", "v": 20000000.0}], "other": [{"text": "N/A", "kind": "never"}, {"text": "∞", "kind": "inf"}, {"text": "Für kein Geld der Welt", "kind": "never"}, {"text": "Bitte, Milo du musst los lassen.", "kind": "never"}, {"text": "Gar nicht", "kind": "never"}, {"text": "Drei mal unendlich", "kind": "inf"}, {"text": "∞", "kind": "inf"}, {"text": "?", "kind": "other"}], "median": 3.5, "answers": ["N/A", "∞", "45k", "1 Euro", "For freee lil one", "20mio", "Für kein Geld der Welt", "5£", "Bitte, Milo du musst los lassen.", "Gar nicht", "Drei mal unendlich", "Opfer macht Frage 2 mal", "∞", "?"]}, {"n": 31, "q": "Für wie viel geld würdest du ein Jahr lang kein Handy mehr nutzen?", "values": [{"text": "5", "v": 5.0}, {"text": "100", "v": 100.0}, {"text": "10.000 Euro", "v": 10000.0}, {"text": "10k", "v": 10000.0}, {"text": "40k", "v": 40000.0}, {"text": "100.000€", "v": 100000.0}, {"text": "100.000€", "v": 100000.0}, {"text": "300k", "v": 300000.0}, {"text": "500000", "v": 500000.0}, {"text": "500k", "v": 500000.0}, {"text": "Eine Million.", "v": 1000000.0}, {"text": "1.000.000€", "v": 1000000.0}, {"text": "5.000.000", "v": 5000000.0}], "other": [{"text": "So ein gutes Jahresgehalt", "kind": "other"}, {"text": "Gar nicht.", "kind": "never"}], "median": 100000.0, "answers": ["500000", "Eine Million.", "5.000.000", "5", "100", "100.000€", "100.000€", "1.000.000€", "500k", "40k", "So ein gutes Jahresgehalt", "Gar nicht.", "10.000 Euro", "300k", "10k"]}, {"n": 32, "q": "Für wie viel geld würdest du ein Jahr deiner Lebenserwartung aufgeben?", "values": [{"text": "10", "v": 10.0}, {"text": "10.000€", "v": 10000.0}, {"text": "50k", "v": 50000.0}, {"text": "100000", "v": 100000.0}, {"text": "1000000 Euro", "v": 1000000.0}, {"text": "1.000.000€", "v": 1000000.0}, {"text": "1 mille", "v": 1000000.0}, {"text": "5 mio", "v": 5000000.0}, {"text": "5mio", "v": 5000000.0}, {"text": "100.000.000€", "v": 100000000.0}], "other": [{"text": "Gar keins", "kind": "never"}, {"text": "Für kein Geld der Welt", "kind": "never"}, {"text": "Unendlich", "kind": "inf"}, {"text": "∞", "kind": "inf"}, {"text": "∞", "kind": "inf"}], "median": 1000000.0, "answers": ["Gar keins", "10.000€", "Für kein Geld der Welt", "5 mio", "1000000 Euro", "1.000.000€", "5mio", "100.000.000€", "100000", "Unendlich", "∞", "50k", "10", "∞", "1 mille"]}, {"n": 33, "q": "Für wie viel geld würdest du Zehn Jahre deiner Lebenserwartung aufgeben?", "values": [{"text": "1000", "v": 1000.0}, {"text": "750000", "v": 750000.0}, {"text": "1.000.000€", "v": 1000000.0}, {"text": "5 Mill", "v": 5000000.0}, {"text": "10000000 Ewro", "v": 10000000.0}, {"text": "50mio", "v": 50000000.0}, {"text": "100.000.000% (Jahresgehalt * 10)", "v": 100000000.0}, {"text": "100mio", "v": 100000000.0}, {"text": "Eigentlich für kein Geld aber ich sach ma 500 Millionen", "v": 500000000.0}, {"text": "100 000.000.000€", "v": 100000000000.0}], "other": [{"text": "Für kein Geld der Welt", "kind": "never"}, {"text": "Same", "kind": "never"}, {"text": "∞", "kind": "inf"}, {"text": "Unendlich", "kind": "inf"}, {"text": "∞", "kind": "inf"}], "median": 30000000.0, "answers": ["100.000.000% (Jahresgehalt * 10)", "Eigentlich für kein Geld aber ich sach ma 500 Millionen", "Für kein Geld der Welt", "Same", "∞", "Unendlich", "100 000.000.000€", "100mio", "∞", "5 Mill", "10000000 Ewro", "750000", "1.000.000€", "50mio", "1000"]}, {"n": 34, "q": "Für wie viel geld würdest du dir ein Tatto stechen lassen, dass wir anderen aussuchen?", "values": [{"text": "100", "v": 100.0}, {"text": "1k", "v": 1000.0}, {"text": "2000", "v": 2000.0}, {"text": "4500 i guess", "v": 4500.0}, {"text": "10k", "v": 10000.0}, {"text": "20k", "v": 20000.0}, {"text": "100.000€", "v": 100000.0}, {"text": "200k", "v": 200000.0}, {"text": "500000", "v": 500000.0}, {"text": "1Mio", "v": 1000000.0}, {"text": "1.000.000€", "v": 1000000.0}, {"text": "2 Millionen", "v": 2000000.0}], "other": [{"text": "Kein trust", "kind": "never"}, {"text": "Für kein Geld der Welt", "kind": "never"}, {"text": "∞€", "kind": "inf"}], "median": 60000.0, "answers": ["10k", "Kein trust", "2 Millionen", "Für kein Geld der Welt", "200k", "1Mio", "20k", "4500 i guess", "1.000.000€", "1k", "∞€", "2000", "100", "500000", "100.000€"]}], "geiz_txt": [{"n": 35, "q": "Was ist das Verrückteste, dass du für 20€ machen würdest?", "answers": ["Kp", "Ein beliebiges Weib aus unserer Stufe cracken", "In den Club mit milo", "Vom 5 Meter Turm springen", "Idk", "Nichts", "Ich werd nichts machen!!", "Klippenspringen", "Lola fragen wie schwer sie ist", "Frittierte Heuschrecke Essen", "trap schreibt man mit einem einzelnen p (auf der nächsten seite der umfrage)", "Runter bücken um es aufzuheben", "48h Berlin ohne Unterkunft wenn mir Essen udn Anreise auch bezahlt werden"], "chart": null}], "smash": ["https://drive.google.com/open?id=14APoGaTRn-ZYCVfy3piKqDxrPaVjQeq9", "https://drive.google.com/open?id=1ksNXnRv9M7DX5kfyxFVVbvw8hF1JTEzj", "https://drive.google.com/open?id=1E1OIAOmq6mlyjScQ5a0B_xDzqdLs6luB", "https://drive.google.com/open?id=1pFB4-zLG951f4f5yahiA5qx_55CRr2Xv", "https://drive.google.com/open?id=1X6-3l2DxSyHBQqTHWDxYNysuPOPoQTut", "https://drive.google.com/open?id=1dncQ8fyhfJPvmUjAVqkLRdI_W1yMFEcp", "https://drive.google.com/open?id=1hNJ76MrmCwZ9FpUgXq93trg9e0L5XDNH"], "ihrQuestions": ["Wie Heisst du?", "Was sind so deine wichtigsten Hobbies?", "Sammelst du etwas?", "Wofür Lebst du? (metaforisch)", "Was ist für dich das wertvollste, dass du besitzt?", "Was ist bis jetzt das beste, dass du erreicht hast?", "Was ist auf deiner Bucket list?", "Was ist deine aktuelle beste erinnerung?", "Was ist deine beste Kindheits erinnerung?", "Was ist dein Lieblings Feiertag?", "Wer kennt dich am besten?", "Welche fähigkeit würdest du gerne lernen?", "Was ist der coolste ort an dem du warst? Bilder unten", "Bilder ablage:", "Was macht dich besonders?", "Worauf freust du dich?", "Was ist dein Nutzloses Talent?", "Du kannst unendlich von einem Gegenstand haben. Welchen gegenstaand nimmst du?", "Was ist dein lieblings Witz?", "Wie willst du als Rentner sein?", "Lieblings Webseite?", "Wenn du einen Film nochmal zum ersten mal schauen könntest, welchen?", "Dich in 3 Worten... oder mehr, mir egal", "Was ist die beste Bussines idee die du hattest?", "Wenn du den Lotterie Jackpot gewinnst, was würdest du machen?", "Willst du tattos? Welche?", "Was sind deine Allergien?", "Was machst du im Sommer am liebsten?", "Lieblings Essen?", "Welchen Tier hättest du am liebsten als Haustier?", "Lieblings Sport?", "Wenn du ein Event der vergangenheit ändern könntest, welches?", "Was ist für dich Erfolg?", "Würdest du sagen Personen können sich ändern?", "Was ist der sinn des Lebens?", "Wie Trinkst du Kaffe am liebsten?", "Wo siehst du dich in 10 Jahren?", "Bester Anmachspruch, den du kennst", "Lieblings Fach?", "Welches Schulfach sollte es geben?", "Wenn du spontan einen Vortrag halten müsstest, worüber?", "Arbeitest du? Wo?", "Lieblings Snack?", "Wie sehr haben dich die ganzen rechtschreibfehler (primär groß und kleinschreibung) genervt?"], "named": [{"label": "Lars", "named": true, "raw": "Lars", "ihr": ["Lars", "Programmieren, lesen und spazieren", "PDFs, phio Bücher", "Sophia", "Signiere Version von einem Philosophie Text", "1.0 in dat algo", "Philosophie Publishing udn noch paar andere Dinge", "I don’t Know", "I don’t Know", "1.11", "Luka", "Kroatisch", "Geheim", "", "Hab interessante Dinge zu sagen", "They", "Kann gut bs?", "Essen", "I don’t Know", "Grimmig", "YouTube", "Europe the last battle", "Corny, 140+ iq, sub 6 inches", "Non disclosure", "Das selbe wie gestern hoffentlich", "Arsch Geweih", "Keine", "Sterben", "Auflauf", "Kuh", "Volleyball", "Nichts", "Hannibal in den Alpen", "Ja", "Gibt kein", "Gar nicht", "Quant dev oder Philosophie Prof", "Zeig titten", "Mathematik", "Soziologie", "Propositional Logik", "Ja geheim", "Nuts", "Sehr"], "filled": 43}, {"label": "Jonas", "named": true, "raw": "Jonas Robert Johannsen", "ihr": ["Jonas Robert Johannsen", "Wasserball", "Negativ", "Für meinen natürlichen internalisirten Lebensinstikt", "Meine Familie", "4. Platz bei der DM", "Herren Bundesliga spielen", "Idk", "Idk", "Weihnachten", "Meine Mutter", "Idk", "Miniatur Wunderland Hammburg oder Slettestrand Dk", "", "Kann ich doch nicht aus meiner Perspektive sagen", "Urlaub", "Mit der Zunge in der Nase bohren ist lowkey underrated", "Brot. Und dann so Jesus like das an alle verteilen.", "", "Ich will mich den ganzen Tag über diese junge Generationen beschweren", "PornHub.org", "Oppenheimer", "Ich bin Jonas", "Wie wäre es: ich gehe in benachteiligte gebiete und biete den Schwangeren da einen kostenfreien vorad an milchpulver zum stillen an. Der twist ist aber ich gebe ihnen nur soviel, dass sie selber nicht mehr stillen könne und an mein Unternehmen gebunden sind. Gleichzeitig kaufe ich aber auch alle Rechte am Grundwasser auf und vergaufe es an die Bevölkerung überteuerd zurück, so, sie keinen weg an meiner Firma vorbei haben. MfG Die Nestle ag", "Nimanden sagen und erst mal anlegen, in Gold I guess", "Nein", "Fast alle Bäume, Fast alle Gräser, Pollen, alle Arten von Tierhaaren und Hausstaubmilben", "Trainiren", "Bratkartoffeln", "Keins. Aber wenn dann so ein Igel oder so", "Wasserball 🤽‍♂️", "Alle Chancen die ich hatte Milo zu beseitigen", "Das Erlangen des Gefühls erfolreich gewesen zu sein", "Ja", "42", "Garnicht", "In anbetracht der Uhrzeit (01:29 Uhr) im Bett.", "Bist du meine Arbeitszeit, denn ich würde dich gerne auf der Toilette totschlagen", "Deutsch (Kuss Manka) oder Sport", "Informatik LK :(", "Veganismus", "Nö", "Dm Vegane Snackwurst", "Hier sind Rechtschreibfehler lol"], "filled": 42}, {"label": "Shin", "named": true, "raw": "Shin Kim", "ihr": ["Shin Kim", "Baseball", "Ne nicht wirklich", "Ich lebe für nichts. Ich bin nur ein wasser die flißt. Egal was passiert oder wo ich bin, ich fließe einfach weiter", "Wahrscheinlich mein pc setup", "Dass ich von freunden vermisst werde nach dem schulwechsel", "1v1 kampf turnir mit der gang, skydiving, portal 3 spielen, in antarktis reisen", "Hatte im Baseball ein double geschlagen", "Hatte mal ich packe meine Tasche in koreanischen Grundschule gespielt, da war ich und noch ein mädchen noch übrig. Es war scheiß viel dingern so 18 oder so ungefähr und so lange gespielt, dass wir wegen gong aufhören musste.", "Tag der deutschen Einheit. Die placement ist so geil", "Mats Wimmer und Malte", "Teleportation. Ich bin zu faul. Auch so ich brauch kein schlaf und bin komplett fit ohne schlafen aber ich kann noch schlafen gehen. Das wär peak", "Ich geh nicht raus. Aber kroatien war geil", "", "Koreaner, eher Rational aber kan mitfühlen. Lieber listener als yapper", "Bissen auf meine neue schule, fand aber inda schon geiler", "Selektives Langzeitgedächnis. Ich kann mich an unnötigen dingen so gefühlt bis zum tode erinnern aber wichtige dinger vergesse ich in milisekunden", "Wasser. Praktisch in alltag und auch in bestimmte fälle. Mit keine vorgaben kann ich auch so mit hochdurck irgendwelche scheiße anbauen", "Die ganze son variarionen in Insta", "Ich würde einfach so mit meine frau chillen und so die lasten von meinen kindern erleichtern durch unterstützungen", "Naver webtoons", "My hero academia: two heroes", "Grasfeindlich, rational und nachteule", "Vappy bird: vape mit interaktiven spielen auf dem display.", "Hoffendlich in bank/ s&p 500 stecken, haus kaufen und eif damit leben", "Ne", "Hausstaubmilben und katze. Maybe noch pollen", "Im pool chillen", "짜장면 jajangmeon so nudel mit schwarze bohnen paste und ja such in google nach", "Ein maincoon katze und golden retriver/ syberian husky", "baseball", "Dass ich nicht direkt nach geburt gesagt hab, dass mein eltern bitcoin kaufen sollte", "Leben. Am ende bringt eh nichts irgendwas", "Ja bestimmt. Personen ändern sich jederzeit. Permanent ist eine andere frage. Und ich sag aber auch, dass sich menschen auch in der lage ist, permanent sich zu ändern", "Nichts. Sinn des lebens gibt es nicht und die suche danach wird auch nichts bringen. Leben hat kein sinn, was auch bedeutet, dass du alles machen kannst.", "Bei uns in laden gibt es so kaffe erdbeere latte und das ist so peak. 160 ml milch, 60 ml hausgemachte erdbeersyrup und ne shot espresso", "In einen Lab verrotten wenn aes klappt.", "Hab angst vor frauen", "Chemie. Einfach, eher Logisch und bissen auswendiglernen nervt aber schon", "Haushalt. So kochen zumbeispiel oder wie man kleider repariert.", "Absurdism. Ich hab das zwar noch nocht so ganz verstanden aber ich kann immernoch die zentrale ideen rüberbringen", "Bei meine Eltern bei Manna bunsik.", "Eis und schokolade. Auch so java chip frappuchino bei starbucks ist peak.", "Ewm ich kann selber nicht deutsch also hab ich nicht mal so richtig gemerkt"], "filled": 43}, {"label": "Milo", "named": true, "raw": "Milo", "ihr": ["Milo", "Leichtathletik, Serien, viel kleines wie Häkeln", "Skills", "Liebe", "Miles Seele", "Meine Beine 🤤🤤", "Freundin (noch eine), Das eine illegale, Kinder, GELD!!", "Gute Frage… uhhhhhhh sag ich nicht", "Die Scheidung meiner Eltern", "Hanukkah", "Burak der breeee", "Musik… alles", "Überall mit den homies", "https://drive.google.com/open?id=16KsMtBmeUoQb5c60Ly9TQuMsjVftXC5t", "Meine Moral 💀", "Midgard, party, Ferien", "Pi bis zur 100 nachkommerstelle aufsagen", "Geld wär langweilig, also nehm ich Schießpulver oder andere explosive Sachen", "Erzähl ich euch lieber", "Gamer Weil Zeit", "Meine eigene… wenn ich die endlich einrichte", "The princess bride perhaps… oder your name", "Jack of All trades", "Pizza Ofen im Auto für frische Pizza; Für den Grill so räucher Zeug", "Neues setup und Lehrer bestechen", "Eigentlich nicht", "N/A", "Faulenzen", "Sushi", "Katzen (viele)", "Klettern", "Harambes tot", "Veränderung", "Klar…", "Gibt keinen… womp womp", "Garnicht", "", "Wusstest du der Abstand von *Schulter bis Nacken mit der Hand markieren* ist der gleiche wie von *andere Schulter und Hand da lassen* hier bis hier", "Alles mit den homies", "Psychologie", "Alles  LGBTQIA++ related", "Ich bin Angestellter aber ich arbeite nicht", "Dunkle schokolade", "Ich mach genau so viele"], "filled": 43}, {"label": "Sir Jon", "named": true, "raw": "Sir Jon", "ihr": ["Sir Jon", "Fußball, Klavier", "Schlechte Noten", "frauen", "Drei einhundert euro scheine", "Mir den Respekt der Stufe verdient", "Hollywood erobern (als Star)", "In der Grundschule gecracked zu werden (von Mitschülerin)", "Nach Deutschland rüber geschwommen", "9/11 (Family Guy reference)", "Das ist der Lars.(D)", "Ultimate Rizz", "Kp das erste was ich in meiner Galerie finde", "https://drive.google.com/open?id=11lGyL1KlbFBPrYTZP03gVak0u3dTxoRy", "Meine Größe und mein Ya...", "Keine Schule mehr (sry Jungs)", "Johnson rizzen", "Ein Euro Münzen.", "Deine Mudda Ahahahaaaaaaaaa", "Körperlich in guten Zustand", "Tagesschau.", "Zurück in die Zukunft.", "Lang, lustig, lachend.", "Grashalme verkaufen.", "Auswandern auf eine Insel und dort etwas bauen.", "Tottenham Hotspur Logo am Bein.", "Heuschnupfen und Insekten", "Schwimmen.", "Pizza.", "Katze.", "Fußball.", "Die Zeugung Mauros (sodass sie nicht passiert)", "Erfolgreich zu sein? Ig", "Definitiv.", "Goonen, Geld.", "Gar nicht💀", "Nicht in Deutschland 😭🙏", "\"Geiler Ar---\"", "Französisch.", "Steuerhinterziehung.", "Fußball.", "Ich gebe Klein Hollands Nachhilfe", "Schokolade.", "Lwk überhaupt nicht."], "filled": 44}, {"label": "Leonard", "named": true, "raw": "Leonard", "ihr": ["Leonard", "Gym", "Nahh", "Im Gym und Internet", "Uhr", "Kp gute Noten ig", "Usa Waffen schießen, Tigerhai und Walhai sehen", "", "", "Alle", "Eltern", "S-Tier Programming", "Südafrika und Düsburg", "", "Dedication ig", "Poker", "Codmobile", "Goldbarren", "Keine Angabe da verfassungswidrig", "Reich", "YouTube", "John Wick 1", "", "Privately owned Palantir operated predator drone", "Das Geld investieren und ne fette Reise machen", "Oh hell nawww", "Pollen", "Nicht überhitzen", "Rindfleischsuppe", "Ara", "Gymmmm", "WW1/2 halt wegen Moral und so aber deep down Fall der Udssr und die Abschaffung der Sechuan sauce bei Mcces", "Geld und Connections", "Safe", "Überleben", "Mit Hafermilch", "Hohe Position bei einem der Big4", "K.a", "Matheeee", "Finanzen und Aktien", "Warum Religion bullshit ist", "Ja Edeka", "Ungarisch Chips", "Nahh"], "filled": 40}, {"label": "Fynn", "named": true, "raw": "Fynn", "ihr": ["Fynn", "Jonglieren, Gym, Klavier", "Küsse mit Männern", "Spaß", "Gibt nichts physisches", "War im Ausland", "Während Studium ins Ausland", "Gibt nicht eine spezielle", "Lustige Taschenbücher", "Weihnachten", "Eric (mein Bruder)", "Handstand", "Son Strand im Urlaub", "https://drive.google.com/open?id=1iH9ab1QhnmnDryQrOxarQ9_Fj7uTZupb", "Humor, Offenheit", "Abi haben und raus aus Aachen", "Körperliche Ausdauer (benutz ich für nichts)", "Geld I guess", "Ein Skelett kommt in eine Bar und bestellt ein Bier und einen mob", "Cooler Opa der Geld verschenkt", "******* spaaaaß Chess.com", "Schwierig aber ich gehe mit Inception", "Energiegeladener, etwas aufdringlicher Typ", "In Deutschland billig Wasser kaufen (weil tf kostet hier nur so 34 Cent die Flasche) und in Afrika dann für 2€ die Flasche verticken", "Anlegen ETFs und so", "Ne", "Hab keine (imagine man kriegt so nen nerf vom Leben)", "Freunde und so", "Carbonara", "Schildkröte", "Badminton oder Tennis", "Ein vollidiot kam 1941 auf die Idee die UdSSR anzugreifen. Das muss geändert werden", "Glücklich sein", "Ja", "Spaß", "Gar nicht", "Wohlhabend, Stadt, guter Job, viele Freunde", "Jo hast du meinen Werkzeugkasten gesehen? Weil wenn ich dich sehe muss ich dringend diesen Hammer verstecken", "Alles arsch, Schule ist ein beschissenes System", "So Lebensplanung oder so", "Filme", "Medienfirma", "Nüsse (milos)", "Ging, pieramide war hart"], "filled": 44}, {"label": "Malte", "named": true, "raw": "Name ist so egal, du weißt, wenn ich ehrlich antworte, so oder so, das ich es bin, Malte. Hi Bre", "ihr": ["Name ist so egal, du weißt, wenn ich ehrlich antworte, so oder so, das ich es bin, Malte. Hi Bre", "TechnikTeam, Freunde, Zocken, Familie. Daraus besteht mit Schule aktuell gefühlt mein Leben", "Erfahrung.", "Weiß nicht. Für manche Menschen aktuell.", "Wenn man nach physischem Wert geht, mein PC. Nach nicht physischem Wert, Menschen.", "Ein Kompliment von Herr Wirtz xD. Zitat: \"Ey Malte, der Sound auf dem Schulfest war der beste den ich jemals vom TechnikTeam gehört habe\". Cinema und holy Glaze", "Ein SOAD Konzert besuchen.", "Rückblikend auf das Quartal gesehen: Schulfest. Meine erste komplett eigens geleitete Veranstaltung. Hat unfassbar viel Spaß gemacht. Danach am Abend auch noch mit Freunden gefeiert. Cinema Tag.", "Gibt vieles. Keine Ahnung", "Hab keinen. Find alle cool, weil ich so oder so nichts feier :D is halt frei.", "Von Freunden: David.", "Gibt mehreres, fällt mir grad nd ein.", "Okö. Gibt mehrere coole Orte, ich fotografiere sowas nur nicht.. deswegen kann nur Bild von einer Nachtwanderung im Gebirge schicken, die ich ganz cinema fand.", "https://drive.google.com/open?id=1AVl_aR9RrdTfXdWm_73Jek98OTp72eAN", "Vll das ich selbstgetrieben bin.. ich weiß nicht.", "Auf meinen Job.", "Mir fallen in Songs mixing Fehler auf. Das dumme: Du hörst dir dann immer und das fuckt ab.", "Gute Frage. Weiß ich nicht.", "Frag Fabian.", "Hoffentlich nicht alt und kaputt..", "pornhu... ähhhhhhh ich meine youtube.com :>", "Weiß nicht.", "Zielstrebig, technikaffin, verantwortungsbewusst", "YouTube höhö", "Kommt drauf an wie viel Geld.. bei so 100 Mio würde ich Equipment kaufen und eine eigene Firma aufmachen.", "Hatte mal überlegt, aber mich wieder dagegen entschieden.", "Pollen.", "Kalt duschen", "Lasange", "Kaninchen, hab ja 2", "Laufen ist ganz cinema eigentlich.", "Familienprobleme und Freund, den ich verloren hab.", "Wenn etwas klapptx gut gelaufen ist, ich das Ziel erreicht hab, was ich mir gesetzt habe.", "Ja. Können sie.", "Milo ist der Sinn des Lebens.", "Schwarz oder mit bissl Sahne.", "Hoffentlich am FoH", "Kp.", "Mathe is ganz cool eigentlich.", "Technik und zwar angewandte Technik und nicht son Kram den wir mit Schmitz machen.", "Das ist obvious.", "Nicht fest, nope.", "Bubensahn.... ähhh Eis.", "😂 bissl abgefuckt hat es, ja."], "filled": 44}], "anon": [{"label": "Anonym", "named": false, "raw": "is eig ziemlich klar", "ihr": ["is eig ziemlich klar", "zeichnen, gaming", "dinge die ich bereue", "metaphorisch*", "meine minecraft ps4 legacy edition welten", "hier sein (und BB 100%)", "auf dem mond landen", "aller erste lethal company session (absolute cinema)", "mc ps4 legacy edition roleplay mit meiner schwester", "Was wird mein ahh feiern twin ✌️🥀🪫", "Milo", "sozial kompetent sein", "zuhause", "", "die konfiguration an eigenschaften die mich als person beschreiben welche zu viele sind um aufzulisten", "chapter 6", "π", "femboys", "", "der beste g dasher über 80", "pointercrate.com", "spiderverse", "ähm also erm", "r34 comissions", "anderen menschen geben", "nah", "larper", "g dashen", "patatesli börek", "", "schach", "Wie ist die frage gemeint? like etwas aus meinem leben oder auch etwas woran ich nicht teilgenommen habe?", "level complete!", "lowkey", "der den man es gibt", "nicht", "pro dasher/animierer/versagter lehrer", "der abstand von... (nah idk bro)", "mathe", "schach (nicht wirklich aber schon ein bisschen)", "die geschichte von top play in geometry dash", "good one", "all of the above", "lol hab ich wohl schon beantwortet"], "filled": 41}, {"label": "Anonym", "named": false, "raw": "Leck eier", "ihr": ["Leck eier", "Geld verdienen", "Ja C.E.R.T.S.", "Legacy", "Meine Freunde <3 (genuinely)", "Richtig cooler trade", "Jungle Extraction survival", "Gute Frage nächste frage", "Siehe oben", "4.06", "Ama / Tabea / maybe du oder Max noch", "Muscle up", "Dubaiii", "", "Meine Persönlichkeit inform von people talking", "Worklife", "Gibt keine (Phonk Sounds)", "So ein Purer Energieblock so", "Linke Menschen", "Rechts", "www.fdp.de", "1000 players simulate: rich vs poor civilization (mein ich ernst)", "Moralisch intakt aber rechts aus ❤️", "Sag ich nciht", "Investier", "Nein", "Keine", "Goonen", "Kluski", "Dawg", "Badminton", "Keine sogar, alles Findet seinen Weg", "Erfülltes Leben (Geld)", "Ja aber schwer", "Erfolg", "Gar nicht", "Blackrock / vanguard / State S", "Den mit dem ich hab meine Perle verloren möchtest du meine sein", "Mathe", "Ai", "Ai", "Blackrock", "Einsatz", "Digga herbe"], "filled": 43}, {"label": "Anonym", "named": false, "raw": "", "ihr": ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""], "filled": 0}, {"label": "Anonym", "named": false, "raw": "", "ihr": ["", "Zoggen", "Lego", "Kein plan", "Materialistisch oder Emotional?", "Keine Ahnung", "Schießen", "Keine Ahnung", "Keine Ahnung", "Jeder an d ich frei habe", "Mattis Höhl", "Schnell schneiden", "", "", "Meine Empathie (ja meine Empathie)", "Ende der schule", "Keine Ahnung", "Geld , vorausgesetzt die Welt Wirtschaft wird nicht gecrasht", "Keine Ahnung", "Keine Ahnung", "Nexus-mods.com", "Herr der ringe", "Egal", "Gar keine", "Schulden bezahlen falls ich welche hab und sonst es niemanden sagen", "Nö", "Sonnencreme", "Auf Herbst warten und Frühling hinterher trauern und vor allem überleben", "Keine Ahnung", "Katzen", "Keine Ahnung", "Hitler🔪🔪🩸☠️", "Das wissen etwas geschafft zu haben wofür man gearbeitet hat", "Kommt auf die Person an, es gibt halt Menschen die von Grund auf Böse sind", "Sterben", "Gar nicht", "Im Altersheim", "Kenne keine", "Geschichte", "Hauswirtschaft (Kochen etc.)", "Wie scheiße unser Schulsystem ist", "Lebenshilfe Aachen FeD", "Keine Ahnung", "Ist mir nicht wirklich aufgefallen"], "filled": 41}, {"label": "Anonym", "named": false, "raw": "Unbekannt", "ihr": ["Unbekannt", "Leichtathletik, Tischtennis, Gitarre, Fahrrad fahren/laufen", "Nope", "...", "", "", "Iron Man", "", "Familientreffen", "Jeder", "Ich", "Calisthenics", "Berge (vermutlich Österreich)", "https://drive.google.com/open?id=1-ItmIPPxGMBO7Hdlp6F5Yvr9zee4Q7rk", "", "Das Rentnerleben (am besten so schnell wie möglich)", "", "", "", "Viel Reisen, alle Dinge machen für die vorher keine Zeit war, entspannen", "", "Avengers Endgame", "Joa ne, läuft", "Handy Lampe", "Ne einsame insel kaufen und chillen", "Nein", "Keine", "Schlafen", "Nudeln", "Hund (Australien Shepard)", "Fußball", "Hitlers weg (nicht töten, sondern ihn zu einem anderen Menschen machen)", "Wenn man auf sich selbst stolz ist", "Bedingt, es kommt auf den Bereich an", "Leben", "Mit Milch oder Schwarz", "Im Spiegel", "Joa ne", "Sport", "Psychologie", "Welthunger", "Nipe", "Gummibärchen (natürlich vegan)", "Gar nicht, juckt"], "filled": 36}, {"label": "Anonym", "named": false, "raw": "", "ihr": ["", "Spaß haben", "Erfahrungen", "Meine Ziele", "Mein Leben", "Mein aktuelles alter", "Familie gründen", "", "", "Geburtstag", "Meine Mutter", "Fliegen", "Unterwasser", "", "Meine art", "Zukunft", "Augen zittern lassen", "Geld", "", "Cool", "", "", "", "", "Niemandem sagen", "Maybe", "Du", "Chillen", "Fleiscj", "Hund", "Sport", "", "", "Maybe", "Gemeinwohl", "Gar nicht", "Auf der erde", "", "", "Business", "", "Nö", "Ka", "Nicht aufgefallen"], "filled": 30}, {"label": "Anonym", "named": false, "raw": "", "ihr": ["", "Tennis, WoF, zocken", "Nicht wirklich", "Für ein erfülltes Leben", "Meine Familie", "Gutes Verhältnis mit Freunden und Familien", "Familie gründen", "Führerschein Prüfung bestanden", "Mit meinem Bruder Lego spielen", "Tag der Deutschen Einheit", "Meine Mutter", "Viele Sprachen zu beherrschen", "Berlin und Copenhagen", "", "Spaß am Leben", "Auf Zeit mit der Familie zu verbringen", "Extrem viel Star Wars Wissen zu haben", "Öl", "Keine Ahnung", "Ein netter Rentner", "YouTube", "Star Wars Episode III Die Rache der Sith", "Hilfsbereit, höflich mitfühlend", "Keine Ahnung", "Ein Urlaub in den USA mit meiner Familie", "Nein, keine Tattos", "Keine …, glaube ich", "Mit Freunden treffen und mit der Familie im Urlaub sein", "Pizza", "Löwen, Bären, Adler", "Zum gucken Fußball. Zum spielen Badminton oder Tennis", "Den zweiten Weltkrieg", "Glücklich zu sein", "Nicht alle Personen", "Glücklich zu werden", "Keinen Kaffee", "Mit einer gegründeten Familie", "Ich kenne keinen guten", "Geschichte/Latein", "Star Wars Geschichte", "Über den ersten Weltkrieg, über Star Wars", "Noch nicht, bald ;)", "Erdbeeren", "Ein wenig :)"], "filled": 42}]};
+const PAL = ['#2438D8','#FF3355','#16181F','#E8B21C','#128C7E','#7A3BD8','#9A968A','#0EA5E9'];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const nf = new Intl.NumberFormat('de-DE', {maximumFractionDigits:2});
+
+function money(v){
+  if(v >= 1e9) return nf.format(v/1e9)+' Mrd €';
+  if(v >= 1e6) return nf.format(v/1e6)+' Mio €';
+  if(v >= 1e3) return nf.format(v)+' €';
+  return nf.format(v)+' €';
+}
+
+/* Donut */
+function donut(items){
+  const total = items.reduce((s,i) => s+i.count, 0), R = 62, r = 34, C = 75;
+  let a = -Math.PI/2, paths = '';
+  if(items.length === 1){
+    paths = `<circle cx="${C}" cy="${C}" r="${(R+r)/2}" fill="none" stroke="${PAL[0]}" stroke-width="${R-r}"/>`;
+  } else {
+    items.forEach((it,i) => {
+      const s = a, e = a + it.count/total*Math.PI*2; a = e;
+      const p = (rad,ang) => [C+rad*Math.cos(ang), C+rad*Math.sin(ang)].map(n=>n.toFixed(2)).join(' ');
+      const big = e-s > Math.PI ? 1 : 0;
+      paths += `<path d="M ${p(R,s)} A ${R} ${R} 0 ${big} 1 ${p(R,e)} L ${p(r,e)} A ${r} ${r} 0 ${big} 0 ${p(r,s)} Z"
+        fill="${PAL[i%PAL.length]}" stroke="var(--paper-2)" stroke-width="1.5"/>`;
+    });
+  }
+  const svg = `<svg width="150" height="150" viewBox="0 0 150 150" role="img" aria-label="Kreisdiagramm">
+    ${paths}<text x="${C}" y="${C-2}" text-anchor="middle" font-family="var(--mono)" font-size="19" font-weight="700">${total}</text>
+    <text x="${C}" y="${C+14}" text-anchor="middle" font-family="var(--mono)" font-size="8.5" fill="rgba(22,24,31,.55)">ANTWORTEN</text></svg>`;
+  const legend = `<ul class="legend">${items.map((it,i) => `<li>
+      <span class="swatch" style="background:${PAL[i%PAL.length]}"></span>${esc(it.label)}
+      <span class="pct">${it.count} · ${Math.round(it.count/total*100)}%</span></li>`).join('')}</ul>`;
+  return `<div class="chart">${svg}${legend}</div>`;
+}
+
+/* Balken */
+function bars(items, base, multi){
+  const max = Math.max(...items.map(i => i.count));
+  return `<div class="bars">${items.map(it => `
+    <div class="bar-row">
+      <span class="bar-lab">${esc(it.label)}</span>
+      <span class="bar-track"><span class="bar-fill" style="width:${it.count/max*100}%"></span></span>
+      <span class="bar-val">${it.count}${multi ? '' : ' · '+Math.round(it.count/base*100)+'%'}</span>
+    </div>`).join('')}</div>
+    ${multi ? '<p class="viz-note">Mehrfachnennungen möglich – Summe über 100 %.</p>' : ''}`;
+}
+
+function viz(c){
+  if(!c) return '';
+  return `<div class="q-viz">${c.type === 'pie' ? donut(c.items) : bars(c.items, c.base, c.multi)}</div>`;
+}
+
+function answerList(list){
+  return list.map(t => `<div class="a"><span class="dash">›</span><p>${esc(t)}</p></div>`).join('')
+    || '<div class="empty-note">Keine Antworten.</div>';
+}
+
+function renderQuestions(list, el, cls){
+  el.innerHTML = list.map(q => `
+    <div class="q">
+      <button class="q-head" aria-expanded="false">
+        <span class="q-num">${String(q.n).padStart(2,'0')}</span>
+        <span class="q-text">${esc(q.q)}</span>
+        <span class="q-meta">${q.answers.length} Antw.</span>
+      </button>
+      ${viz(q.chart)}
+      <div class="q-body ${cls||''}">${answerList(q.answers)}</div>
+    </div>`).join('');
+  el.querySelectorAll('.q-head').forEach(btn => btn.addEventListener('click', () => {
+    const open = btn.parentElement.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open);
+  }));
+}
+renderQuestions(DATA.fragen, document.getElementById('fragen-list'));
+renderQuestions(DATA.geiz_txt, document.getElementById('geiz-txt'), 'money-list');
+
+/* Geldfragen */
+const geldEl = document.getElementById('geld-list');
+geldEl.innerHTML = DATA.geld.map(g => {
+  const vs = g.values.map(v => v.v);
+  const lg = v => Math.log10(Math.max(v, 0.5) + 1);
+  const max = vs.length ? lg(Math.max(...vs)) : 1;
+  const stats = vs.length ? `
+    <div class="money-stats">
+      <span class="ms">MEDIAN <b>${money(g.median)}</b></span>
+      <span class="ms">GÜNSTIGSTE <b>${money(Math.min(...vs))}</b></span>
+      <span class="ms">TEUERSTE <b>${money(Math.max(...vs))}</b></span>
+      <span class="ms">UNBEZAHLBAR <b>${g.other.length}</b></span>
+    </div>` : '';
+  const rows = g.values.map(v => `
+    <div class="mrow">
+      <span class="mtrack"><span class="mfill" style="width:${Math.max(lg(v.v)/max*100, 1.5)}%"></span></span>
+      <span class="mtxt">${esc(v.text)}</span>
+    </div>`).join('');
+  const chips = g.other.map(o => `<span class="chip${o.kind === 'other' ? ' grey' : ''}">${esc(o.text)}</span>`).join('');
+  return `
+    <div class="q">
+      <button class="q-head" aria-expanded="false">
+        <span class="q-num">${String(g.n).padStart(2,'0')}</span>
+        <span class="q-text">${esc(g.q)}</span>
+        <span class="q-meta">${g.answers.length} Antw.</span>
+      </button>
+      <div class="q-viz">
+        ${stats}
+        <div class="mbars">${rows || '<p class="viz-note">Keine bezifferbaren Antworten.</p>'}</div>
+        ${chips ? `<div class="chips">${chips}</div>` : ''}
+        <p class="viz-note">Balkenlänge logarithmisch. Gestrichelt = kein Preis / ∞, gepunktet = unklar.</p>
+      </div>
+      <div class="q-body money-list">${answerList(g.answers)}</div>
+    </div>`;
+}).join('');
+geldEl.querySelectorAll('.q-head').forEach(btn => btn.addEventListener('click', () => {
+  const open = btn.parentElement.classList.toggle('open');
+  btn.setAttribute('aria-expanded', open);
+}));
+/* Smash */
+  .slots{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .slot{position:relative;aspect-ratio:3/4;border:2px dashed var(--ink);background:var(--paper-2);overflow:hidden;display:grid;place-items:center}
+  .slot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .slot .ph{font-family:var(--mono);font-size:12px;color:rgba(22,24,31,.45);text-align:center;padding:10px;line-height:1.5}
+  .slot .idx{position:absolute;top:0;left:0;background:var(--ink);color:var(--paper);font-family:var(--mono);font-size:11px;padding:3px 7px;z-index:2}
+  .slot input{position:absolute;inset:0;opacity:0;cursor:pointer}
+  .slot:focus-within{outline:3px solid var(--blue)}
+  .hint{font-family:var(--mono);font-size:12px;color:rgba(22,24,31,.6);margin:16px 0 26px;line-height:1.6}
+  .links{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:6px}
+  .links li{font-family:var(--mono);font-size:12px}
+  .links a{color:var(--blue);overflow-wrap:anywhere}
+
+  /* Ihr */
+  .picker{display:flex;flex-wrap:wrap;gap:8px}
+  .pick{font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.06em;
+    border:1.5px solid var(--ink);background:var(--paper-2);padding:8px 12px;cursor:pointer;color:var(--ink)}
+  .pick:hover{background:#fff}
+  .pick.anon{border-style:dashed;color:var(--red);border-color:var(--red)}
+  .pick[aria-pressed="true"]{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:3px 3px 0 var(--red)}
+  .group-label{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    color:rgba(22,24,31,.5);width:100%;margin:14px 0 2px}
+  .card{border:1.5px solid var(--ink);background:var(--paper-2);box-shadow:6px 6px 0 var(--blue);margin-top:26px}
+  .card-head{padding:18px;border-bottom:1.5px solid var(--ink);display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap}
+  .card-head h3{font-family:var(--display);font-size:28px;margin:0}
+  .card-head .sub{font-family:var(--mono);font-size:11.5px;color:rgba(22,24,31,.6);max-width:46ch}
+  .qa{display:grid;grid-template-columns:minmax(180px,34%) 1fr}
+  .qa > div{padding:11px 18px;border-top:1px solid rgba(22,24,31,.1)}
+  .qa .k{font-family:var(--mono);font-size:11.5px;color:rgba(22,24,31,.62);line-height:1.45}
+  .qa .v{font-size:15px;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere}
+  .qa .v.empty{color:rgba(22,24,31,.3)}
+  .empty-note{padding:22px 18px;font-family:var(--mono);font-size:13px;color:rgba(22,24,31,.6)}
+
+  footer{padding:60px 0 70px;font-family:var(--mono);font-size:11.5px;color:rgba(22,24,31,.5);border-top:1.5px solid var(--line);margin-top:60px}
+
+  @media (max-width:700px){
+    .qa{grid-template-columns:1fr}
+    .qa .k{padding-bottom:0}
+    .qa .v{padding-top:2px;border-top:none}
+    .slots{grid-template-columns:repeat(2,1fr)}
+    .mrow{grid-template-columns:1fr}
+    .bar-row{grid-template-columns:1fr;gap:2px}
+  }
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="eyebrow">Auswertung der Stufenumfrage · <b>ungefiltert</b></div>
+    <h1>WER<br>SEID<br>IHR?</h1>
+    <p class="lede">Alles vor der Namensfrage bleibt anonym: Antworten sind pro Frage neu gemischt, damit sich nichts zusammensetzen lässt. Ab „Wie heisst du?" gibt es Namen – oder eben nicht.</p>
+    <div class="stats">
+      <div class="stat">TEILNEHMER <b>15</b></div>
+      <div class="stat">FRAGEN <b>80</b></div>
+      <div class="stat">MIT NAMEN <b>8</b></div>
+      <div class="stat">ANONYM <b>7</b></div>
+      <div class="stat">MEISTGENANNT <b>ROBEL</b></div>
+    </div>
+  </div>
+</header>
+
+<nav>
+  <div class="wrap">
+    <a href="#fragen">Eure Fragen</a>
+    <a href="#geiz">Euer Geiz</a>
+    <a href="#smash">Smash or Pass?</a>
+    <a href="#ihr">Ihr</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <section id="fragen">
+    <div class="sec-head"><h2>Eure Fragen</h2><span class="tag">22 Fragen</span></div>
+    <p class="sec-sub">Diagramm, wo sich Antworten wiederholen. Frage anklicken für alle Antworten im Wortlaut – anonym und gemischt.</p>
+    <button class="toggle-all" data-target="fragen-list">Alle Antworten zeigen</button>
+    <div id="fragen-list"></div>
+  </section>
+
+  <section id="geiz">
+    <div class="sec-head"><h2>Euer Geiz</h2><span class="tag">13 Preise</span></div>
+    <p class="sec-sub">Preise auf logarithmischer Skala – sonst verschluckt die eine Milliarde alle 67 Cent.<br>Was sich nicht in Zahlen fassen ließ, steht als Chip darunter.</p>
+    <button class="toggle-all" data-target="geiz-section">Alle Antworten zeigen</button>
+    <div id="geiz-section"><div id="geld-list"></div>
+    <div id="geiz-txt" class="money-list"></div></div>
+  </section>
+
+  <section id="smash">
+    <div class="sec-head"><h2>Smash or Pass?</h2><span class="tag">9 Slots</span></div>
+    <p class="sec-sub">Neun leere Plätze, von euch hochgeladen, von Milo zu füllen.</p>
+    <p class="hint">Slot anklicken und ein Bild vom Gerät wählen – die Vorschau ist nur temporär.<br>Dauerhaft einsetzen: im Quelltext bei <code>data-slot="1"</code> das <code>src</code> des <code>&lt;img&gt;</code> auf den Bildpfad setzen.</p>
+    <div class="slots" id="slots"></div>
+    <p class="hint" style="margin-top:26px">Eingereichtes Material (anonym, gemischt):</p>
+    <ul class="links" id="smash-links"></ul>
+  </section>
+
+  <section id="ihr">
+    <div class="sec-head"><h2>Ihr</h2><span class="tag">44 Fragen</span></div>
+    <p class="sec-sub">Ab hier zählt die Antwort auf „Wie heisst du?". Wer keinen Namen genannt hat, bleibt Anonym – ohne Nummer, in zufälliger Reihenfolge.</p>
+    <div class="picker" id="picker"></div>
+    <div id="person-card"></div>
+  </section>
+
+</main>
+
+<footer class="wrap">
+  Stufenumfrage · 15 Teilnehmer · 80 Fragen · Antworten unverändert übernommen, Reihenfolge gemischt.
+</footer>
+
+<script>
+const DATA = {"meta": {"people": 15, "questions": 80, "named": 8, "anon": 7}, "fragen": [{"n": 1, "q": "Wärst du bei einem Attentat auf den von Daniels meist gehassten Lehrer dabei? Im spiel natürlich", "answers": ["Nein, dass ist Illegal", "Immer, Weg mit dem Wixxer, Bitte mit Folter", "Nein, dass ist Illegal", "Nein, dass ist Illegal", "Immer", "Immer, Weg mit dem Wixxer, Bitte mit Folter", "Immer, Weg mit dem Wixxer, Bitte mit Folter", "Nein, dass ist Illegal", "Nein, dass ist Illegal", "Nein, dass ist Illegal", "Nein, dass ist Illegal", "Nein, dass ist Illegal", "Immer, Weg mit dem Wixxer, Bitte mit Folter", "Immer, Bitte mit Folter", "Nein, dass ist Illegal"], "chart": {"type": "bar", "items": [{"label": "Nein, dass ist Illegal", "count": 9}, {"label": "Immer", "count": 6}, {"label": "Bitte mit Folter", "count": 5}, {"label": "Weg mit dem Wixxer", "count": 4}], "multi": true, "base": 15}}, {"n": 2, "q": "Wie viele Kinder willst du haben", "answers": ["3", "Alle", "2", "4", "2-3", "2", "1-4", "Es ist wichtig nachzudenken, ob es sinnvoll ist, Kinder in diese Welt zu setzen und wie sich die Situation in der Zukunft entwickelt. Ansonsten wäre es zwei.", "0!!!", "2", "1-2", "Alle", "2", "4."], "chart": null}, {"n": 3, "q": "Wer ist der Beste in Geometry Dash?", "answers": ["Burak", "Burak und milo", "Burak", "Burak", "Zoink", "Burak", "Burak", "Burak", "Burak", "Burak", "Burak", "Burak", "Burak", "Shin", "Burak"], "chart": {"type": "pie", "items": [{"label": "Burak", "count": 12}, {"label": "Zoink", "count": 1}, {"label": "Burak und milo", "count": 1}, {"label": "Shin", "count": 1}], "multi": false, "base": 15}}, {"n": 4, "q": "Darf ich Milo's Katze Essen?", "answers": ["Nein, Nope, Bitte nicht, nah, 🚫, nuh uh, Non, Option 8, No, ≽^•⩊•^≼ (+ ASCII-Katze)", "≽^•⩊•^≼", "Option 8, ≽^•⩊•^≼", "nuh uh", "🚫", "≽^•⩊•^≼", "ASCII-Katze", "Nein, Nope, Bitte nicht, nah, 🚫, nuh uh, Non, Option 8, No, ≽^•⩊•^≼ (+ ASCII-Katze)", "Nein", "Bitte nicht", "≽^•⩊•^≼", "nuh uh", "Option 8", "Option 8"], "chart": null}, {"n": 5, "q": "Würdest du mich noch lieben Wenn ich ein wurm wäre?", "answers": ["abhängig von länge", "Klar", "Nein.", "Ich liebe dich auch jetzt nicht", "Nein, ich würde dich zertreten", "Dich nicht", "Kommt drauf an, welche", "Nö", "Nah", "Ja immer ❤️ (außer links Wähler)", "Nein", "Ich bau dir eigenhändig ein Terrarium und hab dich immer bei mir", "Ne irgendwie nicht", "Ein Regenwurm?", "Klar bro :)"], "chart": null}, {"n": 6, "q": "War Napoleon Gut?", "answers": ["Napoleon war eine der entscheidendsten Figuren des 19 Jahrhunderts. Er hat die grundfeste der französischen Revolution wieder über den Haufen geworfen und völlig neue Grundsätze in Europa gesetzt. Also ja.", "Nö, er war Franzose", "Ambivalent, aber kritisch zu bewerten, weil seine Fortschritte stark an Machtpolitik und Gewalt gebunden waren. Er war ein Modernisierer mit autoritären, kriegerischen Mitteln. Er stärkte Rechtsordnung, Verwaltung und Reformen, zugleich führte er Eroberungskriege, unterdrückte politische Freiheit und verursachte massives Leid in Europa.", "Nein er war ein Franzose", "idk bro ich hab geschichte lowkey abgewählt", "Goat", "Naja", "Nein. [Erläuterung]", "Die historische Figur Napoleon Bonaparte hatte großen Teil an noblen Taten wie der Französischen Revolution. Allerdings überwiegt, zur bewertung der Person, hier die größe des Leids, welches er über west Europa gebracht hat.", "Nö er hat ver hindert dass das heilige deutsche Reich deutscher Nationen tausend Jahre besteht", "Absolut keine Ahnung.", "Nahhhh bro", "Er hat Menschen getötet und war Franzose ..also ja :)", "Nope wegen Krieg und so"], "chart": {"type": "pie", "items": [{"label": "Nein", "count": 7}, {"label": "Ja", "count": 3}, {"label": "Ambivalent", "count": 2}, {"label": "Weiß nicht", "count": 2}], "multi": false, "base": 14}}, {"n": 7, "q": "Wer Stirbt in einem Horrorfilm zuerst?", "answers": ["Daniels", "Burak", "Mauro", "Eric", "Jonathan", "Eric", "Eric", "Eric", "Jonathan", "Mauro", "Shin", "Robel", "Julian", "Julian", "Mauro"], "chart": {"type": "bar", "items": [{"label": "Eric", "count": 4}, {"label": "Mauro", "count": 3}, {"label": "Julian", "count": 2}, {"label": "Jonathan", "count": 2}, {"label": "Robel", "count": 1}, {"label": "Shin", "count": 1}, {"label": "Burak", "count": 1}, {"label": "Daniels", "count": 1}], "multi": false, "base": 15}}, {"n": 8, "q": "Würdest du eine Dunkelhäutige Person daten?", "answers": ["Ja", "Ja", "Ja", "Ja", "Warum nicht ?", "Nein", "Ja", "Ja", "Ja", "Ja", "Sry einf nicht mein Typ", "Nicht mein Type", "Nein", "NEIN!!!", "Ja"], "chart": {"type": "pie", "items": [{"label": "Ja", "count": 10}, {"label": "Nein", "count": 3}, {"label": "Anders", "count": 2}], "multi": false, "base": 15}}, {"n": 9, "q": "Was ist dein typ Frau?", "answers": ["Kp", "Schlau, Selbstbewusst und etwas verrückt", "Idc", "Overall Hübsch und guter Charakter", "Bruder wasn Typ? Keine Ahnung muss halt passen, hab kein Typ.", "sie trägt die hose", "Lebendig", "Milo", "Langhaarig, sportlich aktiv und ähnlich groß", "Lena", "Alles was mir in die Quere kommt U15", "5,7–5,9: nordafrikanische, arabische oder osmanische, politisch gebildete, akademisch(vorallem stem) versierte Baddie", "Offen", "Blond und blaue Augen", "Hot, Lustig"], "chart": null}, {"n": 10, "q": "Worauf achtest du bei einer Partnerin?", "answers": ["Interessen und Verhalten in Konflikt?", "Kompatible Zukunftsansichten, Werte", "Eigenständigkeit, Liebevoll, Kommunikativ", "Charakter", "Intelligenz und Geld", "Lebendig", "warum wird partnerin angenommen", "Hatte ich noch nicht 😭😭😭.....", "Ehrlichkeit, Humor, Zuverlässigkeit, Empathie, Bodenständigkeit, Kompromissbereitschaft, Unabhängigkeit, gemeinsame Interessen, Unterstützung bei Zielen, Vertrauen und natürlich (wie eric) brüste 😂 (spaß)", "Humor und so und die sichtbaren Sachen", "Personalität und Inteligenz", "Das es Milo ist", "T*****, A****, Gesicht :)", "Siehe oben du opfer", "Persönlichkeit 90% Aussehen 10%"], "chart": null}, {"n": 11, "q": "Wenn wir könnten, wer würde am ehesten schwanger werden?", "answers": ["Bosbach", "Eric", "Jonathan", "Bosbach", "Jonas", "Finn", "Mauro", "Bosbach", "Eric", "Jonas", "Eric", "Shin", "Finn", "Jonathan", "Daniels"], "chart": {"type": "bar", "items": [{"label": "Bosbach", "count": 3}, {"label": "Eric", "count": 3}, {"label": "Jonas", "count": 2}, {"label": "Jonathan", "count": 2}, {"label": "Finn", "count": 2}, {"label": "Shin", "count": 1}, {"label": "Daniels", "count": 1}, {"label": "Mauro", "count": 1}], "multi": false, "base": 15}}, {"n": 12, "q": "Wer würde am ehesten auf ein Schneeball oder Piramieden scam reinfallen?", "answers": ["Eric", "Shin", "Daniels", "Mauro", "Burak", "Mauro", "Eric", "Mauro", "Jonathan", "Eric", "Robel", "Eric", "Robel", "Shin"], "chart": {"type": "bar", "items": [{"label": "Eric", "count": 4}, {"label": "Mauro", "count": 3}, {"label": "Robel", "count": 2}, {"label": "Shin", "count": 2}, {"label": "Daniels", "count": 1}, {"label": "Jonathan", "count": 1}, {"label": "Burak", "count": 1}], "multi": false, "base": 14}}, {"n": 13, "q": "Wer Labert am meisten?", "answers": ["Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel"], "chart": {"type": "pie", "items": [{"label": "Robel", "count": 14}], "multi": false, "base": 14}}, {"n": 14, "q": "Wer Sollte mal ruhig bleiben?", "answers": ["Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel"], "chart": {"type": "pie", "items": [{"label": "Robel", "count": 14}], "multi": false, "base": 14}}, {"n": 15, "q": "Wer könnte auch mal  seine Fresse halten?", "answers": ["Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel", "Robel"], "chart": {"type": "pie", "items": [{"label": "Robel", "count": 14}], "multi": false, "base": 14}}, {"n": 16, "q": "Wer sollte sich jetzt bei Robel entschuldigen?", "answers": ["Milo", "Robel", "Robel", "Milo", "Robel", "Milo", "Robel", "Robel", "Milo", "Milo", "Robel", "Robel", "Robel", "Robel", "Milo"], "chart": {"type": "pie", "items": [{"label": "Robel", "count": 9}, {"label": "Milo", "count": 6}], "multi": false, "base": 15}}, {"n": 17, "q": "Wenn du eine Frau wärst, was wär dein Name?", "answers": ["Demeter", "Josephine.", "Finja", "Johanna", "Maltina", "Larsiii", "burka", "So ne elisabeth wäre lustig", "Mimzy", "Reina (Unstable reference aber tuffer Name)", "Keine Ahnung", "Lara(von meinen Eltern) ich würde mir Sophie, Maria oder Sappho geben", "Cleopatra"], "chart": null}, {"n": 18, "q": "Wenn du eine Frau wärst, was wär deine Persöhnlichkeit?", "answers": ["Idk", "Nicht anderes", "Stripperin", "Lieb, nett, sympathisch", "Meine einfach <3 wahrscheinlich bisschen mehr girly aber", "So wie Miral vielleicht. Mit mehr Sport", "Nicht Eric.", "Zu deepe fragen für morgens auf dem Klo", "die selbe", "+20 aggresivität, -40 kraft,", "Offen, sozial,....", "Kp broski", "Keine Ahnung", "Königin Elisabeth"], "chart": null}, {"n": 19, "q": "Wenn wir ums Überleben kämpfen, dürfte ich  deinen toten Körper dann essen um zu überleben?", "answers": ["Ja, guten Appetit", "Du kannst mich immer gerne anknabern... wenn du weißt was ich meine 😏", "Ja, bin eh tot", "Mir egal.", "Ja ich bin sowieso tot und jucks mich wircklich nicht", "Nur Lars Ruben dürfte das .", "Warum wäre ich denen tot?", "Nein, solange ich nicht aktiv von dir umgebracht werde würde ich nicht als erstes sterben", "Nein, ich denke nicht, dass das für beide Seiten appetitlich wäre. :(", "Klar, guten Hunger!", "lowkey muss, gibt ja viel zu geben", "Wenn ich tot bin warum nicht. Juckt doch nicht.", "Ja, wenn ich schon tot bin. Ist auch schon desöfterem vorgekommen, das Menschen in Not ihre Familienmitglieder gegessen haben, um zu überleben. Legitim.", "Ja, weil the fuck wird sonst damit passieren? Willst du mich begraben? Wenn du da happy mit bist genieß es", "Ja safe. Ist rational"], "chart": {"type": "pie", "items": [{"label": "Ja", "count": 7}, {"label": "Anders", "count": 6}, {"label": "Nein", "count": 2}], "multi": false, "base": 15}}, {"n": 20, "q": "Wer von uns hätte einen geheimen Boyfriend?", "answers": ["Robel", "Eric, Jonathan, Mauro, Robel", "Jonas", "Jonathan", "Milo", "Burak, Malte, Mauro, Milo", "Eric, Jonas, Lukas, Mauro", "Jonas", "Bosbach, Jonas, Milo", "Jonas", "Milo, Robel", "Burak", "Eric", "Jonathan", "Daniels"], "chart": {"type": "bar", "items": [{"label": "Jonas", "count": 5}, {"label": "Milo", "count": 4}, {"label": "Mauro", "count": 3}, {"label": "Eric", "count": 3}, {"label": "Jonathan", "count": 3}, {"label": "Robel", "count": 3}, {"label": "Burak", "count": 2}, {"label": "Malte", "count": 1}, {"label": "Lukas", "count": 1}, {"label": "Daniels", "count": 1}, {"label": "Bosbach", "count": 1}], "multi": true, "base": 15}}, {"n": 21, "q": "Was sieht besser aus?", "answers": ["Post Cut", "Post Cut, Post Cut weil topless", "Pre Cut", "Post Cut", "Pre Cut", "Post cut. Aber nur weil du kein tshirt an hast.", "Letzteres weil ohne Shirt", "Pre Cut, zählt shirt?", "So nackt ist schon hot", "Pre Cut", "Pre Cut", "Pre Cut, Flash nie wieder 😞", "Pre Cut", "Post Cut"], "chart": {"type": "pie", "items": [{"label": "Pre Cut", "count": 7}, {"label": "Post Cut", "count": 6}, {"label": "Anders", "count": 1}], "multi": false, "base": 14}}, {"n": 22, "q": "Was ist deine Lieblings Minecraft Mod?", "answers": ["Small Ships Mod", "Solas Shader (ik ist shader, aber theoretisch auch ne Mod. Sonst Create)", "Timeless&Classics:Zero", "Create ultimate Factory", "Irgendwas mit tnt", "Create / Aeronautics", "Create", "Create", "Wem vanilla nicht ausreicht ist selber schult", "Keine", "luckytnt", "Origins, Portal oder ars nouveau", "Pokémon mod", "Gooner Mod (kp gibt's die?)"], "chart": null}], "geld": [{"n": 23, "q": "Für wie viel geld würdest du jemanden Umbringen", "values": [{"text": "1.000€ (nicht real, kann nd einschätzen)", "v": 1000.0}, {"text": "100.000€", "v": 100000.0}, {"text": "167189,99 Euro", "v": 167189.99}, {"text": "200.000€", "v": 200000.0}, {"text": "400k", "v": 400000.0}, {"text": "500 000.", "v": 500000.0}, {"text": "1000k", "v": 1000000.0}, {"text": "Eine mio", "v": 1000000.0}, {"text": "1mio", "v": 1000000.0}, {"text": "20 mio", "v": 20000000.0}, {"text": "22.000.000", "v": 22000000.0}], "other": [{"text": "∞", "kind": "inf"}, {"text": "Unendlich", "kind": "inf"}, {"text": "Kommt drauf an wie ich sie töten muss", "kind": "other"}, {"text": "∞", "kind": "inf"}], "median": 500000.0, "answers": ["500 000.", "∞", "200.000€", "20 mio", "1000k", "167189,99 Euro", "1.000€ (nicht real, kann nd einschätzen)", "Eine mio", "400k", "100.000€", "Unendlich", "Kommt drauf an wie ich sie töten muss", "22.000.000", "∞", "1mio"]}, {"n": 24, "q": "Für wie viel geld würdest du zu einer Frau werden?", "values": [{"text": "20 ct", "v": 0.2}, {"text": "20", "v": 20.0}, {"text": "1.000€", "v": 1000.0}, {"text": "100k", "v": 100000.0}, {"text": "100k", "v": 100000.0}, {"text": "200k", "v": 200000.0}, {"text": "500.000€", "v": 500000.0}, {"text": "1237295,67 Euro", "v": 1237295.67}, {"text": "1,5Mio (Gender Pay gap)", "v": 1500000.0}, {"text": "50 mio", "v": 50000000.0}, {"text": "Eine Milliarde", "v": 1000000000.0}, {"text": "4 Milliarden am liebsten gar nicht.", "v": 4000000000.0}], "other": [{"text": "Für kein Geld (unendlich)", "kind": "inf"}, {"text": "Gar nicht", "kind": "never"}, {"text": "Unendlich", "kind": "inf"}], "median": 350000.0, "answers": ["20", "1237295,67 Euro", "Für kein Geld (unendlich)", "1.000€", "100k", "20 ct", "4 Milliarden am liebsten gar nicht.", "200k", "500.000€", "Gar nicht", "1,5Mio (Gender Pay gap)", "50 mio", "100k", "Eine Milliarde", "Unendlich"]}, {"n": 25, "q": "Für wie viel geld würdest du mir 100$ geben?", "values": [{"text": "67 Cent :)", "v": 0.67}, {"text": "2,01", "v": 2.01}, {"text": "87,47", "v": 87.47}, {"text": "87,759429€ (stand 13.07)", "v": 87.759429}, {"text": "90", "v": 90.0}, {"text": "95€", "v": 95.0}, {"text": "100", "v": 100.0}, {"text": "100$", "v": 100.0}, {"text": "100$", "v": 100.0}, {"text": "100$", "v": 100.0}, {"text": "101", "v": 101.0}, {"text": "101$", "v": 101.0}, {"text": "110 € (10% Rendite)", "v": 110.0}, {"text": "200$", "v": 200.0}, {"text": "200€", "v": 200.0}], "other": [], "median": 100.0, "answers": ["100", "200$", "100$", "67 Cent :)", "100$", "101", "87,47", "90", "110 € (10% Rendite)", "2,01", "101$", "95€", "87,759429€ (stand 13.07)", "200€", "100$"]}, {"n": 26, "q": "Für wie viel geld würdest du Hund essen?", "values": [{"text": "Man bekommt geld dafür?", "v": 0}, {"text": "Nen Fünfer.", "v": 5.0}, {"text": "10€", "v": 10.0}, {"text": "20?", "v": 20.0}, {"text": "Das ist voll nicht ok #nicht_vegan_ist_nicht_ok!!! Aber für nen Zwani...", "v": 20.0}, {"text": "100", "v": 100.0}, {"text": "500€", "v": 500.0}, {"text": "500", "v": 500.0}, {"text": "600€", "v": 600.0}, {"text": "1000", "v": 1000.0}, {"text": "10.000", "v": 10000.0}, {"text": "500000", "v": 500000.0}], "other": [{"text": "∞", "kind": "inf"}, {"text": "Unendlich", "kind": "inf"}, {"text": "∞ (aber nur weil vegan)", "kind": "inf"}], "median": 300.0, "answers": ["10.000", "600€", "500€", "1000", "500", "500000", "20?", "∞", "100", "Unendlich", "Das ist voll nicht ok #nicht_vegan_ist_nicht_ok!!! Aber für nen Zwani...", "∞ (aber nur weil vegan)", "10€", "Nen Fünfer.", "Man bekommt geld dafür?"]}, {"n": 27, "q": "Für wie viel geld würdest du mit einem Mann Sex haben?", "values": [{"text": "Wenn er heiß ist 0 (Chris Hemsworth)", "v": 0.0}, {"text": "Geht auch gratis?😏", "v": 0}, {"text": "0€", "v": 0.0}, {"text": "10", "v": 10.0}, {"text": "20", "v": 20.0}, {"text": "10k", "v": 10000.0}, {"text": "100000", "v": 100000.0}, {"text": "500k", "v": 500000.0}, {"text": "8.000.000€ (500.000€ als Frau)", "v": 8000000.0}, {"text": "100.000.000€", "v": 100000000.0}], "other": [{"text": "Für kein Geld der Welt", "kind": "never"}, {"text": "∞", "kind": "inf"}, {"text": "Gar nicht.", "kind": "never"}, {"text": "Unendlich", "kind": "inf"}, {"text": "Gar nicht", "kind": "never"}], "median": 5010.0, "answers": ["Für kein Geld der Welt", "∞", "10k", "100.000.000€", "Gar nicht.", "Wenn er heiß ist 0 (Chris Hemsworth)", "500k", "20", "Geht auch gratis?😏", "Unendlich", "0€", "10", "Gar nicht", "8.000.000€ (500.000€ als Frau)", "100000"]}, {"n": 28, "q": "Für wie viel geld würdest du mit Ryan Reynolds Sex haben?", "values": [{"text": "For freeeeeeee!", "v": 0}, {"text": "Kostenlos", "v": 0}, {"text": "Ich Zahl dafür", "v": 0}, {"text": "10?", "v": 10.0}, {"text": "100€", "v": 100.0}, {"text": "8k", "v": 8000.0}, {"text": "50000 .€", "v": 50000.0}, {"text": "20mio", "v": 20000000.0}, {"text": "100.000.000€", "v": 100000000.0}], "other": [{"text": "Gar nicht.", "kind": "never"}, {"text": "Für kein Geld der Welt", "kind": "never"}, {"text": "-200€", "kind": "never"}, {"text": "Hälfte von unendlich", "kind": "inf"}, {"text": "Gar nicht", "kind": "never"}, {"text": "-∞", "kind": "inf"}], "median": 100.0, "answers": ["For freeeeeeee!", "10?", "20mio", "100€", "100.000.000€", "Gar nicht.", "Kostenlos", "Ich Zahl dafür", "Für kein Geld der Welt", "8k", "-200€", "Hälfte von unendlich", "50000 .€", "Gar nicht", "-∞"]}, {"n": 29, "q": "Für wie viel geld würdest du mit mir Sex haben?", "values": [{"text": "Mach ich schon", "v": 0}, {"text": "1  Euro", "v": 1.0}, {"text": "12,37 euro", "v": 12.37}, {"text": "21", "v": 21.0}, {"text": "50k", "v": 50000.0}, {"text": "10.000.000€", "v": 10000000.0}, {"text": "20mio", "v": 20000000.0}, {"text": "300.000.000€", "v": 300000000.0}], "other": [{"text": "Gar nicht", "kind": "never"}, {"text": "Für kein Geld der Welt", "kind": "never"}, {"text": "Drei mal unendlich", "kind": "inf"}, {"text": "N/A", "kind": "never"}, {"text": "So viel Geld hat keiner", "kind": "never"}, {"text": "∞", "kind": "inf"}, {"text": "Hell na", "kind": "never"}], "median": 25010.5, "answers": ["Gar nicht", "Für kein Geld der Welt", "Drei mal unendlich", "21", "10.000.000€", "20mio", "N/A", "50k", "So viel Geld hat keiner", "1  Euro", "∞", "12,37 euro", "300.000.000€", "Hell na", "Mach ich schon"]}, {"n": 30, "q": "Für wie viel geld würdest du mit mir Sex haben?", "values": [{"text": "For freee lil one", "v": 0}, {"text": "1 Euro", "v": 1.0}, {"text": "Opfer macht Frage 2 mal", "v": 2.0}, {"text": "5£", "v": 5.0}, {"text": "45k", "v": 45000.0}, {"text": "20mio", "v": 20000000.0}], "other": [{"text": "N/A", "kind": "never"}, {"text": "∞", "kind": "inf"}, {"text": "Für kein Geld der Welt", "kind": "never"}, {"text": "Bitte, Milo du musst los lassen.", "kind": "never"}, {"text": "Gar nicht", "kind": "never"}, {"text": "Drei mal unendlich", "kind": "inf"}, {"text": "∞", "kind": "inf"}, {"text": "?", "kind": "other"}], "median": 3.5, "answers": ["N/A", "∞", "45k", "1 Euro", "For freee lil one", "20mio", "Für kein Geld der Welt", "5£", "Bitte, Milo du musst los lassen.", "Gar nicht", "Drei mal unendlich", "Opfer macht Frage 2 mal", "∞", "?"]}, {"n": 31, "q": "Für wie viel geld würdest du ein Jahr lang kein Handy mehr nutzen?", "values": [{"text": "5", "v": 5.0}, {"text": "100", "v": 100.0}, {"text": "10.000 Euro", "v": 10000.0}, {"text": "10k", "v": 10000.0}, {"text": "40k", "v": 40000.0}, {"text": "100.000€", "v": 100000.0}, {"text": "100.000€", "v": 100000.0}, {"text": "300k", "v": 300000.0}, {"text": "500000", "v": 500000.0}, {"text": "500k", "v": 500000.0}, {"text": "Eine Million.", "v": 1000000.0}, {"text": "1.000.000€", "v": 1000000.0}, {"text": "5.000.000", "v": 5000000.0}], "other": [{"text": "So ein gutes Jahresgehalt", "kind": "other"}, {"text": "Gar nicht.", "kind": "never"}], "median": 100000.0, "answers": ["500000", "Eine Million.", "5.000.000", "5", "100", "100.000€", "100.000€", "1.000.000€", "500k", "40k", "So ein gutes Jahresgehalt", "Gar nicht.", "10.000 Euro", "300k", "10k"]}, {"n": 32, "q": "Für wie viel geld würdest du ein Jahr deiner Lebenserwartung aufgeben?", "values": [{"text": "10", "v": 10.0}, {"text": "10.000€", "v": 10000.0}, {"text": "50k", "v": 50000.0}, {"text": "100000", "v": 100000.0}, {"text": "1000000 Euro", "v": 1000000.0}, {"text": "1.000.000€", "v": 1000000.0}, {"text": "1 mille", "v": 1000000.0}, {"text": "5 mio", "v": 5000000.0}, {"text": "5mio", "v": 5000000.0}, {"text": "100.000.000€", "v": 100000000.0}], "other": [{"text": "Gar keins", "kind": "never"}, {"text": "Für kein Geld der Welt", "kind": "never"}, {"text": "Unendlich", "kind": "inf"}, {"text": "∞", "kind": "inf"}, {"text": "∞", "kind": "inf"}], "median": 1000000.0, "answers": ["Gar keins", "10.000€", "Für kein Geld der Welt", "5 mio", "1000000 Euro", "1.000.000€", "5mio", "100.000.000€", "100000", "Unendlich", "∞", "50k", "10", "∞", "1 mille"]}, {"n": 33, "q": "Für wie viel geld würdest du Zehn Jahre deiner Lebenserwartung aufgeben?", "values": [{"text": "1000", "v": 1000.0}, {"text": "750000", "v": 750000.0}, {"text": "1.000.000€", "v": 1000000.0}, {"text": "5 Mill", "v": 5000000.0}, {"text": "10000000 Ewro", "v": 10000000.0}, {"text": "50mio", "v": 50000000.0}, {"text": "100.000.000% (Jahresgehalt * 10)", "v": 100000000.0}, {"text": "100mio", "v": 100000000.0}, {"text": "Eigentlich für kein Geld aber ich sach ma 500 Millionen", "v": 500000000.0}, {"text": "100 000.000.000€", "v": 100000000000.0}], "other": [{"text": "Für kein Geld der Welt", "kind": "never"}, {"text": "Same", "kind": "never"}, {"text": "∞", "kind": "inf"}, {"text": "Unendlich", "kind": "inf"}, {"text": "∞", "kind": "inf"}], "median": 30000000.0, "answers": ["100.000.000% (Jahresgehalt * 10)", "Eigentlich für kein Geld aber ich sach ma 500 Millionen", "Für kein Geld der Welt", "Same", "∞", "Unendlich", "100 000.000.000€", "100mio", "∞", "5 Mill", "10000000 Ewro", "750000", "1.000.000€", "50mio", "1000"]}, {"n": 34, "q": "Für wie viel geld würdest du dir ein Tatto stechen lassen, dass wir anderen aussuchen?", "values": [{"text": "100", "v": 100.0}, {"text": "1k", "v": 1000.0}, {"text": "2000", "v": 2000.0}, {"text": "4500 i guess", "v": 4500.0}, {"text": "10k", "v": 10000.0}, {"text": "20k", "v": 20000.0}, {"text": "100.000€", "v": 100000.0}, {"text": "200k", "v": 200000.0}, {"text": "500000", "v": 500000.0}, {"text": "1Mio", "v": 1000000.0}, {"text": "1.000.000€", "v": 1000000.0}, {"text": "2 Millionen", "v": 2000000.0}], "other": [{"text": "Kein trust", "kind": "never"}, {"text": "Für kein Geld der Welt", "kind": "never"}, {"text": "∞€", "kind": "inf"}], "median": 60000.0, "answers": ["10k", "Kein trust", "2 Millionen", "Für kein Geld der Welt", "200k", "1Mio", "20k", "4500 i guess", "1.000.000€", "1k", "∞€", "2000", "100", "500000", "100.000€"]}], "geiz_txt": [{"n": 35, "q": "Was ist das Verrückteste, dass du für 20€ machen würdest?", "answers": ["Kp", "Ein beliebiges Weib aus unserer Stufe cracken", "In den Club mit milo", "Vom 5 Meter Turm springen", "Idk", "Nichts", "Ich werd nichts machen!!", "Klippenspringen", "Lola fragen wie schwer sie ist", "Frittierte Heuschrecke Essen", "trap schreibt man mit einem einzelnen p (auf der nächsten seite der umfrage)", "Runter bücken um es aufzuheben", "48h Berlin ohne Unterkunft wenn mir Essen udn Anreise auch bezahlt werden"], "chart": null}], "smash": ["https://drive.google.com/open?id=14APoGaTRn-ZYCVfy3piKqDxrPaVjQeq9", "https://drive.google.com/open?id=1ksNXnRv9M7DX5kfyxFVVbvw8hF1JTEzj", "https://drive.google.com/open?id=1E1OIAOmq6mlyjScQ5a0B_xDzqdLs6luB", "https://drive.google.com/open?id=1pFB4-zLG951f4f5yahiA5qx_55CRr2Xv", "https://drive.google.com/open?id=1X6-3l2DxSyHBQqTHWDxYNysuPOPoQTut", "https://drive.google.com/open?id=1dncQ8fyhfJPvmUjAVqkLRdI_W1yMFEcp", "https://drive.google.com/open?id=1hNJ76MrmCwZ9FpUgXq93trg9e0L5XDNH"], "ihrQuestions": ["Wie Heisst du?", "Was sind so deine wichtigsten Hobbies?", "Sammelst du etwas?", "Wofür Lebst du? (metaforisch)", "Was ist für dich das wertvollste, dass du besitzt?", "Was ist bis jetzt das beste, dass du erreicht hast?", "Was ist auf deiner Bucket list?", "Was ist deine aktuelle beste erinnerung?", "Was ist deine beste Kindheits erinnerung?", "Was ist dein Lieblings Feiertag?", "Wer kennt dich am besten?", "Welche fähigkeit würdest du gerne lernen?", "Was ist der coolste ort an dem du warst? Bilder unten", "Bilder ablage:", "Was macht dich besonders?", "Worauf freust du dich?", "Was ist dein Nutzloses Talent?", "Du kannst unendlich von einem Gegenstand haben. Welchen gegenstaand nimmst du?", "Was ist dein lieblings Witz?", "Wie willst du als Rentner sein?", "Lieblings Webseite?", "Wenn du einen Film nochmal zum ersten mal schauen könntest, welchen?", "Dich in 3 Worten... oder mehr, mir egal", "Was ist die beste Bussines idee die du hattest?", "Wenn du den Lotterie Jackpot gewinnst, was würdest du machen?", "Willst du tattos? Welche?", "Was sind deine Allergien?", "Was machst du im Sommer am liebsten?", "Lieblings Essen?", "Welchen Tier hättest du am liebsten als Haustier?", "Lieblings Sport?", "Wenn du ein Event der vergangenheit ändern könntest, welches?", "Was ist für dich Erfolg?", "Würdest du sagen Personen können sich ändern?", "Was ist der sinn des Lebens?", "Wie Trinkst du Kaffe am liebsten?", "Wo siehst du dich in 10 Jahren?", "Bester Anmachspruch, den du kennst", "Lieblings Fach?", "Welches Schulfach sollte es geben?", "Wenn du spontan einen Vortrag halten müsstest, worüber?", "Arbeitest du? Wo?", "Lieblings Snack?", "Wie sehr haben dich die ganzen rechtschreibfehler (primär groß und kleinschreibung) genervt?"], "named": [{"label": "Lars", "named": true, "raw": "Lars", "ihr": ["Lars", "Programmieren, lesen und spazieren", "PDFs, phio Bücher", "Sophia", "Signiere Version von einem Philosophie Text", "1.0 in dat algo", "Philosophie Publishing udn noch paar andere Dinge", "I don’t Know", "I don’t Know", "1.11", "Luka", "Kroatisch", "Geheim", "", "Hab interessante Dinge zu sagen", "They", "Kann gut bs?", "Essen", "I don’t Know", "Grimmig", "YouTube", "Europe the last battle", "Corny, 140+ iq, sub 6 inches", "Non disclosure", "Das selbe wie gestern hoffentlich", "Arsch Geweih", "Keine", "Sterben", "Auflauf", "Kuh", "Volleyball", "Nichts", "Hannibal in den Alpen", "Ja", "Gibt kein", "Gar nicht", "Quant dev oder Philosophie Prof", "Zeig titten", "Mathematik", "Soziologie", "Propositional Logik", "Ja geheim", "Nuts", "Sehr"], "filled": 43}, {"label": "Jonas", "named": true, "raw": "Jonas Robert Johannsen", "ihr": ["Jonas Robert Johannsen", "Wasserball", "Negativ", "Für meinen natürlichen internalisirten Lebensinstikt", "Meine Familie", "4. Platz bei der DM", "Herren Bundesliga spielen", "Idk", "Idk", "Weihnachten", "Meine Mutter", "Idk", "Miniatur Wunderland Hammburg oder Slettestrand Dk", "", "Kann ich doch nicht aus meiner Perspektive sagen", "Urlaub", "Mit der Zunge in der Nase bohren ist lowkey underrated", "Brot. Und dann so Jesus like das an alle verteilen.", "", "Ich will mich den ganzen Tag über diese junge Generationen beschweren", "PornHub.org", "Oppenheimer", "Ich bin Jonas", "Wie wäre es: ich gehe in benachteiligte gebiete und biete den Schwangeren da einen kostenfreien vorad an milchpulver zum stillen an. Der twist ist aber ich gebe ihnen nur soviel, dass sie selber nicht mehr stillen könne und an mein Unternehmen gebunden sind. Gleichzeitig kaufe ich aber auch alle Rechte am Grundwasser auf und vergaufe es an die Bevölkerung überteuerd zurück, so, sie keinen weg an meiner Firma vorbei haben. MfG Die Nestle ag", "Nimanden sagen und erst mal anlegen, in Gold I guess", "Nein", "Fast alle Bäume, Fast alle Gräser, Pollen, alle Arten von Tierhaaren und Hausstaubmilben", "Trainiren", "Bratkartoffeln", "Keins. Aber wenn dann so ein Igel oder so", "Wasserball 🤽‍♂️", "Alle Chancen die ich hatte Milo zu beseitigen", "Das Erlangen des Gefühls erfolreich gewesen zu sein", "Ja", "42", "Garnicht", "In anbetracht der Uhrzeit (01:29 Uhr) im Bett.", "Bist du meine Arbeitszeit, denn ich würde dich gerne auf der Toilette totschlagen", "Deutsch (Kuss Manka) oder Sport", "Informatik LK :(", "Veganismus", "Nö", "Dm Vegane Snackwurst", "Hier sind Rechtschreibfehler lol"], "filled": 42}, {"label": "Shin", "named": true, "raw": "Shin Kim", "ihr": ["Shin Kim", "Baseball", "Ne nicht wirklich", "Ich lebe für nichts. Ich bin nur ein wasser die flißt. Egal was passiert oder wo ich bin, ich fließe einfach weiter", "Wahrscheinlich mein pc setup", "Dass ich von freunden vermisst werde nach dem schulwechsel", "1v1 kampf turnir mit der gang, skydiving, portal 3 spielen, in antarktis reisen", "Hatte im Baseball ein double geschlagen", "Hatte mal ich packe meine Tasche in koreanischen Grundschule gespielt, da war ich und noch ein mädchen noch übrig. Es war scheiß viel dingern so 18 oder so ungefähr und so lange gespielt, dass wir wegen gong aufhören musste.", "Tag der deutschen Einheit. Die placement ist so geil", "Mats Wimmer und Malte", "Teleportation. Ich bin zu faul. Auch so ich brauch kein schlaf und bin komplett fit ohne schlafen aber ich kann noch schlafen gehen. Das wär peak", "Ich geh nicht raus. Aber kroatien war geil", "", "Koreaner, eher Rational aber kan mitfühlen. Lieber listener als yapper", "Bissen auf meine neue schule, fand aber inda schon geiler", "Selektives Langzeitgedächnis. Ich kann mich an unnötigen dingen so gefühlt bis zum tode erinnern aber wichtige dinger vergesse ich in milisekunden", "Wasser. Praktisch in alltag und auch in bestimmte fälle. Mit keine vorgaben kann ich auch so mit hochdurck irgendwelche scheiße anbauen", "Die ganze son variarionen in Insta", "Ich würde einfach so mit meine frau chillen und so die lasten von meinen kindern erleichtern durch unterstützungen", "Naver webtoons", "My hero academia: two heroes", "Grasfeindlich, rational und nachteule", "Vappy bird: vape mit interaktiven spielen auf dem display.", "Hoffendlich in bank/ s&p 500 stecken, haus kaufen und eif damit leben", "Ne", "Hausstaubmilben und katze. Maybe noch pollen", "Im pool chillen", "짜장면 jajangmeon so nudel mit schwarze bohnen paste und ja such in google nach", "Ein maincoon katze und golden retriver/ syberian husky", "baseball", "Dass ich nicht direkt nach geburt gesagt hab, dass mein eltern bitcoin kaufen sollte", "Leben. Am ende bringt eh nichts irgendwas", "Ja bestimmt. Personen ändern sich jederzeit. Permanent ist eine andere frage. Und ich sag aber auch, dass sich menschen auch in der lage ist, permanent sich zu ändern", "Nichts. Sinn des lebens gibt es nicht und die suche danach wird auch nichts bringen. Leben hat kein sinn, was auch bedeutet, dass du alles machen kannst.", "Bei uns in laden gibt es so kaffe erdbeere latte und das ist so peak. 160 ml milch, 60 ml hausgemachte erdbeersyrup und ne shot espresso", "In einen Lab verrotten wenn aes klappt.", "Hab angst vor frauen", "Chemie. Einfach, eher Logisch und bissen auswendiglernen nervt aber schon", "Haushalt. So kochen zumbeispiel oder wie man kleider repariert.", "Absurdism. Ich hab das zwar noch nocht so ganz verstanden aber ich kann immernoch die zentrale ideen rüberbringen", "Bei meine Eltern bei Manna bunsik.", "Eis und schokolade. Auch so java chip frappuchino bei starbucks ist peak.", "Ewm ich kann selber nicht deutsch also hab ich nicht mal so richtig gemerkt"], "filled": 43}, {"label": "Milo", "named": true, "raw": "Milo", "ihr": ["Milo", "Leichtathletik, Serien, viel kleines wie Häkeln", "Skills", "Liebe", "Miles Seele", "Meine Beine 🤤🤤", "Freundin (noch eine), Das eine illegale, Kinder, GELD!!", "Gute Frage… uhhhhhhh sag ich nicht", "Die Scheidung meiner Eltern", "Hanukkah", "Burak der breeee", "Musik… alles", "Überall mit den homies", "https://drive.google.com/open?id=16KsMtBmeUoQb5c60Ly9TQuMsjVftXC5t", "Meine Moral 💀", "Midgard, party, Ferien", "Pi bis zur 100 nachkommerstelle aufsagen", "Geld wär langweilig, also nehm ich Schießpulver oder andere explosive Sachen", "Erzähl ich euch lieber", "Gamer Weil Zeit", "Meine eigene… wenn ich die endlich einrichte", "The princess bride perhaps… oder your name", "Jack of All trades", "Pizza Ofen im Auto für frische Pizza; Für den Grill so räucher Zeug", "Neues setup und Lehrer bestechen", "Eigentlich nicht", "N/A", "Faulenzen", "Sushi", "Katzen (viele)", "Klettern", "Harambes tot", "Veränderung", "Klar…", "Gibt keinen… womp womp", "Garnicht", "", "Wusstest du der Abstand von *Schulter bis Nacken mit der Hand markieren* ist der gleiche wie von *andere Schulter und Hand da lassen* hier bis hier", "Alles mit den homies", "Psychologie", "Alles  LGBTQIA++ related", "Ich bin Angestellter aber ich arbeite nicht", "Dunkle schokolade", "Ich mach genau so viele"], "filled": 43}, {"label": "Sir Jon", "named": true, "raw": "Sir Jon", "ihr": ["Sir Jon", "Fußball, Klavier", "Schlechte Noten", "frauen", "Drei einhundert euro scheine", "Mir den Respekt der Stufe verdient", "Hollywood erobern (als Star)", "In der Grundschule gecracked zu werden (von Mitschülerin)", "Nach Deutschland rüber geschwommen", "9/11 (Family Guy reference)", "Das ist der Lars.(D)", "Ultimate Rizz", "Kp das erste was ich in meiner Galerie finde", "https://drive.google.com/open?id=11lGyL1KlbFBPrYTZP03gVak0u3dTxoRy", "Meine Größe und mein Ya...", "Keine Schule mehr (sry Jungs)", "Johnson rizzen", "Ein Euro Münzen.", "Deine Mudda Ahahahaaaaaaaaa", "Körperlich in guten Zustand", "Tagesschau.", "Zurück in die Zukunft.", "Lang, lustig, lachend.", "Grashalme verkaufen.", "Auswandern auf eine Insel und dort etwas bauen.", "Tottenham Hotspur Logo am Bein.", "Heuschnupfen und Insekten", "Schwimmen.", "Pizza.", "Katze.", "Fußball.", "Die Zeugung Mauros (sodass sie nicht passiert)", "Erfolgreich zu sein? Ig", "Definitiv.", "Goonen, Geld.", "Gar nicht💀", "Nicht in Deutschland 😭🙏", "\"Geiler Ar---\"", "Französisch.", "Steuerhinterziehung.", "Fußball.", "Ich gebe Klein Hollands Nachhilfe", "Schokolade.", "Lwk überhaupt nicht."], "filled": 44}, {"label": "Leonard", "named": true, "raw": "Leonard", "ihr": ["Leonard", "Gym", "Nahh", "Im Gym und Internet", "Uhr", "Kp gute Noten ig", "Usa Waffen schießen, Tigerhai und Walhai sehen", "", "", "Alle", "Eltern", "S-Tier Programming", "Südafrika und Düsburg", "", "Dedication ig", "Poker", "Codmobile", "Goldbarren", "Keine Angabe da verfassungswidrig", "Reich", "YouTube", "John Wick 1", "", "Privately owned Palantir operated predator drone", "Das Geld investieren und ne fette Reise machen", "Oh hell nawww", "Pollen", "Nicht überhitzen", "Rindfleischsuppe", "Ara", "Gymmmm", "WW1/2 halt wegen Moral und so aber deep down Fall der Udssr und die Abschaffung der Sechuan sauce bei Mcces", "Geld und Connections", "Safe", "Überleben", "Mit Hafermilch", "Hohe Position bei einem der Big4", "K.a", "Matheeee", "Finanzen und Aktien", "Warum Religion bullshit ist", "Ja Edeka", "Ungarisch Chips", "Nahh"], "filled": 40}, {"label": "Fynn", "named": true, "raw": "Fynn", "ihr": ["Fynn", "Jonglieren, Gym, Klavier", "Küsse mit Männern", "Spaß", "Gibt nichts physisches", "War im Ausland", "Während Studium ins Ausland", "Gibt nicht eine spezielle", "Lustige Taschenbücher", "Weihnachten", "Eric (mein Bruder)", "Handstand", "Son Strand im Urlaub", "https://drive.google.com/open?id=1iH9ab1QhnmnDryQrOxarQ9_Fj7uTZupb", "Humor, Offenheit", "Abi haben und raus aus Aachen", "Körperliche Ausdauer (benutz ich für nichts)", "Geld I guess", "Ein Skelett kommt in eine Bar und bestellt ein Bier und einen mob", "Cooler Opa der Geld verschenkt", "******* spaaaaß Chess.com", "Schwierig aber ich gehe mit Inception", "Energiegeladener, etwas aufdringlicher Typ", "In Deutschland billig Wasser kaufen (weil tf kostet hier nur so 34 Cent die Flasche) und in Afrika dann für 2€ die Flasche verticken", "Anlegen ETFs und so", "Ne", "Hab keine (imagine man kriegt so nen nerf vom Leben)", "Freunde und so", "Carbonara", "Schildkröte", "Badminton oder Tennis", "Ein vollidiot kam 1941 auf die Idee die UdSSR anzugreifen. Das muss geändert werden", "Glücklich sein", "Ja", "Spaß", "Gar nicht", "Wohlhabend, Stadt, guter Job, viele Freunde", "Jo hast du meinen Werkzeugkasten gesehen? Weil wenn ich dich sehe muss ich dringend diesen Hammer verstecken", "Alles arsch, Schule ist ein beschissenes System", "So Lebensplanung oder so", "Filme", "Medienfirma", "Nüsse (milos)", "Ging, pieramide war hart"], "filled": 44}, {"label": "Malte", "named": true, "raw": "Name ist so egal, du weißt, wenn ich ehrlich antworte, so oder so, das ich es bin, Malte. Hi Bre", "ihr": ["Name ist so egal, du weißt, wenn ich ehrlich antworte, so oder so, das ich es bin, Malte. Hi Bre", "TechnikTeam, Freunde, Zocken, Familie. Daraus besteht mit Schule aktuell gefühlt mein Leben", "Erfahrung.", "Weiß nicht. Für manche Menschen aktuell.", "Wenn man nach physischem Wert geht, mein PC. Nach nicht physischem Wert, Menschen.", "Ein Kompliment von Herr Wirtz xD. Zitat: \"Ey Malte, der Sound auf dem Schulfest war der beste den ich jemals vom TechnikTeam gehört habe\". Cinema und holy Glaze", "Ein SOAD Konzert besuchen.", "Rückblikend auf das Quartal gesehen: Schulfest. Meine erste komplett eigens geleitete Veranstaltung. Hat unfassbar viel Spaß gemacht. Danach am Abend auch noch mit Freunden gefeiert. Cinema Tag.", "Gibt vieles. Keine Ahnung", "Hab keinen. Find alle cool, weil ich so oder so nichts feier :D is halt frei.", "Von Freunden: David.", "Gibt mehreres, fällt mir grad nd ein.", "Okö. Gibt mehrere coole Orte, ich fotografiere sowas nur nicht.. deswegen kann nur Bild von einer Nachtwanderung im Gebirge schicken, die ich ganz cinema fand.", "https://drive.google.com/open?id=1AVl_aR9RrdTfXdWm_73Jek98OTp72eAN", "Vll das ich selbstgetrieben bin.. ich weiß nicht.", "Auf meinen Job.", "Mir fallen in Songs mixing Fehler auf. Das dumme: Du hörst dir dann immer und das fuckt ab.", "Gute Frage. Weiß ich nicht.", "Frag Fabian.", "Hoffentlich nicht alt und kaputt..", "pornhu... ähhhhhhh ich meine youtube.com :>", "Weiß nicht.", "Zielstrebig, technikaffin, verantwortungsbewusst", "YouTube höhö", "Kommt drauf an wie viel Geld.. bei so 100 Mio würde ich Equipment kaufen und eine eigene Firma aufmachen.", "Hatte mal überlegt, aber mich wieder dagegen entschieden.", "Pollen.", "Kalt duschen", "Lasange", "Kaninchen, hab ja 2", "Laufen ist ganz cinema eigentlich.", "Familienprobleme und Freund, den ich verloren hab.", "Wenn etwas klapptx gut gelaufen ist, ich das Ziel erreicht hab, was ich mir gesetzt habe.", "Ja. Können sie.", "Milo ist der Sinn des Lebens.", "Schwarz oder mit bissl Sahne.", "Hoffentlich am FoH", "Kp.", "Mathe is ganz cool eigentlich.", "Technik und zwar angewandte Technik und nicht son Kram den wir mit Schmitz machen.", "Das ist obvious.", "Nicht fest, nope.", "Bubensahn.... ähhh Eis.", "😂 bissl abgefuckt hat es, ja."], "filled": 44}], "anon": [{"label": "Anonym", "named": false, "raw": "is eig ziemlich klar", "ihr": ["is eig ziemlich klar", "zeichnen, gaming", "dinge die ich bereue", "metaphorisch*", "meine minecraft ps4 legacy edition welten", "hier sein (und BB 100%)", "auf dem mond landen", "aller erste lethal company session (absolute cinema)", "mc ps4 legacy edition roleplay mit meiner schwester", "Was wird mein ahh feiern twin ✌️🥀🪫", "Milo", "sozial kompetent sein", "zuhause", "", "die konfiguration an eigenschaften die mich als person beschreiben welche zu viele sind um aufzulisten", "chapter 6", "π", "femboys", "", "der beste g dasher über 80", "pointercrate.com", "spiderverse", "ähm also erm", "r34 comissions", "anderen menschen geben", "nah", "larper", "g dashen", "patatesli börek", "", "schach", "Wie ist die frage gemeint? like etwas aus meinem leben oder auch etwas woran ich nicht teilgenommen habe?", "level complete!", "lowkey", "der den man es gibt", "nicht", "pro dasher/animierer/versagter lehrer", "der abstand von... (nah idk bro)", "mathe", "schach (nicht wirklich aber schon ein bisschen)", "die geschichte von top play in geometry dash", "good one", "all of the above", "lol hab ich wohl schon beantwortet"], "filled": 41}, {"label": "Anonym", "named": false, "raw": "Leck eier", "ihr": ["Leck eier", "Geld verdienen", "Ja C.E.R.T.S.", "Legacy", "Meine Freunde <3 (genuinely)", "Richtig cooler trade", "Jungle Extraction survival", "Gute Frage nächste frage", "Siehe oben", "4.06", "Ama / Tabea / maybe du oder Max noch", "Muscle up", "Dubaiii", "", "Meine Persönlichkeit inform von people talking", "Worklife", "Gibt keine (Phonk Sounds)", "So ein Purer Energieblock so", "Linke Menschen", "Rechts", "www.fdp.de", "1000 players simulate: rich vs poor civilization (mein ich ernst)", "Moralisch intakt aber rechts aus ❤️", "Sag ich nciht", "Investier", "Nein", "Keine", "Goonen", "Kluski", "Dawg", "Badminton", "Keine sogar, alles Findet seinen Weg", "Erfülltes Leben (Geld)", "Ja aber schwer", "Erfolg", "Gar nicht", "Blackrock / vanguard / State S", "Den mit dem ich hab meine Perle verloren möchtest du meine sein", "Mathe", "Ai", "Ai", "Blackrock", "Einsatz", "Digga herbe"], "filled": 43}, {"label": "Anonym", "named": false, "raw": "", "ihr": ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""], "filled": 0}, {"label": "Anonym", "named": false, "raw": "", "ihr": ["", "Zoggen", "Lego", "Kein plan", "Materialistisch oder Emotional?", "Keine Ahnung", "Schießen", "Keine Ahnung", "Keine Ahnung", "Jeder an d ich frei habe", "Mattis Höhl", "Schnell schneiden", "", "", "Meine Empathie (ja meine Empathie)", "Ende der schule", "Keine Ahnung", "Geld , vorausgesetzt die Welt Wirtschaft wird nicht gecrasht", "Keine Ahnung", "Keine Ahnung", "Nexus-mods.com", "Herr der ringe", "Egal", "Gar keine", "Schulden bezahlen falls ich welche hab und sonst es niemanden sagen", "Nö", "Sonnencreme", "Auf Herbst warten und Frühling hinterher trauern und vor allem überleben", "Keine Ahnung", "Katzen", "Keine Ahnung", "Hitler🔪🔪🩸☠️", "Das wissen etwas geschafft zu haben wofür man gearbeitet hat", "Kommt auf die Person an, es gibt halt Menschen die von Grund auf Böse sind", "Sterben", "Gar nicht", "Im Altersheim", "Kenne keine", "Geschichte", "Hauswirtschaft (Kochen etc.)", "Wie scheiße unser Schulsystem ist", "Lebenshilfe Aachen FeD", "Keine Ahnung", "Ist mir nicht wirklich aufgefallen"], "filled": 41}, {"label": "Anonym", "named": false, "raw": "Unbekannt", "ihr": ["Unbekannt", "Leichtathletik, Tischtennis, Gitarre, Fahrrad fahren/laufen", "Nope", "...", "", "", "Iron Man", "", "Familientreffen", "Jeder", "Ich", "Calisthenics", "Berge (vermutlich Österreich)", "https://drive.google.com/open?id=1-ItmIPPxGMBO7Hdlp6F5Yvr9zee4Q7rk", "", "Das Rentnerleben (am besten so schnell wie möglich)", "", "", "", "Viel Reisen, alle Dinge machen für die vorher keine Zeit war, entspannen", "", "Avengers Endgame", "Joa ne, läuft", "Handy Lampe", "Ne einsame insel kaufen und chillen", "Nein", "Keine", "Schlafen", "Nudeln", "Hund (Australien Shepard)", "Fußball", "Hitlers weg (nicht töten, sondern ihn zu einem anderen Menschen machen)", "Wenn man auf sich selbst stolz ist", "Bedingt, es kommt auf den Bereich an", "Leben", "Mit Milch oder Schwarz", "Im Spiegel", "Joa ne", "Sport", "Psychologie", "Welthunger", "Nipe", "Gummibärchen (natürlich vegan)", "Gar nicht, juckt"], "filled": 36}, {"label": "Anonym", "named": false, "raw": "", "ihr": ["", "Spaß haben", "Erfahrungen", "Meine Ziele", "Mein Leben", "Mein aktuelles alter", "Familie gründen", "", "", "Geburtstag", "Meine Mutter", "Fliegen", "Unterwasser", "", "Meine art", "Zukunft", "Augen zittern lassen", "Geld", "", "Cool", "", "", "", "", "Niemandem sagen", "Maybe", "Du", "Chillen", "Fleiscj", "Hund", "Sport", "", "", "Maybe", "Gemeinwohl", "Gar nicht", "Auf der erde", "", "", "Business", "", "Nö", "Ka", "Nicht aufgefallen"], "filled": 30}, {"label": "Anonym", "named": false, "raw": "", "ihr": ["", "Tennis, WoF, zocken", "Nicht wirklich", "Für ein erfülltes Leben", "Meine Familie", "Gutes Verhältnis mit Freunden und Familien", "Familie gründen", "Führerschein Prüfung bestanden", "Mit meinem Bruder Lego spielen", "Tag der Deutschen Einheit", "Meine Mutter", "Viele Sprachen zu beherrschen", "Berlin und Copenhagen", "", "Spaß am Leben", "Auf Zeit mit der Familie zu verbringen", "Extrem viel Star Wars Wissen zu haben", "Öl", "Keine Ahnung", "Ein netter Rentner", "YouTube", "Star Wars Episode III Die Rache der Sith", "Hilfsbereit, höflich mitfühlend", "Keine Ahnung", "Ein Urlaub in den USA mit meiner Familie", "Nein, keine Tattos", "Keine …, glaube ich", "Mit Freunden treffen und mit der Familie im Urlaub sein", "Pizza", "Löwen, Bären, Adler", "Zum gucken Fußball. Zum spielen Badminton oder Tennis", "Den zweiten Weltkrieg", "Glücklich zu sein", "Nicht alle Personen", "Glücklich zu werden", "Keinen Kaffee", "Mit einer gegründeten Familie", "Ich kenne keinen guten", "Geschichte/Latein", "Star Wars Geschichte", "Über den ersten Weltkrieg, über Star Wars", "Noch nicht, bald ;)", "Erdbeeren", "Ein wenig :)"], "filled": 42}]};
+const PAL = ['#2438D8','#FF3355','#16181F','#E8B21C','#128C7E','#7A3BD8','#9A968A','#0EA5E9'];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const nf = new Intl.NumberFormat('de-DE', {maximumFractionDigits:2});
+
+function money(v){
+  if(v >= 1e9) return nf.format(v/1e9)+' Mrd €';
+  if(v >= 1e6) return nf.format(v/1e6)+' Mio €';
+  if(v >= 1e3) return nf.format(v)+' €';
+  return nf.format(v)+' €';
+}
+
+/* Donut */
+function donut(items){
+  const total = items.reduce((s,i) => s+i.count, 0), R = 62, r = 34, C = 75;
+  let a = -Math.PI/2, paths = '';
+  if(items.length === 1){
+    paths = `<circle cx="${C}" cy="${C}" r="${(R+r)/2}" fill="none" stroke="${PAL[0]}" stroke-width="${R-r}"/>`;
+  } else {
+    items.forEach((it,i) => {
+      const s = a, e = a + it.count/total*Math.PI*2; a = e;
+      const p = (rad,ang) => [C+rad*Math.cos(ang), C+rad*Math.sin(ang)].map(n=>n.toFixed(2)).join(' ');
+      const big = e-s > Math.PI ? 1 : 0;
+      paths += `<path d="M ${p(R,s)} A ${R} ${R} 0 ${big} 1 ${p(R,e)} L ${p(r,e)} A ${r} ${r} 0 ${big} 0 ${p(r,s)} Z"
+        fill="${PAL[i%PAL.length]}" stroke="var(--paper-2)" stroke-width="1.5"/>`;
+    });
+  }
+  const svg = `<svg width="150" height="150" viewBox="0 0 150 150" role="img" aria-label="Kreisdiagramm">
+    ${paths}<text x="${C}" y="${C-2}" text-anchor="middle" font-family="var(--mono)" font-size="19" font-weight="700">${total}</text>
+    <text x="${C}" y="${C+14}" text-anchor="middle" font-family="var(--mono)" font-size="8.5" fill="rgba(22,24,31,.55)">ANTWORTEN</text></svg>`;
+  const legend = `<ul class="legend">${items.map((it,i) => `<li>
+      <span class="swatch" style="background:${PAL[i%PAL.length]}"></span>${esc(it.label)}
+      <span class="pct">${it.count} · ${Math.round(it.count/total*100)}%</span></li>`).join('')}</ul>`;
+  return `<div class="chart">${svg}${legend}</div>`;
+}
+
+/* Balken */
+function bars(items, base, multi){
+  const max = Math.max(...items.map(i => i.count));
+  return `<div class="bars">${items.map(it => `
+    <div class="bar-row">
+      <span class="bar-lab">${esc(it.label)}</span>
+      <span class="bar-track"><span class="bar-fill" style="width:${it.count/max*100}%"></span></span>
+      <span class="bar-val">${it.count}${multi ? '' : ' · '+Math.round(it.count/base*100)+'%'}</span>
+    </div>`).join('')}</div>
+    ${multi ? '<p class="viz-note">Mehrfachnennungen möglich – Summe über 100 %.</p>' : ''}`;
+}
+
+function viz(c){
+  if(!c) return '';
+  return `<div class="q-viz">${c.type === 'pie' ? donut(c.items) : bars(c.items, c.base, c.multi)}</div>`;
+}
+
+function answerList(list){
+  return list.map(t => `<div class="a"><span class="dash">›</span><p>${esc(t)}</p></div>`).join('')
+    || '<div class="empty-note">Keine Antworten.</div>';
+}
+
+function renderQuestions(list, el, cls){
+  el.innerHTML = list.map(q => `
+    <div class="q">
+      <button class="q-head" aria-expanded="false">
+        <span class="q-num">${String(q.n).padStart(2,'0')}</span>
+        <span class="q-text">${esc(q.q)}</span>
+        <span class="q-meta">${q.answers.length} Antw.</span>
+      </button>
+      ${viz(q.chart)}
+      <div class="q-body ${cls||''}">${answerList(q.answers)}</div>
+    </div>`).join('');
+  el.querySelectorAll('.q-head').forEach(btn => btn.addEventListener('click', () => {
+    const open = btn.parentElement.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open);
+  }));
+}
+renderQuestions(DATA.fragen, document.getElementById('fragen-list'));
+renderQuestions(DATA.geiz_txt, document.getElementById('geiz-txt'), 'money-list');
+
+/* Geldfragen */
+const geldEl = document.getElementById('geld-list');
+geldEl.innerHTML = DATA.geld.map(g => {
+  const vs = g.values.map(v => v.v);
+  const lg = v => Math.log10(Math.max(v, 0.5) + 1);
+  const max = vs.length ? lg(Math.max(...vs)) : 1;
+  const stats = vs.length ? `
+    <div class="money-stats">
+      <span class="ms">MEDIAN <b>${money(g.median)}</b></span>
+      <span class="ms">GÜNSTIGSTE <b>${money(Math.min(...vs))}</b></span>
+      <span class="ms">TEUERSTE <b>${money(Math.max(...vs))}</b></span>
+      <span class="ms">UNBEZAHLBAR <b>${g.other.length}</b></span>
+    </div>` : '';
+  const rows = g.values.map(v => `
+    <div class="mrow">
+      <span class="mtrack"><span class="mfill" style="width:${Math.max(lg(v.v)/max*100, 1.5)}%"></span></span>
+      <span class="mtxt">${esc(v.text)}</span>
+    </div>`).join('');
+  const chips = g.other.map(o => `<span class="chip${o.kind === 'other' ? ' grey' : ''}">${esc(o.text)}</span>`).join('');
+  return `
+    <div class="q">
+      <button class="q-head" aria-expanded="false">
+        <span class="q-num">${String(g.n).padStart(2,'0')}</span>
+        <span class="q-text">${esc(g.q)}</span>
+        <span class="q-meta">${g.answers.length} Antw.</span>
+      </button>
+      <div class="q-viz">
+        ${stats}
+        <div class="mbars">${rows || '<p class="viz-note">Keine bezifferbaren Antworten.</p>'}</div>
+        ${chips ? `<div class="chips">${chips}</div>` : ''}
+        <p class="viz-note">Balkenlänge logarithmisch. Gestrichelt = kein Preis / ∞, gepunktet = unklar.</p>
+      </div>
+      <div class="q-body money-list">${answerList(g.answers)}</div>
+    </div>`;
+}).join('');
+geldEl.querySelectorAll('.q-head').forEach(btn => btn.addEventListener('click', () => {
+  const open = btn.parentElement.classList.toggle('open');
+  btn.setAttribute('aria-expanded', open);
+}));
+geldEl.querySelectorAll('.q-head').forEach(b => b.remove());
+geldEl.querySelectorAll('.q').forEach((q,i) => {
+  const g = DATA.geld[i];
+  q.insertAdjacentHTML('afterbegin', `
+    <div class="q-head" style="cursor:default">
+      <span class="q-num">${String(g.n).padStart(2,'0')}</span>
+      <span class="q-text">${esc(g.q)}</span>
+      <span class="q-meta">${g.answers.length} Antw.</span>
+    </div>`);
+});
+
+/* Smash */
+document.getElementById('slots').innerHTML = Array.from({length:9}, (_,i) => `
+  <div class="slot" data-slot="${i+1}">
+    <span class="idx">${String(i+1).padStart(2,'0')}</span>
+    <img alt="" src="" hidden>
+    <span class="ph">Slot ${i+1}<br>Bild wählen</span>
+    <input type="file" accept="image/*" aria-label="Bild für Slot ${i+1} wählen">
+  </div>`).join('');
+document.querySelectorAll('.slot input').forEach(inp => inp.addEventListener('change', e => {
+  const f = e.target.files[0]; if(!f) return;
+  const slot = e.target.closest('.slot'), img = slot.querySelector('img');
+  img.src = URL.createObjectURL(f); img.hidden = false;
+  slot.querySelector('.ph').style.display = 'none';
+  slot.style.borderStyle = 'solid';
+}));
+document.getElementById('smash-links').innerHTML =
+  DATA.smash.map(u => `<li><a href="${esc(u)}" target="_blank" rel="noopener">${esc(u)}</a></li>`).join('')
+  || '<li>Nichts eingereicht.</li>';
+
+/* Ihr */
+const picker = document.getElementById('picker'), card = document.getElementById('person-card');
+const all = [...DATA.named.map((p,i) => ({...p, key:'n'+i})), ...DATA.anon.map((p,i) => ({...p, key:'a'+i}))];
+picker.innerHTML =
+  `<span class="group-label">Mit Namen</span>` +
+  DATA.named.map((p,i) => `<button class="pick" data-key="n${i}" aria-pressed="false">${esc(p.label)}</button>`).join('') +
+  `<span class="group-label">Ohne Namen</span>` +
+  DATA.anon.map((p,i) => `<button class="pick anon" data-key="a${i}" aria-pressed="false">Anonym</button>`).join('');
+
+function show(key){
+  const p = all.find(x => x.key === key);
+  picker.querySelectorAll('.pick').forEach(b => b.setAttribute('aria-pressed', b.dataset.key === key));
+  const sub = p.named
+    ? `Eigene Angabe: „${esc(p.raw)}" · ${p.filled}/44 beantwortet`
+    : (p.raw ? `Auf „Wie heisst du?": „${esc(p.raw)}" · ${p.filled}/44 beantwortet`
+             : `Kein Name angegeben · ${p.filled}/44 beantwortet`);
+  card.innerHTML = `
+    <div class="card">
+      <div class="card-head"><h3>${esc(p.label)}</h3><span class="sub">${sub}</span></div>
+      ${p.filled === 0
+        ? `<div class="empty-note">Diese Person hat nach „Euer Geiz" aufgehört. Nichts zu sehen.</div>`
+        : `<div class="qa">${DATA.ihrQuestions.map((q,i) => `
+            <div class="k">${esc(q)}</div>
+            <div class="v${p.ihr[i] ? '' : ' empty'}">${p.ihr[i] ? esc(p.ihr[i]) : '—'}</div>`).join('')}</div>`}
+    </div>`;
+}
+picker.addEventListener('click', e => { const b = e.target.closest('.pick'); if(b) show(b.dataset.key); });
+
+/* Alle Antworten einer Sektion auf einmal zeigen */
+document.querySelectorAll('.toggle-all').forEach(btn => btn.addEventListener('click', () => {
+  const root = document.getElementById(btn.dataset.target);
+  const qs = [...root.querySelectorAll('.q')];
+  const open = !qs.every(q => q.classList.contains('open'));
+  qs.forEach(q => {
+    q.classList.toggle('open', open);
+    q.querySelector('.q-head').setAttribute('aria-expanded', open);
+  });
+  btn.textContent = open ? 'Alle Antworten ausblenden' : 'Alle Antworten zeigen';
+}));
+show('n0');
+</script>
+</body>
+</html>
