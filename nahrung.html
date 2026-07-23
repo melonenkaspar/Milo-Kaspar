@@ -3,1031 +3,895 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Animal Based – By Milo</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<title>Vegan – die Beweislage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bone: #f5ede0;
-    --cream: #faf6f0;
-    --bark: #2c1a0e;
-    --ember: #c94b1a;
-    --fat: #e8c98a;
-    --ash: #8a7060;
-    --char: #1a0f08;
-    --smoke: #d4c4b0;
-  }
- 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
- 
-  body {
-    background: var(--char);
-    color: var(--bone);
-    font-family: 'DM Mono', monospace;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
- 
-  /* HERO */
-  .hero {
-    position: relative;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    padding: 4rem 2rem;
-    background: radial-gradient(ellipse at 60% 30%, #3d1a08 0%, #1a0f08 60%);
-    overflow: hidden;
-  }
- 
-  .hero::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image:
-      repeating-linear-gradient(0deg, transparent, transparent 80px, rgba(255,255,255,0.015) 80px, rgba(255,255,255,0.015) 81px),
-      repeating-linear-gradient(90deg, transparent, transparent 80px, rgba(255,255,255,0.015) 80px, rgba(255,255,255,0.015) 81px);
-    pointer-events: none;
-  }
- 
-  .flame-ring {
-    position: absolute;
-    width: 600px;
-    height: 600px;
-    border-radius: 50%;
-    border: 1px solid rgba(201, 75, 26, 0.15);
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    animation: pulse 4s ease-in-out infinite;
-  }
-  .flame-ring:nth-child(2) { width: 800px; height: 800px; animation-delay: 1s; opacity: 0.5; }
-  .flame-ring:nth-child(3) { width: 1000px; height: 1000px; animation-delay: 2s; opacity: 0.25; }
- 
-  @keyframes pulse {
-    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.4; }
-    50% { transform: translate(-50%, -50%) scale(1.05); opacity: 0.15; }
-  }
- 
-  .hero-tag {
-    font-size: 0.65rem;
-    letter-spacing: 0.4em;
-    color: var(--ember);
-    text-transform: uppercase;
-    margin-bottom: 2rem;
-    opacity: 0;
-    animation: fadeUp 0.8s ease 0.2s forwards;
-  }
- 
-  .hero-title {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(3.5rem, 10vw, 8rem);
-    font-weight: 900;
-    line-height: 0.9;
-    color: var(--bone);
-    margin-bottom: 1.5rem;
-    opacity: 0;
-    animation: fadeUp 0.8s ease 0.4s forwards;
-  }
- 
-  .hero-title em {
-    font-style: italic;
-    color: var(--fat);
-  }
- 
-  .hero-sub {
-    font-size: 0.8rem;
-    color: var(--ash);
-    letter-spacing: 0.15em;
-    max-width: 400px;
-    line-height: 1.8;
-    opacity: 0;
-    animation: fadeUp 0.8s ease 0.6s forwards;
-  }
- 
-  .scroll-hint {
-    position: absolute;
-    bottom: 3rem;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.6rem;
-    letter-spacing: 0.3em;
-    color: var(--ash);
-    opacity: 0;
-    animation: fadeUp 0.8s ease 1s forwards;
-  }
- 
-  .scroll-line {
-    width: 1px;
-    height: 40px;
-    background: linear-gradient(to bottom, var(--ember), transparent);
-    animation: scrollLine 2s ease-in-out infinite;
-  }
- 
-  @keyframes scrollLine {
-    0%, 100% { opacity: 0.3; transform: scaleY(1); }
-    50% { opacity: 1; transform: scaleY(1.2); }
-  }
- 
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
- 
-  /* NAV */
-  nav {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: rgba(26, 15, 8, 0.95);
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(201, 75, 26, 0.2);
-    padding: 1rem 2rem;
-    display: flex;
-    justify-content: center;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-  }
- 
-  nav a {
-    color: var(--ash);
-    text-decoration: none;
-    font-size: 0.65rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    padding: 0.4rem 1rem;
-    border: 1px solid transparent;
-    transition: all 0.3s;
-  }
- 
-  nav a:hover {
-    color: var(--bone);
-    border-color: var(--ember);
-  }
- 
-  /* SECTIONS */
-  section {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 6rem 2rem;
-  }
- 
-  .section-header {
-    display: flex;
-    align-items: baseline;
-    gap: 2rem;
-    margin-bottom: 4rem;
-  }
- 
-  .section-num {
-    font-size: 0.6rem;
-    letter-spacing: 0.3em;
-    color: var(--ember);
-    white-space: nowrap;
-  }
- 
-  .section-title {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(2rem, 5vw, 3.5rem);
-    font-weight: 700;
-    color: var(--bone);
-    line-height: 1.1;
-  }
- 
-  .section-line {
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(to right, var(--ember), transparent);
-  }
- 
-  /* RECIPE CARDS */
-  .recipes-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 2px;
-  }
- 
-  .recipe-card {
-    background: rgba(44, 26, 14, 0.4);
-    border: 1px solid rgba(138, 112, 96, 0.15);
-    padding: 2.5rem;
-    cursor: pointer;
-    transition: all 0.4s;
-    position: relative;
-    overflow: hidden;
-  }
- 
-  .recipe-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0;
-    width: 3px;
-    height: 0;
-    background: var(--ember);
-    transition: height 0.4s;
-  }
- 
-  .recipe-card:hover::before { height: 100%; }
-  .recipe-card:hover {
-    background: rgba(44, 26, 14, 0.7);
-    transform: translateY(-2px);
-  }
- 
-  .card-category {
-    font-size: 0.55rem;
-    letter-spacing: 0.35em;
-    color: var(--ember);
-    text-transform: uppercase;
-    margin-bottom: 1rem;
-  }
- 
-  .card-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-    color: var(--bone);
-  }
- 
-  .card-desc {
-    font-size: 0.75rem;
-    color: var(--ash);
-    line-height: 1.7;
-    margin-bottom: 1.5rem;
-  }
- 
-  .card-meta {
-    display: flex;
-    gap: 1.5rem;
-    font-size: 0.6rem;
-    color: var(--smoke);
-    letter-spacing: 0.1em;
-  }
- 
-  .card-meta span::before {
-    content: '— ';
-    color: var(--ember);
-  }
- 
-  .card-expand-btn {
-    margin-top: 1.5rem;
-    background: none;
-    border: 1px solid rgba(201, 75, 26, 0.4);
-    color: var(--ember);
-    font-family: 'DM Mono', monospace;
-    font-size: 0.6rem;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    padding: 0.6rem 1.2rem;
-    cursor: pointer;
-    transition: all 0.3s;
-    width: 100%;
-  }
- 
-  .card-expand-btn:hover {
-    background: var(--ember);
-    color: var(--bone);
-  }
- 
-  /* MODAL */
-  .modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.85);
-    z-index: 1000;
-    backdrop-filter: blur(8px);
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-  }
- 
-  .modal-overlay.active { display: flex; }
- 
-  .modal {
-    background: var(--char);
-    border: 1px solid rgba(201, 75, 26, 0.3);
-    max-width: 700px;
-    width: 100%;
-    max-height: 85vh;
-    overflow-y: auto;
-    position: relative;
-  }
- 
-  .modal-header {
-    background: linear-gradient(135deg, #2c1a0e, #1a0f08);
-    padding: 2.5rem;
-    border-bottom: 1px solid rgba(201, 75, 26, 0.2);
-    position: sticky;
-    top: 0;
-    z-index: 1;
-  }
- 
-  .modal-category {
-    font-size: 0.55rem;
-    letter-spacing: 0.35em;
-    color: var(--ember);
-    text-transform: uppercase;
-    margin-bottom: 0.75rem;
-  }
- 
-  .modal-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--bone);
-    margin-bottom: 0.75rem;
-  }
- 
-  .modal-desc {
-    font-size: 0.75rem;
-    color: var(--ash);
-    line-height: 1.7;
-  }
- 
-  .modal-close {
-    position: absolute;
-    top: 1.5rem;
-    right: 1.5rem;
-    background: none;
-    border: 1px solid rgba(138, 112, 96, 0.3);
-    color: var(--ash);
-    font-family: 'DM Mono', monospace;
-    font-size: 0.7rem;
-    padding: 0.4rem 0.8rem;
-    cursor: pointer;
-    transition: all 0.3s;
-  }
- 
-  .modal-close:hover { color: var(--bone); border-color: var(--ember); }
- 
-  .modal-body { padding: 2.5rem; }
- 
-  .modal-section-title {
-    font-size: 0.6rem;
-    letter-spacing: 0.3em;
-    color: var(--ember);
-    text-transform: uppercase;
-    margin-bottom: 1rem;
-  }
- 
-  .ingredients-list {
-    list-style: none;
-    margin-bottom: 2.5rem;
-  }
- 
-  .ingredients-list li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.6rem 0;
-    border-bottom: 1px solid rgba(138, 112, 96, 0.1);
-    font-size: 0.75rem;
-  }
- 
-  .ingredients-list li:last-child { border-bottom: none; }
- 
-  .ing-name { color: var(--bone); }
-  .ing-amount { color: var(--fat); font-weight: 500; }
- 
-  .steps-list {
-    list-style: none;
-  }
- 
-  .step-item {
-    display: flex;
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
-  }
- 
-  .step-num {
-    font-family: 'Playfair Display', serif;
-    font-size: 2rem;
-    color: var(--ember);
-    opacity: 0.4;
-    flex-shrink: 0;
-    line-height: 1;
-  }
- 
-  .step-content { flex: 1; }
- 
-  .step-title {
-    font-size: 0.7rem;
-    letter-spacing: 0.15em;
-    color: var(--fat);
-    text-transform: uppercase;
-    margin-bottom: 0.4rem;
-  }
- 
-  .step-text {
-    font-size: 0.75rem;
-    color: var(--smoke);
-    line-height: 1.7;
-  }
- 
-  .step-time {
-    font-size: 0.6rem;
-    color: var(--ember);
-    margin-top: 0.4rem;
-    letter-spacing: 0.1em;
-  }
- 
-  .modal-note {
-    margin-top: 2rem;
-    padding: 1rem 1.5rem;
-    border-left: 2px solid var(--ember);
-    background: rgba(201, 75, 26, 0.05);
-    font-size: 0.72rem;
-    color: var(--ash);
-    line-height: 1.7;
-  }
- 
-  /* SPICE SECTION */
-  .spice-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
-  }
- 
-  .spice-group {
-    padding: 2rem;
-    border: 1px solid rgba(138, 112, 96, 0.15);
-    background: rgba(44, 26, 14, 0.3);
-    position: relative;
-  }
- 
-  .spice-group-status {
-    position: absolute;
-    top: -1px;
-    left: 2rem;
-    font-size: 0.55rem;
-    letter-spacing: 0.3em;
-    padding: 0.3rem 0.8rem;
-    text-transform: uppercase;
-  }
- 
-  .status-ok { background: rgba(120, 180, 80, 0.2); color: #a0d060; }
-  .status-warn { background: rgba(230, 180, 60, 0.2); color: #e0c060; }
-  .status-no { background: rgba(201, 75, 26, 0.2); color: var(--ember); }
- 
-  .spice-group-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.2rem;
-    margin-bottom: 1rem;
-    margin-top: 0.5rem;
-  }
- 
-  .spice-items {
-    list-style: none;
-  }
- 
-  .spice-items li {
-    padding: 0.35rem 0;
-    font-size: 0.72rem;
-    color: var(--ash);
-    border-bottom: 1px solid rgba(138, 112, 96, 0.07);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
- 
-  .spice-items li::before { content: '·'; color: var(--ember); font-size: 1rem; }
-  .spice-items li:last-child { border-bottom: none; }
- 
-  /* MIXES SECTION */
-  .mixes-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 2rem;
-  }
- 
-  .mix-card {
-    border: 1px solid rgba(138, 112, 96, 0.15);
-    background: rgba(44, 26, 14, 0.3);
-    overflow: hidden;
-  }
- 
-  .mix-card-header {
-    padding: 1.5rem 2rem;
-    background: linear-gradient(135deg, rgba(201, 75, 26, 0.15), transparent);
-    border-bottom: 1px solid rgba(138, 112, 96, 0.15);
-  }
- 
-  .mix-card-tag {
-    font-size: 0.55rem;
-    letter-spacing: 0.3em;
-    color: var(--ember);
-    text-transform: uppercase;
-    margin-bottom: 0.5rem;
-  }
- 
-  .mix-card-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.3rem;
-    color: var(--bone);
-  }
- 
-  .mix-card-body { padding: 1.5rem 2rem; }
- 
-  .mix-ingredient {
-    display: flex;
-    justify-content: space-between;
-    padding: 0.4rem 0;
-    font-size: 0.7rem;
-    border-bottom: 1px solid rgba(138, 112, 96, 0.07);
-  }
- 
-  .mix-ingredient:last-child { border-bottom: none; }
-  .mix-ing-name { color: var(--smoke); }
-  .mix-ing-amount { color: var(--fat); }
- 
-  .mix-tip {
-    margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 1px solid rgba(201, 75, 26, 0.2);
-    font-size: 0.65rem;
-    color: var(--ash);
-    line-height: 1.6;
-  }
- 
-  /* FOOTER */
-  footer {
-    border-top: 1px solid rgba(138, 112, 96, 0.15);
-    padding: 3rem 2rem;
-    text-align: center;
-  }
- 
-  .footer-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.5rem;
-    font-style: italic;
-    color: var(--ash);
-    margin-bottom: 0.75rem;
-  }
- 
-  .footer-note {
-    font-size: 0.65rem;
-    color: rgba(138, 112, 96, 0.5);
-    letter-spacing: 0.15em;
-  }
- 
-  /* DIVIDER */
-  .divider {
-    border: none;
-    border-top: 1px solid rgba(138, 112, 96, 0.1);
-    margin: 0 2rem;
-  }
- 
-  /* SCROLLBAR */
-  ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-track { background: var(--char); }
-  ::-webkit-scrollbar-thumb { background: var(--ember); }
- 
-  /* RESPONSIVE */
-  @media (max-width: 600px) {
-    .section-header { flex-wrap: wrap; }
-    .section-line { display: none; }
-    nav { gap: 0.25rem; }
-    nav a { font-size: 0.55rem; padding: 0.3rem 0.6rem; }
+  :root{
+    --ink:#1c1c18;
+    --ink-soft:#4a4a42;
+    --paper:#f7f8f5;
+    --card:#fffffe;
+    --line:#e2e2da;
+    --line-strong:#c9c9bd;
+
+    --pro:#2f6b4f;        /* botanical green – the plant side */
+    --pro-tint:#eef4ef;
+    --contra:#7c5e2a;     /* bronze – the animal-foods side */
+    --contra-tint:#f4efe4;
+
+    /* verdict status system – the signature */
+    --v-yes:#2f6b4f;      /* bestätigt */
+    --v-part:#a8791a;     /* teilweise / gemischt */
+    --v-no:#9b4433;       /* widerlegt / schwach */
+    --v-value:#4a5578;    /* wertefrage */
+
+    --shadow:0 1px 2px rgba(28,28,24,.04),0 8px 24px -18px rgba(28,28,24,.25);
+    --maxw:1080px;
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"Inter",system-ui,sans-serif;
+    font-size:17px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  ::selection{background:#d8e6dd}
+
+  a{color:inherit}
+  a:focus-visible,button:focus-visible{outline:2px solid var(--v-value);outline-offset:3px;border-radius:2px}
+
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    padding:88px 0 44px;
+    border-bottom:1px solid var(--line);
+  }
+  .eyebrow{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:12.5px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin:0 0 20px;
+  }
+  h1{
+    font-family:"Fraunces",serif;
+    font-weight:600;
+    font-size:clamp(2.7rem,7vw,5rem);
+    line-height:.98;
+    letter-spacing:-.02em;
+    margin:0 0 22px;
+  }
+  h1 .plant{color:var(--pro)}
+  .thesis{
+    font-size:clamp(1.05rem,2.4vw,1.3rem);
+    max-width:60ch;
+    color:var(--ink-soft);
+    margin:0 0 40px;
+  }
+  .thesis strong{color:var(--ink);font-weight:600}
+
+  /* verdict legend – hero centerpiece */
+  .legend{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+    gap:12px;
+    margin-top:8px;
+  }
+  .legend-item{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:14px 16px;
+    box-shadow:var(--shadow);
+  }
+  .stamp{
+    display:inline-block;
+    font-family:"IBM Plex Mono",monospace;
+    font-size:11px;
+    font-weight:600;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    padding:4px 9px;
+    border-radius:5px;
+    color:#fff;
+    margin-bottom:9px;
+  }
+  .stamp.yes{background:var(--v-yes)}
+  .stamp.part{background:var(--v-part)}
+  .stamp.no{background:var(--v-no)}
+  .stamp.value{background:var(--v-value)}
+  .legend-item p{margin:0;font-size:13.5px;color:var(--ink-soft);line-height:1.45}
+
+  .caveat{
+    margin-top:34px;
+    font-size:13.5px;
+    color:var(--ink-soft);
+    border-left:3px solid var(--line-strong);
+    padding:6px 0 6px 16px;
+    max-width:70ch;
+  }
+
+  /* ---------- NAV ---------- */
+  nav.toc{
+    position:sticky;top:0;z-index:20;
+    background:rgba(247,248,245,.86);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  nav.toc .wrap{
+    display:flex;gap:6px;flex-wrap:wrap;
+    padding-top:12px;padding-bottom:12px;
+    align-items:center;
+  }
+  nav.toc a{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:12.5px;
+    text-decoration:none;
+    color:var(--ink-soft);
+    padding:6px 11px;
+    border-radius:20px;
+    border:1px solid transparent;
+    transition:background .15s,border-color .15s,color .15s;
+  }
+  nav.toc a:hover{background:var(--card);border-color:var(--line);color:var(--ink)}
+
+  /* ---------- SECTIONS ---------- */
+  section.theme{padding:60px 0 12px}
+  .theme-head{
+    display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;
+    margin-bottom:8px;
+  }
+  .theme-num{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:13px;color:var(--ink-soft);
+  }
+  h2{
+    font-family:"Fraunces",serif;
+    font-weight:600;
+    font-size:clamp(1.7rem,4vw,2.5rem);
+    letter-spacing:-.01em;
+    margin:0;
+  }
+  .theme-intro{color:var(--ink-soft);max-width:65ch;margin:10px 0 30px;font-size:15.5px}
+
+  /* ---------- ARGUMENT CARD ---------- */
+  .arg{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:0;
+    margin-bottom:20px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+  .arg-top{
+    display:flex;gap:14px;align-items:flex-start;
+    padding:22px 26px 18px;
+    border-left:4px solid transparent;
+  }
+  .arg.pro .arg-top{border-left-color:var(--pro)}
+  .arg.contra .arg-top{border-left-color:var(--contra)}
+
+  .side-badge{
+    flex-shrink:0;
+    font-family:"IBM Plex Mono",monospace;
+    font-size:11px;font-weight:600;
+    letter-spacing:.09em;text-transform:uppercase;
+    padding:5px 10px;border-radius:6px;margin-top:3px;
+  }
+  .arg.pro .side-badge{background:var(--pro-tint);color:var(--pro)}
+  .arg.contra .side-badge{background:var(--contra-tint);color:var(--contra)}
+
+  .claim-wrap{flex:1;min-width:0}
+  .claim{
+    font-family:"Fraunces",serif;
+    font-weight:500;
+    font-size:1.32rem;
+    line-height:1.28;
+    margin:0 0 4px;
+    letter-spacing:-.005em;
+  }
+  .claim-tag{
+    font-size:13px;color:var(--ink-soft);
+    font-style:italic;
+  }
+
+  .verdict-row{
+    display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+    padding:0 26px 16px;
+  }
+  .data-chip{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:12px;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:4px 10px;
+    color:var(--ink-soft);
+  }
+  .data-chip b{color:var(--ink);font-weight:600}
+
+  .arg-body{
+    padding:2px 26px 4px;
+    border-top:1px solid var(--line);
+  }
+  .arg-body > .factcheck{padding-top:16px}
+  .factcheck{font-size:15.5px;color:var(--ink)}
+  .factcheck p{margin:0 0 12px}
+
+  /* source block */
+  .source{
+    margin:6px 0 22px;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:15px 18px;
+  }
+  .source-label{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;
+    color:var(--ink-soft);margin-bottom:7px;
+  }
+  .quote{
+    font-family:"Fraunces",serif;
+    font-style:italic;
+    font-size:15.5px;
+    line-height:1.5;
+    margin:0 0 10px;
+    color:var(--ink);
+  }
+  .quote::before{content:"„"}
+  .quote::after{content:"“"}
+  .cite{
+    font-size:13px;color:var(--ink-soft);line-height:1.45;
+  }
+  .cite a{color:var(--v-value);text-decoration:none;border-bottom:1px solid #c3cad9}
+  .cite a:hover{border-bottom-color:var(--v-value)}
+
+  /* ---------- PROSE BLOCKS (summary / conclusion) ---------- */
+  .prose{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:38px clamp(24px,5vw,52px);
+    box-shadow:var(--shadow);
+    margin-bottom:24px;
+  }
+  .prose h3{
+    font-family:"Fraunces",serif;font-weight:600;
+    font-size:1.45rem;margin:26px 0 10px;letter-spacing:-.01em;
+  }
+  .prose h3:first-child{margin-top:0}
+  .prose p{margin:0 0 15px;color:var(--ink);font-size:16px}
+  .prose ul{margin:0 0 15px;padding-left:0;list-style:none}
+  .prose li{
+    position:relative;padding-left:26px;margin-bottom:10px;font-size:15.5px;
+  }
+  .prose li::before{
+    content:"";position:absolute;left:4px;top:.62em;
+    width:8px;height:8px;border-radius:2px;background:var(--pro);
+    transform:rotate(45deg);
+  }
+  .prose li.minus::before{background:var(--contra)}
+
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+  @media(max-width:720px){.two-col{grid-template-columns:1fr}}
+  .verdict-box{
+    border:1px solid var(--line);border-radius:14px;padding:26px 28px;
+    background:var(--card);box-shadow:var(--shadow);
+  }
+  .verdict-box .kicker{
+    font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--ink-soft);margin-bottom:12px;
+  }
+  .verdict-box h4{
+    font-family:"Fraunces",serif;font-weight:600;font-size:1.3rem;margin:0 0 12px;
+  }
+  .verdict-box p{margin:0 0 12px;font-size:15px;color:var(--ink-soft)}
+  .verdict-box .answer{
+    font-family:"Fraunces",serif;font-size:1.05rem;color:var(--ink);
+    font-weight:500;border-top:1px solid var(--line);padding-top:14px;margin-top:4px;
+  }
+
+  /* ---------- SOURCES LIST ---------- */
+  .refs{font-size:13.5px;color:var(--ink-soft);line-height:1.6}
+  .refs ol{padding-left:22px;margin:0}
+  .refs li{margin-bottom:12px}
+  .refs a{color:var(--v-value);text-decoration:none;border-bottom:1px solid #c3cad9;word-break:break-word}
+
+  footer{
+    border-top:1px solid var(--line);
+    margin-top:60px;padding:40px 0 70px;
+    font-size:13.5px;color:var(--ink-soft);
+  }
+  footer .disc{max-width:75ch;margin-bottom:18px}
+
+  .divider-note{
+    font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-soft);
+    letter-spacing:.06em;text-transform:uppercase;margin:2px 0 18px;
   }
 </style>
 </head>
 <body>
- 
-<!-- HERO -->
-<div class="hero">
-  <div class="flame-ring"></div>
-  <div class="flame-ring"></div>
-  <div class="flame-ring"></div>
-  <p class="hero-tag">Ernährung · Rezepte · Gewürze</p>
-  <h1 class="hero-title">Animal<br><em>Based</em><br>By Milo</h1>
-  <p class="hero-sub">Ursprünglich essen. Tierische Nahrung, natürliche Gewürze, echte Nährstoffe. Alles an mich angepasst (noch nicht). Kauf mal beim türken palmyra ein, bester metzger </p>
-  <div class="scroll-hint">
-    <div class="scroll-line"></div>
-    <span>Scrollen</span>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Ernährung · Faktencheck · Stand Jul 2026</p>
+    <h1>Vegan – die&nbsp;<span class="plant">Beweislage</span></h1>
+    <p class="thesis">Jedes gängige Argument für und gegen eine vegane Ernährung, geprüft an einer echten wissenschaftlichen Quelle. <strong>Keine Meinung, sondern ein Urteilsstempel:</strong> Wo landet die Aussage, wenn man sie an den Daten misst?</p>
+
+    <div class="legend" aria-label="Bewertungssystem">
+      <div class="legend-item">
+        <span class="stamp yes">Bestätigt</span>
+        <p>Durch belastbare Studien gut abgesichert.</p>
+      </div>
+      <div class="legend-item">
+        <span class="stamp part">Teilweise</span>
+        <p>Kern stimmt, aber mit Einschränkungen oder gemischter Datenlage.</p>
+      </div>
+      <div class="legend-item">
+        <span class="stamp no">Schwach&nbsp;/&nbsp;widerlegt</span>
+        <p>Als pauschale Aussage nicht haltbar.</p>
+      </div>
+      <div class="legend-item">
+        <span class="stamp value">Wertefrage</span>
+        <p>Moralische Prämisse – empirisch weder beweis- noch widerlegbar.</p>
+      </div>
+    </div>
+
+    <p class="caveat">Ernährungsforschung besteht überwiegend aus <strong>Beobachtungsstudien</strong>: Sie zeigen Zusammenhänge, keine sichere Ursache. Zudem sind Vegetarier:innen im Schnitt schlanker, rauchen seltener und bewegen sich mehr – Effekte, die die Studien herauszurechnen versuchen, aber nie vollständig. „Relatives Risiko“ (z.&nbsp;B. +20&nbsp;%) klingt oft dramatischer als der kleine absolute Unterschied. Dieser Faktencheck ersetzt keine ärztliche oder diätetische Beratung.</p>
   </div>
-</div>
- 
-<!-- NAV -->
-<nav>
-  <a href="#rezepte">Rezepte</a>
-  <a href="#gewuerze">Erlaubte Gewürze</a>
-  <a href="#mischungen">Eigene Mischungen</a>
+</header>
+
+<nav class="toc" aria-label="Inhalt">
+  <div class="wrap">
+    <a href="#gesundheit">01 Gesundheit</a>
+    <a href="#naehrstoffe">02 Nährstoffe</a>
+    <a href="#umwelt">03 Umwelt</a>
+    <a href="#ethik">04 Ethik</a>
+    <a href="#sport">05 Sport &amp; Leistung</a>
+    <a href="#warum">Warum so unterschiedlich?</a>
+    <a href="#fazit">Fazit</a>
+    <a href="#quellen">Quellen</a>
+  </div>
 </nav>
- 
-<!-- REZEPTE -->
-<section id="rezepte">
-  <div class="section-header">
-    <span class="section-num">01</span>
-    <h2 class="section-title">Rezepte</h2>
-    <div class="section-line"></div>
+
+<main class="wrap">
+
+<!-- ============ 01 GESUNDHEIT ============ -->
+<section class="theme" id="gesundheit">
+  <div class="theme-head">
+    <span class="theme-num">01</span>
+    <h2>Gesundheit &amp; Krankheitsrisiko</h2>
   </div>
- 
-  <div class="recipes-grid" id="recipesGrid"></div>
+  <p class="theme-intro">Der am besten untersuchte Bereich. Zwei große Langzeitkohorten dominieren die Evidenz: die britische <em>EPIC-Oxford</em>-Studie (48.000–55.000 Teilnehmende) und die US-amerikanische <em>Adventist Health Study-2</em> (73.000 Teilnehmende).</p>
+
+  <!-- PRO: Herz -->
+  <article class="arg pro">
+    <div class="arg-top">
+      <span class="side-badge">Pro</span>
+      <div class="claim-wrap">
+        <p class="claim">Vegetarier und Veganer bekommen seltener eine koronare Herzkrankheit.</p>
+        <span class="claim-tag">Herz-Kreislauf-Argument, Pro-Seite</span>
+      </div>
+    </div>
+    <div class="verdict-row">
+      <span class="stamp yes">Bestätigt</span>
+      <span class="data-chip">Risiko <b>–22&nbsp;%</b> (HR 0,78)</span>
+      <span class="data-chip">EPIC-Oxford, 18&nbsp;Jahre</span>
+    </div>
+    <div class="arg-body"><div class="factcheck">
+      <p>In EPIC-Oxford hatten Vegetarier:innen (inkl. Veganer:innen) über 18 Jahre ein rund 22&nbsp;% niedrigeres Risiko für ischämische Herzkrankheit als Fleischessende – etwa 10 Fälle weniger pro 1000 Personen in 10 Jahren. Der Effekt lief teils über niedrigeres LDL-Cholesterin, BMI und Blutdruck; nach Herausrechnen dieser Faktoren blieb ein kleinerer, aber realer Vorteil.</p>
+      <div class="source">
+        <div class="source-label">Quelle · Zitat</div>
+        <p class="quote">fish eaters and vegetarians had lower rates of ischaemic heart disease than meat eaters</p>
+        <p class="cite">Tong TYN et al. (2019): <em>Risks of ischaemic heart disease and stroke … EPIC-Oxford study.</em> BMJ 366:l4897. <a href="https://doi.org/10.1136/bmj.l4897">doi.org/10.1136/bmj.l4897</a></p>
+      </div>
+    </div></div>
+  </article>
+
+  <!-- PRO: Mortalität -->
+  <article class="arg pro">
+    <div class="arg-top">
+      <span class="side-badge">Pro</span>
+      <div class="claim-wrap">
+        <p class="claim">Vegane und vegetarische Ernährung senkt die Gesamtsterblichkeit.</p>
+        <span class="claim-tag">Langlebigkeits-Argument, Pro-Seite</span>
+      </div>
+    </div>
+    <div class="verdict-row">
+      <span class="stamp part">Teilweise</span>
+      <span class="data-chip">Sterblichkeit <b>–12&nbsp;%</b> (HR 0,88)</span>
+      <span class="data-chip">stärker bei Männern</span>
+    </div>
+    <div class="arg-body"><div class="factcheck">
+      <p>In der Adventist Health Study-2 war jedes vegetarische Muster (inkl. vegan und pesco) mit rund 12&nbsp;% geringerer Gesamtsterblichkeit verbunden. Der Effekt war bei Männern deutlicher als bei Frauen und teils nur für einzelne Todesursachen signifikant. Es ist ein <em>Zusammenhang</em> in einer besonders gesundheitsbewussten Bevölkerung (Adventisten) – kein direkter Kausalbeweis, weshalb „teilweise“.</p>
+      <div class="source">
+        <div class="source-label">Quelle · Zitat</div>
+        <p class="quote">Vegetarian diets are associated with lower all-cause mortality</p>
+        <p class="cite">Orlich MJ et al. (2013): <em>Vegetarian Dietary Patterns and Mortality in Adventist Health Study 2.</em> JAMA Intern Med 173(13):1230–1238. <a href="https://doi.org/10.1001/jamainternmed.2013.6473">doi.org/10.1001/jamainternmed.2013.6473</a></p>
+      </div>
+    </div></div>
+  </article>
+
+  <!-- PRO: Diabetes/Blutdruck -->
+  <article class="arg pro">
+    <div class="arg-top">
+      <span class="side-badge">Pro</span>
+      <div class="claim-wrap">
+        <p class="claim">Weniger Typ-2-Diabetes, Bluthochdruck und Übergewicht.</p>
+        <span class="claim-tag">Stoffwechsel-Argument, Pro-Seite</span>
+      </div>
+    </div>
+    <div class="verdict-row">
+      <span class="stamp yes">Bestätigt</span>
+      <span class="data-chip">niedrigerer BMI, LDL, Blutzucker</span>
+    </div>
+    <div class="arg-body"><div class="factcheck">
+      <p>Das Positionspapier der Academy of Nutrition and Dietetics fasst die Kohortenlage zusammen: geringere Raten von ischämischer Herzkrankheit, Typ-2-Diabetes, Hypertonie, bestimmten Krebsarten und Adipositas. Ursache sind der hohe Anteil an Ballaststoffen, Hülsenfrüchten, Gemüse und der niedrige Anteil gesättigter Fette.</p>
+      <div class="source">
+        <div class="source-label">Quelle · Zitat</div>
+        <p class="quote">Vegetarians and vegans are at reduced risk of certain health conditions</p>
+        <p class="cite">Melina V, Craig W, Levin S (2016): <em>Position of the Academy of Nutrition and Dietetics: Vegetarian Diets.</em> J Acad Nutr Diet 116(12):1970–1980. <a href="https://doi.org/10.1016/j.jand.2016.09.025">doi.org/10.1016/j.jand.2016.09.025</a></p>
+      </div>
+    </div></div>
+  </article>
+
+  <!-- CONTRA: Schlaganfall -->
+  <article class="arg contra">
+    <div class="arg-top">
+      <span class="side-badge">Contra</span>
+      <div class="claim-wrap">
+        <p class="claim">Vegetarier haben ein höheres Schlaganfall-Risiko.</p>
+        <span class="claim-tag">Herz-Kreislauf-Argument, Contra-Seite</span>
+      </div>
+    </div>
+    <div class="verdict-row">
+      <span class="stamp yes">Bestätigt</span>
+      <span class="data-chip">Schlaganfall <b>+20&nbsp;%</b> (HR 1,20)</span>
+      <span class="data-chip">absolut: +3 Fälle / 1000 / 10&nbsp;J.</span>
+    </div>
+    <div class="arg-body"><div class="factcheck">
+      <p>Dieselbe EPIC-Oxford-Auswertung fand bei Vegetarier:innen ein 20&nbsp;% höheres Gesamt-Schlaganfall-Risiko, vor allem beim hämorrhagischen (Blutungs-)Schlaganfall. Diskutierte Ursachen: sehr niedriges LDL, niedrigere B12-, Vitamin-D- und Omega-3-Spiegel. Wichtig: absolut sind es nur ~3 Fälle mehr pro 1000 Personen in 10 Jahren – der Herz-Vorteil überwiegt zahlenmäßig. Deshalb „bestätigt“, aber im Kontext klein.</p>
+      <div class="source">
+        <div class="source-label">Quelle · Zitat</div>
+        <p class="quote">vegetarians had 20% higher rates of total stroke … than meat eaters</p>
+        <p class="cite">Tong TYN et al. (2019): BMJ 366:l4897. <a href="https://doi.org/10.1136/bmj.l4897">doi.org/10.1136/bmj.l4897</a></p>
+      </div>
+    </div></div>
+  </article>
+
+  <!-- CONTRA: Knochenbrüche -->
+  <article class="arg contra">
+    <div class="arg-top">
+      <span class="side-badge">Contra</span>
+      <div class="claim-wrap">
+        <p class="claim">Veganer haben ein deutlich höheres Risiko für Knochenbrüche, besonders Hüftfrakturen.</p>
+        <span class="claim-tag">Knochen-Argument, Contra-Seite</span>
+      </div>
+    </div>
+    <div class="verdict-row">
+      <span class="stamp yes">Bestätigt</span>
+      <span class="data-chip">Hüftfraktur <b>+131&nbsp;%</b> (HR 2,31)</span>
+      <span class="data-chip">durch Kalzium/Protein/BMI abschwächbar</span>
+    </div>
+    <div class="arg-body"><div class="factcheck">
+      <p>In der EPIC-Oxford-Fraktur-Auswertung hatten Veganer:innen das mit Abstand höchste Hüftfraktur-Risiko (Hazard Ratio 2,31), dazu mehr Gesamt- und Beinfrakturen. Der Effekt schwächte sich ab, sobald man für BMI, Kalzium- und Proteinzufuhr korrigierte – heißt: Er ist zu einem großen Teil <em>vermeidbar</em>, wenn genug Kalzium, Protein und Körpermasse vorhanden sind. Als pauschale „vegan = schwache Knochen“-Aussage ist er real, aber ernährungstechnisch adressierbar.</p>
+      <div class="source">
+        <div class="source-label">Quelle · Zitat</div>
+        <p class="quote">the risks of hip fracture were higher in … vegans (2.31; 1.66–3.22)</p>
+        <p class="cite">Tong TYN et al. (2020): <em>Vegetarian and vegan diets and risks of … fractures: EPIC-Oxford study.</em> BMC Medicine 18:353. <a href="https://doi.org/10.1186/s12916-020-01815-3">doi.org/10.1186/s12916-020-01815-3</a></p>
+      </div>
+    </div></div>
+  </article>
 </section>
- 
-<hr class="divider">
- 
-<!-- GEWÜRZE -->
-<section id="gewuerze">
-  <div class="section-header">
-    <span class="section-num">02</span>
-    <h2 class="section-title">Gewürze</h2>
-    <div class="section-line"></div>
+
+<!-- ============ 02 NÄHRSTOFFE ============ -->
+<section class="theme" id="naehrstoffe">
+  <div class="theme-head">
+    <span class="theme-num">02</span>
+    <h2>Nährstoffe &amp; Versorgung</h2>
   </div>
- 
-  <div class="spice-grid">
-    <div class="spice-group">
-      <span class="spice-group-status status-ok">✓ Problemlos</span>
-      <h3 class="spice-group-title">Immer erlaubt</h3>
-      <ul class="spice-items">
-        <li>Meersalz / Himalayasalz / keltisches Salz</li>
-        <li>Schwarzer Pfeffer (frisch gemahlen)</li>
-        <li>Rosmarin (frisch oder getrocknet)</li>
-        <li>Thymian</li>
-        <li>Oregano</li>
-        <li>Lorbeerblatt</li>
-        <li>Knoblauch (frisch)</li>
-        <li>Ingwer (frisch)</li>
-        <li>Kurkuma (frisch oder gemahlen)</li>
-        <li>Dill</li>
-        <li>Zimt (Ceylon)</li>
-        <li>Roher, ungefilterter Honig</li>
-        <li>Knochenbrühe (zum Würzen)</li>
-      </ul>
+  <p class="theme-intro">Hier verläuft die schärfste Trennlinie. Die Kernfrage: Ist eine vegane Ernährung „von Natur aus“ ausreichend – oder nur mit gezielter Planung und Supplementen?</p>
+
+  <!-- CONTRA: B12 -->
+  <article class="arg contra">
+    <div class="arg-top">
+      <span class="side-badge">Contra</span>
+      <div class="claim-wrap">
+        <p class="claim">Vitamin B12 kann man vegan nicht sicher decken – man <em>muss</em> supplementieren.</p>
+        <span class="claim-tag">Nährstoff-Argument, Contra-Seite</span>
+      </div>
     </div>
- 
-    <div class="spice-group">
-      <span class="spice-group-status status-warn">⚠ Mit Vorsicht</span>
-      <h3 class="spice-group-title">In Maßen</h3>
-      <ul class="spice-items">
-        <li>Chilipulver (Nachtschattengewächs)</li>
-        <li>Paprikapulver (Nachtschattengewächs)</li>
-        <li>Apfelessig (roh, in kleinen Mengen)</li>
-        <li>Fertiggewürzmischungen ohne Zusatzstoffe</li>
-        <li>Getrocknete Kräuter in großen Mengen</li>
-      </ul>
+    <div class="verdict-row">
+      <span class="stamp yes">Bestätigt</span>
+      <span class="data-chip">keine verlässliche Pflanzenquelle</span>
+      <span class="data-chip">aber trivial lösbar</span>
     </div>
- 
-    <div class="spice-group">
-      <span class="spice-group-status status-no">✗ Vermeiden</span>
-      <h3 class="spice-group-title">Nicht empfohlen</h3>
-      <ul class="spice-items">
-        <li>Fertige Gewürzmischungen mit Maltodextrin</li>
-        <li>Glutamat / MSG</li>
-        <li>Rapsöl-Marinaden & Dressings</li>
-        <li>Hefeextrakt</li>
-        <li>Künstliche Aromen & Farbstoffe</li>
-        <li>Sojasauce / Tamari</li>
-        <li>Zucker (außer rohem Honig)</li>
-      </ul>
+    <div class="arg-body"><div class="factcheck">
+      <p>Sachlich korrekt: B12 wird von Bakterien gebildet, nicht von Pflanzen. Angebliche Quellen wie Algen, Tempeh oder Spirulina enthalten meist inaktive Analoga. Verlässlich sind nur angereicherte Lebensmittel und Supplemente. <em>Aber:</em> das ist ein gelöstes Problem – B12-Präparate sind billig und wirksam, supplementierende Veganer:innen haben oft bessere Werte als Fleischessende. Das Argument stimmt als Fakt, taugt aber nicht als Argument <em>gegen</em> Veganismus, nur als Regel <em>innerhalb</em>.</p>
+      <div class="source">
+        <div class="source-label">Quelle · Zitat</div>
+        <p class="quote">plant-based foods naturally lack a reliable source of vitamin B12</p>
+        <p class="cite">Niklewicz A et al. / Scoping Review (2024): <em>Exploring Vitamin B12 Supplementation in the Vegan Population.</em> Nutrients 16(10):1442. <a href="https://doi.org/10.3390/nu16101442">doi.org/10.3390/nu16101442</a></p>
+      </div>
+    </div></div>
+  </article>
+
+  <!-- PRO: adäquat für alle Lebensphasen -->
+  <article class="arg pro">
+    <div class="arg-top">
+      <span class="side-badge">Pro</span>
+      <div class="claim-wrap">
+        <p class="claim">Gut geplant ist vegan in jeder Lebensphase nährstoffdeckend.</p>
+        <span class="claim-tag">Adäquanz-Argument, Pro-Seite</span>
+      </div>
     </div>
-  </div>
+    <div class="verdict-row">
+      <span class="stamp yes">Bestätigt</span>
+      <span class="data-chip">Bedingung: „appropriately planned“</span>
+    </div>
+    <div class="arg-body"><div class="factcheck">
+      <p>Die weltgrößte Ernährungsfachgesellschaft bestätigt: eine gut geplante vegane Ernährung ist für Schwangerschaft, Stillzeit, Kindheit, Jugend, Erwachsenen- und Sportlerleben geeignet. Das entscheidende Wort ist „geplant“ – Adäquanz ist keine automatische Eigenschaft, sondern das Ergebnis bewusster Auswahl (Hülsenfrüchte, Vollkorn, Nüsse) plus B12.</p>
+      <div class="source">
+        <div class="source-label">Quelle · Zitat</div>
+        <p class="quote">appropriately planned … vegan, diets are healthful, nutritionally adequate</p>
+        <p class="cite">Melina V, Craig W, Levin S (2016): J Acad Nutr Diet 116(12):1970–1980. <a href="https://doi.org/10.1016/j.jand.2016.09.025">doi.org/10.1016/j.jand.2016.09.025</a> · Bestätigt im aktualisierten Positionspapier (2025), J Acad Nutr Diet. <a href="https://doi.org/10.1016/j.jand.2025.01.006">doi.org/10.1016/j.jand.2025.01.006</a></p>
+      </div>
+    </div></div>
+  </article>
+
+  <!-- CONTRA: kritische Nährstoffe -->
+  <article class="arg contra">
+    <div class="arg-top">
+      <span class="side-badge">Contra</span>
+      <div class="claim-wrap">
+        <p class="claim">Veganer haben häufiger niedrige Eisen-, Zink-, Jod-, Vitamin-D- und Omega-3-Spiegel.</p>
+        <span class="claim-tag">Nährstoff-Argument, Contra-Seite</span>
+      </div>
+    </div>
+    <div class="verdict-row">
+      <span class="stamp part">Teilweise</span>
+      <span class="data-chip">Werte niedriger, aber selten klinischer Mangel</span>
+    </div>
+    <div class="arg-body"><div class="factcheck">
+      <p>Biomarker-Studien (z.&nbsp;B. die NuEva-Studie) zeigen: Bei Veganer:innen sind Ferritin, Vitamin A/E, Jod-, Selen- und Zink-Marker im Schnitt niedriger als bei Mischköstlern. Gleichzeitig sind Folat, Vitamin C und Ballaststoffe höher. „Niedrigerer Spiegel“ ist nicht dasselbe wie „Mangelkrankheit“ – die meisten bleiben im Normbereich, aber die Marge ist kleiner, weshalb Jod, D und Omega-3 (Algenöl) häufig empfohlen werden.</p>
+      <div class="source">
+        <div class="source-label">Quelle · Zitat</div>
+        <p class="quote">vegans had the highest concentrations of biotin, folate, and vitamin C</p>
+        <p class="cite">Dawczynski C et al. / NuEva-Studie (2022): <em>Nutrient intake and status in vegans, vegetarians …</em> Frontiers in Nutrition / Nutrients. <a href="https://doi.org/10.3390/nu14194144">doi.org/10.3390/nu14194144</a></p>
+      </div>
+    </div></div>
+  </article>
 </section>
- 
-<hr class="divider">
- 
-<!-- MISCHUNGEN -->
-<section id="mischungen">
-  <div class="section-header">
-    <span class="section-num">03</span>
-    <h2 class="section-title">Eigene Mischungen</h2>
-    <div class="section-line"></div>
+
+<!-- ============ 03 UMWELT ============ -->
+<section class="theme" id="umwelt">
+  <div class="theme-head">
+    <span class="theme-num">03</span>
+    <h2>Umwelt &amp; Klima</h2>
   </div>
- 
-  <div class="mixes-grid">
-    <div class="mix-card">
-      <div class="mix-card-header">
-        <p class="mix-card-tag">Fleisch · Steak · Lamm</p>
-        <h3 class="mix-card-title">Animal-Based Steak-Rub</h3>
-      </div>
-      <div class="mix-card-body">
-        <div class="mix-ingredient"><span class="mix-ing-name">Grobes Meersalz</span><span class="mix-ing-amount">2 EL</span></div>
-        <div class="mix-ingredient"><span class="mix-ing-name">Schwarzer Pfeffer (gemahlen)</span><span class="mix-ing-amount">1 EL</span></div>
-        <div class="mix-ingredient"><span class="mix-ing-name">Getrockneter Rosmarin</span><span class="mix-ing-amount">1 TL</span></div>
-        <div class="mix-ingredient"><span class="mix-ing-name">Getrockneter Thymian</span><span class="mix-ing-amount">1 TL</span></div>
-        <div class="mix-ingredient"><span class="mix-ing-name">Knoblauchpulver (100% rein)</span><span class="mix-ing-amount">½ TL</span></div>
-        <p class="mix-tip">💡 Fleisch nach dem Würzen 1–2 Std. offen im Kühlschrank trocknen lassen (Dry Brine) für eine stärkere Kruste.</p>
+  <p class="theme-intro">Der Bereich mit der klarsten Datenlage. Hier stützt sich fast alles auf eine einzige, außergewöhnlich große Meta-Analyse von ~38.700 Betrieben in 119 Ländern.</p>
+
+  <!-- PRO: geringerer Fußabdruck -->
+  <article class="arg pro">
+    <div class="arg-top">
+      <span class="side-badge">Pro</span>
+      <div class="claim-wrap">
+        <p class="claim">Pflanzliche Ernährung hat einen drastisch kleineren ökologischen Fußabdruck.</p>
+        <span class="claim-tag">Klima-Argument, Pro-Seite</span>
       </div>
     </div>
- 
-    <div class="mix-card">
-      <div class="mix-card-header">
-        <p class="mix-card-tag">Lachs · Makrele · Sardinen</p>
-        <h3 class="mix-card-title">Fisch-Gewürzmischung</h3>
+    <div class="verdict-row">
+      <span class="stamp yes">Bestätigt</span>
+      <span class="data-chip">stärkste Evidenz der ganzen Seite</span>
+      <span class="data-chip">~26&nbsp;% der Treibhausgase aus Ernährung</span>
+    </div>
+    <div class="arg-body"><div class="factcheck">
+      <p>Poore &amp; Nemecek (Science, 2018) zeigen: Tierische Produkte verursachen den Großteil von Landnutzung, Treibhausgasen und Wasserverbrauch der Ernährung – bei oft geringerem Kalorien- und Proteinbeitrag. Eine Umstellung auf pflanzenbasierte Kost ist einer der wirksamsten individuellen Hebel für den Fußabdruck. Diese Aussage ist so robust wie kaum eine andere im Feld.</p>
+      <div class="source">
+        <div class="source-label">Quelle · Zitat</div>
+        <p class="quote">impacts of the lowest-impact animal products typically exceed those of vegetable substitutes</p>
+        <p class="cite">Poore J, Nemecek T (2018): <em>Reducing food's environmental impacts through producers and consumers.</em> Science 360(6392):987–992. <a href="https://doi.org/10.1126/science.aaq0216">doi.org/10.1126/science.aaq0216</a></p>
       </div>
-      <div class="mix-card-body">
-        <div class="mix-ingredient"><span class="mix-ing-name">Feines Meersalz</span><span class="mix-ing-amount">2 EL</span></div>
-        <div class="mix-ingredient"><span class="mix-ing-name">Schwarzer Pfeffer</span><span class="mix-ing-amount">½ TL</span></div>
-        <div class="mix-ingredient"><span class="mix-ing-name">Getrockneter Dill</span><span class="mix-ing-amount">1 TL</span></div>
-        <div class="mix-ingredient"><span class="mix-ing-name">Getrockneter Thymian</span><span class="mix-ing-amount">½ TL</span></div>
-        <div class="mix-ingredient"><span class="mix-ing-name">Zitronenschale (getrocknet)</span><span class="mix-ing-amount">1 TL</span></div>
-        <p class="mix-tip">💡 Frische Zitronenschale kurz vor dem Auftragen hinzufügen für maximales Aroma.</p>
+    </div></div>
+  </article>
+
+  <!-- CONTRA: nachhaltiges/lokales Fleisch -->
+  <article class="arg contra">
+    <div class="arg-top">
+      <span class="side-badge">Contra</span>
+      <div class="claim-wrap">
+        <p class="claim">„Lokales / regeneratives Weidefleisch ist genauso klimafreundlich wie Pflanzen.“</p>
+        <span class="claim-tag">Klima-Gegenargument, Contra-Seite</span>
       </div>
     </div>
- 
-    <div class="mix-card">
-      <div class="mix-card-header">
-        <p class="mix-card-tag">Eier · Leber · Innereien</p>
-        <h3 class="mix-card-title">Eier & Innereien Mix</h3>
-      </div>
-      <div class="mix-card-body">
-        <div class="mix-ingredient"><span class="mix-ing-name">Feines Meersalz</span><span class="mix-ing-amount">1 EL</span></div>
-        <div class="mix-ingredient"><span class="mix-ing-name">Schwarzer Pfeffer</span><span class="mix-ing-amount">½ TL</span></div>
-        <div class="mix-ingredient"><span class="mix-ing-name">Getrockneter Oregano</span><span class="mix-ing-amount">1 TL</span></div>
-        <div class="mix-ingredient"><span class="mix-ing-name">Rosmarin (fein gemahlen)</span><span class="mix-ing-amount">½ TL</span></div>
-        <div class="mix-ingredient"><span class="mix-ing-name">Kurkuma</span><span class="mix-ing-amount">¼ TL</span></div>
-        <p class="mix-tip">💡 Kurkuma immer mit schwarzem Pfeffer kombinieren – das erhöht die Aufnahme von Curcumin um ein Vielfaches.</p>
-      </div>
+    <div class="verdict-row">
+      <span class="stamp no">Widerlegt</span>
+      <span class="data-chip">als pauschale Aussage</span>
     </div>
-  </div>
+    <div class="arg-body"><div class="factcheck">
+      <p>Dieselbe Studie widerlegt genau das: Selbst die <em>umweltschonendsten</em> tierischen Produkte übertreffen typische pflanzliche Alternativen. „Lokal“ ist zudem meist der kleinste Posten – Transport macht oft nur wenige Prozent der Emissionen aus, die Produktion dominiert. Es gibt Nischen (Grünland, das nicht ackerfähig ist), aber die pauschale Behauptung hält der Datenlage nicht stand.</p>
+      <div class="source">
+        <div class="source-label">Quelle · Zitat</div>
+        <p class="quote">Impact can vary 50-fold among producers of the same product</p>
+        <p class="cite">Poore J, Nemecek T (2018): Science 360(6392):987–992. <a href="https://doi.org/10.1126/science.aaq0216">doi.org/10.1126/science.aaq0216</a></p>
+      </div>
+    </div></div>
+  </article>
 </section>
- 
-<footer>
-  <p class="footer-title">Iss ursprünglich. Leb natürlich.</p>
-  <p class="footer-note">Animal Based Diet · Alle Rezepte ohne Getreide, Hülsenfrüchte & Pflanzenöle</p>
-</footer>
- 
-<!-- MODAL -->
-<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
-  <div class="modal" id="modal">
-    <div class="modal-header">
-      <button class="modal-close" onclick="closeModalDirect()">✕ Schließen</button>
-      <p class="modal-category" id="modalCategory"></p>
-      <h2 class="modal-title" id="modalTitle"></h2>
-      <p class="modal-desc" id="modalDesc"></p>
-    </div>
-    <div class="modal-body" id="modalBody"></div>
+
+<!-- ============ 04 ETHIK ============ -->
+<section class="theme" id="ethik">
+  <div class="theme-head">
+    <span class="theme-num">04</span>
+    <h2>Ethik &amp; Weltbild</h2>
   </div>
-</div>
- 
-<script>
-const recipes = [
-  {
-    category: "Fleisch",
-    title: "Ribeye-Steak mit Kräuterbutter",
-    desc: "Saftiges Steak mit aromatischer Butter – einfach und nährstoffreich",
-    time: "20 Min",
-    servings: "2 Personen",
-    difficulty: "Einfach",
-    ingredients: [
-      { name: "Ribeye-Steak (grasgefüttert)", amount: "2 Stück" },
-      { name: "Butter (grasgefüttert)", amount: "50 g" },
-      { name: "Meersalz", amount: "1 TL" },
-      { name: "Schwarzer Pfeffer", amount: "½ TL" },
-      { name: "Frischer Rosmarin", amount: "2 Zweige" },
-      { name: "Knoblauchzehen", amount: "2 Stück" },
-    ],
-    steps: [
-      { title: "Steak vorbereiten", text: "Die Steaks 30 Minuten vor dem Braten aus dem Kühlschrank nehmen. Großzügig mit Meersalz und Pfeffer würzen.", time: null },
-      { title: "Pfanne erhitzen", text: "Eine Gusseisenpfanne auf höchster Stufe erhitzen, bis sie leicht raucht.", time: "3 Min" },
-      { title: "Steak anbraten", text: "Die Steaks ohne Fett in die heiße Pfanne legen und pro Seite 2–3 Minuten scharf anbraten, bis eine schöne Kruste entsteht.", time: "5 Min" },
-      { title: "Butter hinzufügen", text: "Hitze reduzieren, Butter, Rosmarin und Knoblauch dazugeben. Die Steaks mehrfach mit der flüssigen Butter übergießen (Arrosieren).", time: "1 Min" },
-      { title: "Ruhen lassen", text: "Steaks aus der Pfanne nehmen und auf einem Brett 5 Minuten ruhen lassen, damit der Fleischsaft sich verteilt.", time: "5 Min" },
-      { title: "Servieren", text: "In Scheiben schneiden und mit dem Bratensaft aus der Pfanne beträufeln. Guten Appetit!", time: null },
-    ],
-    note: "Tipp: Für eine intensivere Kruste das Fleisch nach dem Würzen offen im Kühlschrank 1–2 Stunden trocknen lassen (Dry Brine)."
-  },
-  {
-    category: "Innereien",
-    title: "Rinderleber mit Spiegeleiern & Speck",
-    desc: "Nährstoffkönig auf dem Teller – ideal als sättigendes Frühstück oder Mittagessen",
-    time: "20 Min",
-    servings: "2 Personen",
-    difficulty: "Einfach",
-    ingredients: [
-      { name: "Rinderleber", amount: "200 g" },
-      { name: "Freilandeier", amount: "4 Stück" },
-      { name: "Speckscheiben", amount: "4 Stück" },
-      { name: "Butter", amount: "30 g" },
-      { name: "Meersalz", amount: "1 TL" },
-      { name: "Schwarzer Pfeffer", amount: "½ TL" },
-    ],
-    steps: [
-      { title: "Leber vorbereiten", text: "Die Rinderleber in ca. 1 cm dicke Scheiben schneiden. Mit Salz und Pfeffer würzen.", time: null },
-      { title: "Speck braten", text: "Die Speckscheiben in einer Pfanne ohne Fett bei mittlerer Hitze knusprig braten, herausnehmen und beiseitestellen.", time: "4 Min" },
-      { title: "Leber anbraten", text: "Im Speckfett die Butter schmelzen und die Leber bei hoher Hitze je Seite 2 Minuten braten – innen darf sie noch leicht rosa sein.", time: "4 Min" },
-      { title: "Eier braten", text: "In einer zweiten Pfanne mit etwas Butter die Eier als Spiegeleier bei niedriger Hitze braten, bis das Eiweiß gestockt ist.", time: "3 Min" },
-      { title: "Servieren", text: "Leber, Speck und Spiegeleier zusammen anrichten und sofort genießen.", time: null },
-    ],
-    note: null
-  },
-  {
-    category: "Fisch",
-    title: "Gebratener Lachs mit Blaubeer-Honig-Dip",
-    desc: "Omega-3-reich & fruchtig – eine perfekte Kombination aus Fisch und erlaubten Früchten",
-    time: "20 Min",
-    servings: "2 Personen",
-    difficulty: "Einfach",
-    ingredients: [
-      { name: "Lachsfilets (wild gefangen)", amount: "2 Stück" },
-      { name: "Butter", amount: "30 g" },
-      { name: "Meersalz", amount: "1 TL" },
-      { name: "Blaubeeren", amount: "100 g" },
-      { name: "Roher Honig", amount: "2 EL" },
-      { name: "Zitronensaft", amount: "1 EL" },
-    ],
-    steps: [
-      { title: "Dip vorbereiten", text: "Die Blaubeeren mit Honig und Zitronensaft in einem kleinen Topf bei niedriger Hitze 5 Minuten köcheln lassen, bis die Beeren weich werden. Beiseite stellen.", time: "5 Min" },
-      { title: "Lachs würzen", text: "Die Lachsfilets mit Meersalz würzen und kurz abtupfen.", time: null },
-      { title: "Lachs braten", text: "In einer Pfanne Butter schmelzen und den Lachs bei mittlerer-hoher Hitze je Seite 3–4 Minuten braten, bis er goldbraun ist und sich leicht flöckt.", time: "7 Min" },
-      { title: "Servieren", text: "Lachs auf dem Teller anrichten und den Beeren-Honig-Dip darüber oder daneben geben. Sofort servieren.", time: null },
-    ],
-    note: "Tipp: Frische Zitronenschale über den Lachs reiben für ein intensiveres Aroma."
-  },
-  {
-    category: "Frühstück",
-    title: "Butter-Rührei mit Knochenbrühe",
-    desc: "Das perfekte nährstoffreiche Frühstück – cremig, sättigend und in 10 Minuten fertig",
-    time: "10 Min",
-    servings: "1 Person",
-    difficulty: "Sehr einfach",
-    ingredients: [
-      { name: "Freilandeier", amount: "4 Stück" },
-      { name: "Butter (grasgefüttert)", amount: "40 g" },
-      { name: "Knochenbrühe", amount: "2 EL" },
-      { name: "Meersalz", amount: "½ TL" },
-      { name: "Schwarzer Pfeffer", amount: "1 Prise" },
-    ],
-    steps: [
-      { title: "Eier vorbereiten", text: "Die Eier in einer Schüssel mit Salz, Pfeffer und Knochenbrühe verquirlen.", time: null },
-      { title: "Butter schmelzen", text: "Die Butter bei niedriger bis mittlerer Hitze in einer Pfanne schmelzen lassen – nicht bräunen.", time: "1 Min" },
-      { title: "Rührei machen", text: "Die Eimasse in die Pfanne geben und mit einem Spatel langsam vom Rand zur Mitte schieben. Pfanne gelegentlich vom Herd nehmen um eine cremige Konsistenz zu erhalten.", time: "5 Min" },
-      { title: "Servieren", text: "Sofort auf dem Teller anrichten, solange die Eier noch cremig sind. Mit etwas extra Butter toppen.", time: null },
-    ],
-    note: "Geheimnis: Je langsamer und sanfter das Rührei gemacht wird, desto cremiger wird es. Nie auf hoher Hitze!"
-  },
-  {
-    category: "Suppe",
-    title: "Goldene Knochenbrühe",
-    desc: "Flüssiges Gold – die Basis jeder Animal-Based Ernährung, reich an Kollagen und Mineralstoffen",
-    time: "12–24 Std",
-    servings: "6–8 Portionen",
-    difficulty: "Mittel",
-    ingredients: [
-      { name: "Rinderknochen (Markknochen, Gelenkknochen)", amount: "1.5 kg" },
-      { name: "Wasser", amount: "3 l" },
-      { name: "Apfelessig (roh)", amount: "2 EL" },
-      { name: "Meersalz", amount: "2 TL" },
-      { name: "Lorbeerblätter", amount: "2 Stück" },
-      { name: "Schwarze Pfefferkörner", amount: "1 TL" },
-      { name: "Frischer Rosmarin", amount: "2 Zweige" },
-    ],
-    steps: [
-      { title: "Knochen rösten", text: "Den Backofen auf 200°C vorheizen. Die Knochen auf einem Backblech 30 Minuten rösten, bis sie golden-braun sind – das verstärkt den Geschmack enorm.", time: "1800 Min" },
-      { title: "Knochen einweichen", text: "Die gerösteten Knochen in einen großen Topf geben, Wasser und Apfelessig hinzufügen. 30 Minuten stehen lassen – der Essig zieht Mineralien aus den Knochen.", time: "30 Min" },
-      { title: "Köcheln lassen", text: "Aufkochen, dann Hitze stark reduzieren. Lorbeer, Pfeffer und Rosmarin hinzufügen. Mindestens 12 Stunden (besser 24 Stunden) sanft köcheln lassen.", time: "720 Min" },
-      { title: "Abseihen", text: "Die Brühe durch ein feines Sieb abseihen. Den Schaum der ersten Stunde abschöpfen.", time: null },
-      { title: "Aufbewahren", text: "Heiß in Gläser füllen oder abkühlen lassen. Im Kühlschrank 5 Tage haltbar, eingefroren bis zu 6 Monate.", time: null },
-    ],
-    note: "Goldene Regel: Die Brühe sollte leise köcheln – nie sprudelnd kochen. Je länger sie köchelt, desto mehr Kollagen löst sich aus den Knochen."
-  },
-  {
-    category: "Fleisch",
-    title: "Lammlachs mit Thymian-Butter",
-    desc: "Zartes Lammfleisch, in duftendem Thymian und Butter gebraten – ein Festmahl in 15 Minuten",
-    time: "15 Min",
-    servings: "2 Personen",
-    difficulty: "Einfach",
-    ingredients: [
-      { name: "Lammlachsscheiben", amount: "400 g" },
-      { name: "Butter", amount: "60 g" },
-      { name: "Frischer Thymian", amount: "4 Zweige" },
-      { name: "Knoblauch", amount: "3 Zehen" },
-      { name: "Meersalz", amount: "1 TL" },
-      { name: "Schwarzer Pfeffer", amount: "½ TL" },
-    ],
-    steps: [
-      { title: "Fleisch würzen", text: "Den Lammlachs großzügig mit Salz und Pfeffer würzen. 10 Minuten Raumtemperatur annehmen lassen.", time: "10 Min" },
-      { title: "Scharf anbraten", text: "Eine Pfanne stark erhitzen. Das Lamm ohne Fett je Seite 2 Minuten scharf anbraten.", time: "4 Min" },
-      { title: "Arrosieren", text: "Hitze reduzieren. Butter, Thymian und angedrückte Knoblauchzehen dazugeben. Das Fleisch kontinuierlich mit der schäumenden Butter übergießen.", time: "2 Min" },
-      { title: "Ruhen & servieren", text: "3 Minuten auf einem Brett ruhen lassen, dann mit dem Thymianbutter-Jus servieren.", time: "3 Min" },
-    ],
-    note: null
-  },
-  {
-    category: "Fisch",
-    title: "Sardinen mit Zitrone & Meersalz",
-    desc: "Blitzschnell, unglaublich nährstoffreich und voller Omega-3 – das unterschätzte Superfood",
-    time: "10 Min",
-    servings: "2 Personen",
-    difficulty: "Sehr einfach",
-    ingredients: [
-      { name: "Frische Sardinen (oder aus der Dose in Olivenöl)", amount: "300 g" },
-      { name: "Butter oder Ghee", amount: "30 g" },
-      { name: "Zitrone", amount: "½ Stück" },
-      { name: "Grobes Meersalz", amount: "1 TL" },
-      { name: "Schwarzer Pfeffer", amount: "½ TL" },
-      { name: "Frischer Dill", amount: "1 Handvoll" },
-    ],
-    steps: [
-      { title: "Vorbereiten", text: "Frische Sardinen abspülen und trocken tupfen. Mit Salz und Pfeffer würzen.", time: null },
-      { title: "Braten", text: "Butter in der Pfanne schmelzen. Sardinen bei mittlerer Hitze 2–3 Minuten je Seite braten.", time: "5 Min" },
-      { title: "Finalisieren", text: "Frischen Zitronensaft über die Sardinen pressen und mit Dill bestreuen.", time: null },
-      { title: "Servieren", text: "Sofort servieren. Dosenware: direkt aus der Dose mit Salz, Pfeffer und Zitrone genießen.", time: null },
-    ],
-    note: "Dosensardinen in Olivenöl oder Wasser sind eine perfekte schnelle Mahlzeit – einfach mit Zitrone und Meersalz verfeinern."
-  },
-  {
-    category: "Dessert",
-    title: "Honig-Beeren-Bowl mit rohem Ei",
-    desc: "Natürlich süß, nährstoffreich und erfrischend – der Animal-Based Nachtisch",
-    time: "5 Min",
-    servings: "1 Person",
-    difficulty: "Sehr einfach",
-    ingredients: [
-      { name: "Gemischte Beeren (Blaubeeren, Erdbeeren, Himbeeren)", amount: "200 g" },
-      { name: "Roher Honig", amount: "2 EL" },
-      { name: "Freilandeier (Eigelb)", amount: "2 Stück" },
-      { name: "Vollmilch (grasgefüttert)", amount: "50 ml" },
-      { name: "Zimt (Ceylon)", amount: "1 Prise" },
-    ],
-    steps: [
-      { title: "Beeren vorbereiten", text: "Die Beeren waschen und in eine Schüssel geben.", time: null },
-      { title: "Sauce machen", text: "Eigelb mit Honig und Milch cremig verrühren – ergibt eine natürliche, seidige Sauce.", time: null },
-      { title: "Anrichten", text: "Die Honig-Eigelb-Sauce über die Beeren geben.", time: null },
-      { title: "Verfeinern", text: "Mit einer Prise Ceylon-Zimt bestreuen und sofort genießen.", time: null },
-    ],
-    note: "Rohes Eigelb von hochwertigen Freilandeiern ist völlig unbedenklich und enthält Cholin, Vitamine und gesunde Fette."
-  },
-];
- 
-function renderRecipes() {
-  const grid = document.getElementById('recipesGrid');
-  recipes.forEach((r, i) => {
-    const card = document.createElement('div');
-    card.className = 'recipe-card';
-    card.innerHTML = `
-      <p class="card-category">${r.category}</p>
-      <h3 class="card-title">${r.title}</h3>
-      <p class="card-desc">${r.desc}</p>
-      <div class="card-meta">
-        <span>${r.time}</span>
-        <span>${r.servings}</span>
-        <span>${r.difficulty}</span>
+  <p class="theme-intro">Wichtige Ehrlichkeit: Diese Argumente lassen sich <strong>nicht durch Studien entscheiden.</strong> Fakten (z.&nbsp;B. dass Tiere Schmerz empfinden, wie Tierhaltung abläuft) sind empirisch – aber welches moralische Gewicht man ihnen gibt, ist eine Wertentscheidung. Deshalb tragen sie den Stempel <em>Wertefrage</em>.</p>
+
+  <!-- PRO: Tierleid -->
+  <article class="arg pro">
+    <div class="arg-top">
+      <span class="side-badge">Pro</span>
+      <div class="claim-wrap">
+        <p class="claim">Vermeidbares Tierleid zu verursachen ist falsch – also sollte man keine Tierprodukte essen.</p>
+        <span class="claim-tag">Moral-Argument, Pro-Seite</span>
       </div>
-      <button class="card-expand-btn" onclick="openModal(${i})">Rezept ansehen →</button>
-    `;
-    grid.appendChild(card);
-  });
-}
- 
-function openModal(index) {
-  const r = recipes[index];
-  document.getElementById('modalCategory').textContent = r.category;
-  document.getElementById('modalTitle').textContent = r.title;
-  document.getElementById('modalDesc').textContent = r.desc;
- 
-  let html = `
-    <p class="modal-section-title">Zutaten (${r.servings})</p>
-    <ul class="ingredients-list">
-      ${r.ingredients.map(ing => `
-        <li>
-          <span class="ing-name">${ing.name}</span>
-          <span class="ing-amount">${ing.amount}</span>
-        </li>
-      `).join('')}
+    </div>
+    <div class="verdict-row">
+      <span class="stamp value">Wertefrage</span>
+      <span class="data-chip">Prämisse empirisch, Schluss normativ</span>
+    </div>
+    <div class="arg-body"><div class="factcheck">
+      <p>Die empirischen Teile sind gut belegt: Wirbeltiere (und viele Fische) haben Schmerzempfinden, industrielle Tierhaltung bedeutet für einen Großteil der Tiere erhebliches Leid. Ob daraus folgt, dass man auf Tierprodukte verzichten <em>muss</em>, hängt von einer moralischen Prämisse ab (welches Interesse welches Wesens wie viel zählt). Wissenschaft kann die Fakten liefern, nicht das Urteil. Ein starkes Argument – aber ein philosophisches, kein biologisches.</p>
+      <div class="source">
+        <div class="source-label">Kontext · empirische Grundlage</div>
+        <p class="quote">the position that animals are conscious … is now the mainstream scientific view</p>
+        <p class="cite">Vgl. <em>The Cambridge Declaration on Consciousness</em> (2012) sowie Reviews zur Nozizeption bei Wirbeltieren. Die moralische Bewertung selbst ist Gegenstand der Ethik, nicht der Empirie.</p>
+      </div>
+    </div></div>
+  </article>
+
+  <!-- CONTRA: Naturargument -->
+  <article class="arg contra">
+    <div class="arg-top">
+      <span class="side-badge">Contra</span>
+      <div class="claim-wrap">
+        <p class="claim">„Der Mensch ist von Natur aus Fleischesser – also ist Fleischessen richtig.“</p>
+        <span class="claim-tag">Natur-Argument, Contra-Seite</span>
+      </div>
+    </div>
+    <div class="verdict-row">
+      <span class="stamp part">Teilweise / Fehlschluss</span>
+      <span class="data-chip">Fakt stimmt, Schluss nicht</span>
+    </div>
+    <div class="arg-body"><div class="factcheck">
+      <p>Der biologische Teil stimmt: Menschen sind Omnivoren, unsere Physiologie ist auf Misch­kost ausgelegt, Fleisch spielte in der Evolution eine Rolle. Der <em>Schluss</em> ist aber ein klassischer naturalistischer Fehlschluss: Aus „ist natürlich“ folgt kein „ist moralisch richtig“. Vieles Natürliche lehnen wir ab, vieles Unnatürliche (Medizin, Zahnpflege) begrüßen wir. Als Faktenaussage teilweise wahr, als moralisches Argument nicht tragfähig.</p>
+      <div class="source">
+        <div class="source-label">Kontext · Einordnung</div>
+        <p class="quote">humans are anatomically and physiologically omnivores</p>
+        <p class="cite">Vgl. Reviews zur menschlichen Ernährungsphysiologie; die logische Struktur ist der in der Philosophie beschriebene <em>„appeal to nature“</em>-Fehlschluss (Sein/Sollen-Problem, Hume).</p>
+      </div>
+    </div></div>
+  </article>
+
+  <!-- CONTRA: Crop deaths -->
+  <article class="arg contra">
+    <div class="arg-top">
+      <span class="side-badge">Contra</span>
+      <div class="claim-wrap">
+        <p class="claim">„Auch der Ackerbau tötet Tiere – vegan ist also nicht tierleidfrei.“</p>
+        <span class="claim-tag">Konsequenz-Argument, Contra-Seite</span>
+      </div>
+    </div>
+    <div class="verdict-row">
+      <span class="stamp part">Teilweise</span>
+      <span class="data-chip">wahr, aber netto meist weniger Tote</span>
+    </div>
+    <div class="arg-body"><div class="factcheck">
+      <p>Richtig ist: Auch pflanzliche Landwirtschaft tötet Feldtiere (Ernte, Pestizide, Habitatverlust). Der Schluss „also egal“ greift aber zu kurz: Ein Großteil der weltweiten Ackerfläche produziert <em>Futtermittel</em> für Nutztiere. Wer direkt Pflanzen isst, verursacht netto meist weniger Anbaufläche – und damit tendenziell weniger Feldtier-Tode – als über den Umweg Tier. Der Einwand ist ein berechtigter Nuancierungspunkt, kein Gegenbeweis.</p>
+      <div class="source">
+        <div class="source-label">Quelle · Kontext</div>
+        <p class="quote">Producers have limits on how far they can reduce impacts</p>
+        <p class="cite">Landnutzungs-Argument gestützt durch Poore &amp; Nemecek (2018), Science 360(6392):987–992. <a href="https://doi.org/10.1126/science.aaq0216">doi.org/10.1126/science.aaq0216</a></p>
+      </div>
+    </div></div>
+  </article>
+</section>
+
+<!-- ============ 05 SPORT ============ -->
+<section class="theme" id="sport">
+  <div class="theme-head">
+    <span class="theme-num">05</span>
+    <h2>Sport, Muskeln &amp; Leistung</h2>
+  </div>
+  <p class="theme-intro">Der für einen aktiven, langen Alltag entscheidende Abschnitt – und einer, in dem sich die Datenlage in den letzten Jahren spürbar verschoben hat.</p>
+
+  <!-- CONTRA: kein Muskelaufbau -->
+  <article class="arg contra">
+    <div class="arg-top">
+      <span class="side-badge">Contra</span>
+      <div class="claim-wrap">
+        <p class="claim">„Ohne Fleisch kann man keine Muskeln aufbauen / keine Leistung bringen.“</p>
+        <span class="claim-tag">Protein-Argument, Contra-Seite</span>
+      </div>
+    </div>
+    <div class="verdict-row">
+      <span class="stamp no">Widerlegt</span>
+      <span class="data-chip">bei ~1,6&nbsp;g Protein/kg gleichwertig</span>
+    </div>
+    <div class="arg-body"><div class="factcheck">
+      <p>Kontrollierte Studien zeigen: Bei <em>gleicher</em> und ausreichend hoher Proteinzufuhr (~1,6&nbsp;g/kg Körpergewicht/Tag) baut eine rein pflanzliche Ernährung Muskelmasse und Kraft genauso gut auf wie eine omnivore. Pflanzenprotein hat einzeln oft weniger Leucin/Methionin – das gleicht man durch Menge und Kombination (Hülsenfrüchte + Getreide, Soja, Seitan) aus. Der Muskelaufbau-Einwand ist damit für geplante Ernährung widerlegt; er bleibt eine <em>Warnung</em>, auf Proteinmenge zu achten.</p>
+      <div class="source">
+        <div class="source-label">Quelle · Zitat</div>
+        <p class="quote">a high-protein exclusively plant-based diet supports muscle mass and strength gains comparable to an omnivorous diet</p>
+        <p class="cite">Bonne T et al. (2025), zitiert Evidenz von Hevia-Larraín et al. (2021, Sports Medicine). Physiological Reports 13:e70539. <a href="https://doi.org/10.14814/phy2.70539">doi.org/10.14814/phy2.70539</a></p>
+      </div>
+    </div></div>
+  </article>
+
+  <!-- CONTRA: Kreatin -->
+  <article class="arg contra">
+    <div class="arg-top">
+      <span class="side-badge">Contra</span>
+      <div class="claim-wrap">
+        <p class="claim">Veganer haben niedrigere Kreatin- und Carnosin-Speicher (schlecht für Kraft/Sprint).</p>
+        <span class="claim-tag">Ergogenik-Argument, Contra-Seite</span>
+      </div>
+    </div>
+    <div class="verdict-row">
+      <span class="stamp part">Teilweise</span>
+      <span class="data-chip">real, aber durch Supplement lösbar</span>
+      <span class="data-chip">Veganer reagieren oft stärker</span>
+    </div>
+    <div class="arg-body"><div class="factcheck">
+      <p>Stimmt: Ohne Fleisch/Fisch sind die Muskel-Kreatinspeicher ~20–30&nbsp;% niedriger. Der Clou: Gerade deshalb sprechen Veganer:innen auf Kreatin-Supplementierung oft <em>besser</em> an – 3–5&nbsp;g Kreatinmonohydrat pro Tag heben die Speicher auf oder über das Niveau von Fleischessenden und verbessern Kraft/Explosivität. Ein echter, aber trivial behebbarer Nachteil – daher „teilweise“.</p>
+      <div class="source">
+        <div class="source-label">Quelle · Zitat</div>
+        <p class="quote">creatine supplementation in individuals following a vegan diet enhances muscle strength and lower-body muscular power</p>
+        <p class="cite">RCT (2026): <em>Does creatine supplementation improve strength and power … on a vegan diet?</em> Eur J Appl Physiol. <a href="https://doi.org/10.1007/s00421-026-06323-5">doi.org/10.1007/s00421-026-06323-5</a></p>
+      </div>
+    </div></div>
+  </article>
+
+  <!-- PRO: Sportler geeignet -->
+  <article class="arg pro">
+    <div class="arg-top">
+      <span class="side-badge">Pro</span>
+      <div class="claim-wrap">
+        <p class="claim">Vegane Ernährung ist auch für ernsthafte Sportler:innen geeignet.</p>
+        <span class="claim-tag">Leistungs-Argument, Pro-Seite</span>
+      </div>
+    </div>
+    <div class="verdict-row">
+      <span class="stamp yes">Bestätigt</span>
+      <span class="data-chip">mit gezielter Supplementierung</span>
+    </div>
+    <div class="arg-body"><div class="factcheck">
+      <p>Der Fachkonsens: Vegane und vegetarische Kost ist für Leistungssport eine geeignete, gesunde Option; Proteinpräparate sind für die meisten nicht nötig, wenn genug pflanzliches Protein gegessen wird. Sinnvoll supplementiert werden B12 (immer), Vitamin D, Jod, Omega-3 (Algenöl) und – für Kraft/Sprint – Kreatin. Studien finden vergleichbare Leistungsergebnisse zu Omnivoren.</p>
+      <div class="source">
+        <div class="source-label">Quelle · Zitat</div>
+        <p class="quote">Vegan and vegetarian diets are appropriate healthy options for serious athletes</p>
+        <p class="cite">Academy of Nutrition and Dietetics – Vegetarian Nutrition DPG (2021): <em>Research Brief: Plant-Based Diets and Athletic Performance.</em> Ergänzt durch das Positionspapier Melina et&nbsp;al. (2016).</p>
+      </div>
+    </div></div>
+  </article>
+</section>
+
+<!-- ============ WARUM ============ -->
+<section class="theme" id="warum">
+  <div class="theme-head">
+    <span class="theme-num">·</span>
+    <h2>Warum leben manche vegan – und andere nicht?</h2>
+  </div>
+  <div class="prose">
+    <p>Die Debatte wirkt oft wie ein Streit um Fakten. Meistens ist es aber ein Streit um <strong>Werte und Gewichtung</strong> – dieselben Daten führen zu verschiedenen Entscheidungen, je nachdem, was jemandem am wichtigsten ist.</p>
+
+    <h3>Warum Menschen vegan werden</h3>
+    <ul>
+      <li><strong>Ethik</strong> – der häufigste und stärkste Beweggrund: Tierleid vermeiden. Für viele ist das ein moralisches Muss, das über Bequemlichkeit steht.</li>
+      <li><strong>Umwelt</strong> – der wissenschaftlich am besten abgesicherte Grund. Wer den Klima-Fußabdruck als Priorität setzt, kommt fast zwangsläufig bei „weniger/keine Tierprodukte“ an.</li>
+      <li><strong>Gesundheit</strong> – niedrigeres Herz-, Diabetes- und Cholesterinrisiko motiviert einen Teil, meist mittleren Alters.</li>
+      <li><strong>Identität &amp; Umfeld</strong> – Werte, soziale Gruppe, Religion (z.&nbsp;B. Adventisten), Vorbilder.</li>
     </ul>
-    <p class="modal-section-title">Zubereitung</p>
-    <ol class="steps-list">
-      ${r.steps.map((step, i) => `
-        <li class="step-item">
-          <span class="step-num">${String(i+1).padStart(2,'0')}</span>
-          <div class="step-content">
-            <p class="step-title">${step.title}</p>
-            <p class="step-text">${step.text}</p>
-            ${step.time ? `<p class="step-time">⏱ ${step.time}</p>` : ''}
-          </div>
-        </li>
-      `).join('')}
+
+    <h3>Warum Menschen es nicht werden</h3>
+    <ul>
+      <li class="minus"><strong>Genuss &amp; Gewohnheit</strong> – Geschmack, Kultur, Tradition und Essen als soziales Ritual wiegen für viele schwerer als abstrakte Statistik.</li>
+      <li class="minus"><strong>Bequemlichkeit &amp; Aufwand</strong> – „gut geplant“ ist die Bedingung für fast jeden Gesundheitsvorteil – und Planung kostet Zeit und Wissen.</li>
+      <li class="minus"><strong>Sorge um Nährstoffe</strong> – B12, Eisen, Knochen, Muskeln: reale Punkte, die (siehe oben) lösbar sind, aber Unsicherheit erzeugen.</li>
+      <li class="minus"><strong>Skepsis gegenüber „relativen Risiken“</strong> – wer versteht, dass +20&nbsp;% oft nur wenige absolute Fälle sind, fühlt sich weniger gedrängt.</li>
+    </ul>
+
+    <p>Kurz: <strong>Fakten entscheiden die Debatte nicht allein.</strong> Sie grenzen den Raum vernünftiger Entscheidungen ein – innerhalb dessen bestimmen persönliche Werte, wo man landet.</p>
+  </div>
+</section>
+
+<!-- ============ FAZIT ============ -->
+<section class="theme" id="fazit">
+  <div class="theme-head">
+    <span class="theme-num">·</span>
+    <h2>Fazit: Was ist wirklich belegt?</h2>
+  </div>
+
+  <div class="prose">
+    <p class="divider-note">Ehrliche Vorbemerkung</p>
+    <p>Es gibt <strong>keine „eine, faktisch bewiesene beste Ernährung“ für alle Menschen.</strong> Ernährungswissenschaft liefert Wahrscheinlichkeiten aus Beobachtungsstudien, keine mathematischen Beweise, und der optimale Teller hängt von Genetik, Gesundheit, Zielen und Werten ab. Was die Daten aber sehr wohl hergeben, ist eine klare <em>Richtung</em>.</p>
+    <p>Diese Richtung lautet fast einhellig: <strong>überwiegend pflanzlich, wenig verarbeitet, wenig rotes/verarbeitetes Fleisch, viel Gemüse, Hülsenfrüchte, Vollkorn, Nüsse.</strong> Genau dieses Muster erklärt fast alle Gesundheitsvorteile in den Studien – nicht die letzten paar Prozent „streng vegan vs. fast vegan“.</p>
+  </div>
+
+  <div class="two-col">
+    <div class="verdict-box">
+      <div class="kicker">Beste Wahl · allgemein</div>
+      <h4>Stark pflanzenbasiert – vegan ist eine exzellente Variante davon</h4>
+      <p>Für die Allgemeinbevölkerung ist eine gut geplante, überwiegend pflanzliche Ernährung robust mit weniger Herzkrankheit, Diabetes und einem kleineren Umwelt-Fußabdruck verbunden.</p>
+      <p>Eine <strong>vollständig vegane</strong> Kost ist – bei B12-Supplementierung und Blick auf Kalzium, Jod, D, Omega-3 – eine gesunde, ethisch und ökologisch besonders starke Umsetzung dieses Musters. Ob „100&nbsp;% vegan“ gesundheitlich <em>messbar</em> besser ist als „90&nbsp;% pflanzlich + etwas Fisch“, ist nicht eindeutig belegt; beim <strong>Umwelt- und Tierethik-Argument</strong> gewinnt vegan dagegen klar.</p>
+      <p class="answer">Faktisch belegt ist der Hebel „mehr Pflanzen, weniger Tier“. Vegan ist die konsequenteste, umwelt- und ethikstärkste Form davon – und gesundheitlich mindestens gleichwertig, wenn geplant.</p>
+    </div>
+
+    <div class="verdict-box">
+      <div class="kicker">Beste Wahl · gesund, lang &amp; athletisch</div>
+      <h4>Pflanzenbasiert plus 4 nicht verhandelbare Stellschrauben</h4>
+      <p>Für ein langes, sportlich aktives Leben zeigt die Evidenz: Die Ernährungs<em>form</em> ist zweitrangig gegenüber der Ausführung. Entscheidend sind:</p>
+      <ul>
+        <li><strong>Protein</strong> ~1,6&nbsp;g/kg/Tag – dann ist Muskelaufbau vegan gleichwertig.</li>
+        <li><strong>Supplemente</strong>: B12 (immer), Vitamin D, Jod, Omega-3 (Algenöl).</li>
+        <li><strong>Kreatin</strong> 3–5&nbsp;g/Tag – gleicht den einzigen echten Leistungsnachteil aus.</li>
+        <li><strong>Kalzium &amp; Körpermasse</strong> – schützt vor dem erhöhten Frakturrisiko.</li>
+      </ul>
+      <p class="answer">So umgesetzt gibt es keinen belegten Leistungs- oder Langlebigkeitsvorteil von Fleisch. Eine geplante, supplementierte pflanzenbasierte Kost ist für ein gesundes, athletisches langes Leben eine erstklassige – und nachweislich ausreichende – Wahl.</p>
+    </div>
+  </div>
+
+  <div class="prose" style="margin-top:24px">
+    <p>Die stärkste, ehrlichste Ein-Satz-Antwort auf „was ist die beste Wahl?“ lautet daher: <strong>Nicht die Etikette entscheidet, sondern die Qualität.</strong> Eine gut geplante vegane Ernährung schlägt eine schlechte omnivore deutlich – und eine schlechte vegane (viel Zucker, Weißmehl, Fertigprodukte, kein B12) verliert gegen eine gute omnivore. Der belegte Gewinner ist „pflanzenbetont und durchdacht“; wie weit man Richtung 100&nbsp;% vegan geht, entscheiden Umwelt- und Ethikgewicht – nicht die reine Gesundheitsstatistik.</p>
+  </div>
+</section>
+
+<!-- ============ QUELLEN ============ -->
+<section class="theme" id="quellen">
+  <div class="theme-head">
+    <span class="theme-num">·</span>
+    <h2>Quellen im Überblick</h2>
+  </div>
+  <div class="prose refs">
+    <ol>
+      <li>Melina V, Craig W, Levin S (2016). Position of the Academy of Nutrition and Dietetics: Vegetarian Diets. <em>J Acad Nutr Diet</em> 116(12):1970–1980. <a href="https://doi.org/10.1016/j.jand.2016.09.025">doi.org/10.1016/j.jand.2016.09.025</a></li>
+      <li>Raj S, Guest NS, Landry MJ et al. (2025). Vegetarian Dietary Patterns for Adults: A Position Paper of the Academy of Nutrition and Dietetics. <em>J Acad Nutr Diet.</em> <a href="https://doi.org/10.1016/j.jand.2025.01.006">doi.org/10.1016/j.jand.2025.01.006</a></li>
+      <li>Tong TYN, Appleby PN, Bradbury KE et al. (2019). Risks of ischaemic heart disease and stroke in meat eaters, fish eaters, and vegetarians over 18 years: EPIC-Oxford study. <em>BMJ</em> 366:l4897. <a href="https://doi.org/10.1136/bmj.l4897">doi.org/10.1136/bmj.l4897</a></li>
+      <li>Orlich MJ, Singh PN, Sabaté J et al. (2013). Vegetarian Dietary Patterns and Mortality in Adventist Health Study 2. <em>JAMA Intern Med</em> 173(13):1230–1238. <a href="https://doi.org/10.1001/jamainternmed.2013.6473">doi.org/10.1001/jamainternmed.2013.6473</a></li>
+      <li>Tong TYN, Appleby PN, Armstrong MEG et al. (2020). Vegetarian and vegan diets and risks of total and site-specific fractures: EPIC-Oxford study. <em>BMC Medicine</em> 18:353. <a href="https://doi.org/10.1186/s12916-020-01815-3">doi.org/10.1186/s12916-020-01815-3</a></li>
+      <li>Poore J, Nemecek T (2018). Reducing food's environmental impacts through producers and consumers. <em>Science</em> 360(6392):987–992. <a href="https://doi.org/10.1126/science.aaq0216">doi.org/10.1126/science.aaq0216</a></li>
+      <li>Vitamin-B12-Scoping-Review (2024). Exploring Vitamin B12 Supplementation in the Vegan Population. <em>Nutrients</em> 16(10):1442. <a href="https://doi.org/10.3390/nu16101442">doi.org/10.3390/nu16101442</a></li>
+      <li>Dawczynski C et al. (2022). NuEva-Studie – Nährstoffstatus verschiedener Ernährungsformen. <em>Nutrients</em> 14(19):4144. <a href="https://doi.org/10.3390/nu14194144">doi.org/10.3390/nu14194144</a></li>
+      <li>Bonne T et al. (2025). Muscle creatine levels and sprint performance in vegans and vegetarians. <em>Physiological Reports</em> 13:e70539. <a href="https://doi.org/10.14814/phy2.70539">doi.org/10.14814/phy2.70539</a></li>
+      <li>Creatine RCT (2026). Does creatine supplementation improve strength and power on a vegan diet? <em>Eur J Appl Physiol.</em> <a href="https://doi.org/10.1007/s00421-026-06323-5">doi.org/10.1007/s00421-026-06323-5</a></li>
+      <li>Academy of Nutrition and Dietetics, Vegetarian Nutrition DPG (2021). Research Brief: Plant-Based Diets and Athletic Performance.</li>
     </ol>
-    ${r.note ? `<div class="modal-note">${r.note}</div>` : ''}
-  `;
- 
-  document.getElementById('modalBody').innerHTML = html;
-  document.getElementById('modalOverlay').classList.add('active');
-  document.body.style.overflow = 'hidden';
-}
- 
-function closeModal(e) {
-  if (e.target === document.getElementById('modalOverlay')) closeModalDirect();
-}
- 
-function closeModalDirect() {
-  document.getElementById('modalOverlay').classList.remove('active');
-  document.body.style.overflow = '';
-}
- 
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeModalDirect();
-});
- 
-renderRecipes();
-</script>
+    <p style="margin-top:18px;font-size:12.5px">Alle Effektgrößen (Hazard Ratios, Prozentangaben) stammen aus den jeweils verlinkten Primärstudien. Zahlen sind Beobachtungs-Zusammenhänge, keine garantierten individuellen Ergebnisse. Die Zitate sind kurze Belegausschnitte im Original­wortlaut der Quelle.</p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p class="disc"><strong>Wichtiger Hinweis:</strong> Diese Seite ist eine Bildungs-Zusammenstellung wissenschaftlicher Quellen, keine medizinische Beratung. Vor einer vollständigen Ernährungsumstellung – besonders in Schwangerschaft, Kindheit oder bei Vorerkrankungen – ist eine Rücksprache mit Ärzt:in oder Ernährungsfachkraft sinnvoll. B12-Supplementierung ist für Veganer:innen nicht optional.</p>
+    <p>Faktencheck &amp; Aufbereitung für die Ernährungs-Seite · zuletzt geprüft Juli 2026.</p>
+  </div>
+</footer>
+
 </body>
 </html>
