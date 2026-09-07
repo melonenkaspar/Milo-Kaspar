@@ -115,8 +115,10 @@ tr:last-child td{border-bottom:0}
 .lesson{height:100%;padding:3px 5px;display:flex;flex-direction:column;
   justify-content:center;overflow:hidden;background:var(--sel);
   border-left:2px solid var(--link)}
+.lesson.multi{border-left-width:3px}
 .lesson a{font-weight:600;font-size:11.5px;color:var(--ink);
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lesson.multi a{white-space:normal}
 .lesson span{font-size:10.5px;color:var(--ink-3);
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .free{height:100%;display:flex;align-items:center;justify-content:center;
@@ -302,40 +304,58 @@ function occupancy(ids, onlyRoom) {
     for (const [day, first, last, room] of COURSES[id].slots) {
       if (onlyRoom && room !== onlyRoom) continue;
       for (let p = first; p <= last; p++) {
-        grid[day + "|" + p] = {id, room, top: p === first};
+        grid[day + "|" + p] = {id, room, top: p === first, span: last - first + 1};
       }
     }
   }
   return grid;
 }
 
-/* second: was in der zweiten Zeile einer Zelle steht. */
-function week(ids, second, onlyRoom) {
+/* opts: {stufe, teacher, room} steuert, was in der zweiten Zeile einer Zelle
+   steht. Doppel-/Dreifachstunden werden per rowspan zu einem Block
+   zusammengefasst statt eine zweite, scheinbar freie Zelle zu zeigen. */
+function week(ids, opts, onlyRoom) {
+  const show = Object.assign({stufe: true, teacher: true, room: true}, opts);
   const grid = occupancy(ids, onlyRoom);
   return weekGrid((day, period) => {
     const slot = grid[day + "|" + period];
-    if (!slot || !slot.top) return "";
+    if (!slot || !slot.top) return null;
     const c = COURSES[slot.id];
-    const sub = second === "members" ? c.members.join(", ")
-      : second === "teacher" ? teacherShort(c.teacher) : (slot.room || "");
-    return `<div class="lesson">${link("kurs", slot.id, courseName(c))}` +
-           `<span>${esc(sub)}</span></div>`;
+    const bits = [];
+    if (show.stufe) bits.push(c.levels.join("/"));
+    if (show.teacher) bits.push(teacherShort(c.teacher));
+    if (show.room) bits.push(slot.room || "");
+    return {
+      rowspan: slot.span,
+      html: `<div class="lesson${slot.span > 1 ? " multi" : ""}">` +
+            `${link("kurs", slot.id, courseName(c))}` +
+            `<span>${esc(bits.filter(Boolean).join(" · "))}</span></div>`
+    };
   }, Math.max(6, ...Object.keys(grid).map(k => +k.split("|")[1]), 0));
 }
 
-function weekGrid(render, lastPeriod) {
+/* cellData(day, period) liefert null (leere Zelle) oder {html, rowspan}.
+   Zellen, die von einem rowspan der Zeile darüber abgedeckt sind, werden
+   ausgelassen statt doppelt gezeichnet zu werden. */
+function weekGrid(cellData, lastPeriod) {
   const only = NOW ? NOW.day : 0;
   let out = '<div class="daytabs">' + DAYS.map((d, i) =>
       `<button data-day="${i}"${i === only ? ' aria-current="true"' : ""}>${d}</button>`
     ).join("") + "</div>";
   out += `<div class="scroll"><table class="week" data-only="${only}"><thead><tr><th></th>` +
     DAYS.map((d, i) => `<th data-d="${i}">${d}</th>`).join("") + "</tr></thead><tbody>";
+  const skipUntil = Array(DAYS.length).fill(0);
   for (let p = 1; p <= lastPeriod; p++) {
     const nowRow = NOW && NOW.period === p ? " class=\"now\"" : "";
     out += `<tr${nowRow}><td class="hour">${p}<small>${TIMES[p] || ""}</small></td>`;
     for (let d = 0; d < DAYS.length; d++) {
-      const isNow = NOW && NOW.day === d && NOW.period === p;
-      out += `<td data-d="${d}"${isNow ? ' class="now"' : ""}>${render(d, p)}</td>`;
+      if (skipUntil[d] >= p) continue;
+      const info = cellData(d, p) || {};
+      const rowspan = info.rowspan > 1 ? info.rowspan : 1;
+      if (rowspan > 1) skipUntil[d] = p + rowspan - 1;
+      const isNow = NOW && NOW.day === d && NOW.period >= p && NOW.period <= p + rowspan - 1;
+      out += `<td data-d="${d}"${isNow ? ' class="now"' : ""}` +
+             `${rowspan > 1 ? ` rowspan="${rowspan}"` : ""}>${info.html || ""}</td>`;
     }
     out += "</tr>";
   }
@@ -579,7 +599,7 @@ function teacherView(ab) {
       ? " · " + esc(STAFF[ab].subjects) : ""} ·
       ${ids.length} ${ids.length === 1 ? "Kurs" : "Kurse"} ·
       ${hours} Wochenstunden · ${learners.size} Lerngruppen-Mitglieder</div>
-    <h3>Woche</h3>${week(ids)}
+    <h3>Woche</h3>${week(ids, {teacher: false})}
     <h3>Freie Stunden</h3>${plain(attendance(ids))}
     <h3>Kurse</h3>${table([
       {key: "fach", label: "Fach"},
@@ -609,7 +629,7 @@ function roomView(room) {
   return `<h2>Raum ${esc(room)}</h2>
     <div class="summary">${ids.length} Kurse · ${hours} von 50 möglichen
       Wochenstunden belegt</div>
-    <h3>Belegung</h3>${week(ids, "members", room)}
+    <h3>Belegung</h3>${week(ids, {room: false}, room)}
     <h3>Kurse</h3>${table([
       {key: "fach", label: "Fach"},
       {key: "stufe", label: "Stufe"},
@@ -620,26 +640,51 @@ function roomView(room) {
 
 /* --- Terminsuche ------------------------------------------------------- */
 
+/* group: Array aus {kind: "person"|"teacher", id}. */
 let group = [];
+
+const coursesOf = g => g.kind === "teacher" ? STAFF[g.id].courses : PEOPLE[g.id].courses;
+const groupLabel = g => g.kind === "teacher" ? teacherName(g.id) + " (Lehrkraft)" : g.id;
 
 function finderView() {
   if (!group.length) {
     return `<h2>Termin finden</h2>
-      <div class="summary">Wann haben mehrere Personen oder Klassen gleichzeitig
-        frei, und welcher Raum ist dann leer?</div>
+      <div class="summary">Wann haben mehrere Personen, Klassen oder Lehrkräfte
+        gleichzeitig frei, und wo sehen sie sich bereits im Unterricht?</div>
       <p class="note">Links jemanden anklicken, um ihn hinzuzufügen.
-        Klassen und Schüler:innen lassen sich mischen.</p>`;
+        Klassen, Schüler:innen und Lehrkräfte lassen sich mischen.</p>`;
   }
 
   const busy = new Set();
-  for (const name of group) {
-    for (const id of PEOPLE[name].courses) {
+  for (const g of group) {
+    for (const id of coursesOf(g)) {
       for (const [day, first, last] of COURSES[id].slots) {
         for (let p = first; p <= last; p++) busy.add(day + "|" + p);
       }
     }
   }
   const isFree = (day, period) => !busy.has(day + "|" + period);
+
+  const shared = new Map();
+  for (const g of group) {
+    for (const id of coursesOf(g)) {
+      if (!shared.has(id)) shared.set(id, []);
+      shared.get(id).push(g);
+    }
+  }
+  const sharedRows = [...shared].filter(([, list]) => list.length > 1).map(([id, list]) => {
+    const c = COURSES[id];
+    const names = list.map(groupLabel).join(", ");
+    return {
+      fach: cell(courseName(c), link("kurs", id, courseName(c))),
+      lehrkraft: cell(teacherName(c.teacher),
+        link("lehrkraft", c.teacher, teacherName(c.teacher))),
+      termine: cell(meetings(c), esc(meetings(c))),
+      raum: cell(roomsOf(c), esc(roomsOf(c))),
+      beteiligte: cell(list.length,
+        `${list.length}<span style="color:var(--ink-3)"> · ${esc(names)}</span>`)
+    };
+  });
 
   const blocks = [];
   for (let d = 0; d < DAYS.length; d++) {
@@ -664,17 +709,34 @@ function finderView() {
     };
   });
 
-  const chips = group.map(name =>
-    `<button data-drop="${esc(name)}">${esc(name)}</button>`).join("") +
+  const chips = group.map((g, i) =>
+    `<button data-drop="${i}">${esc(groupLabel(g))}</button>`).join("") +
     '<button class="clear" data-drop="*">alle entfernen</button>';
 
+  const persons = group.filter(g => g.kind === "person").length;
+  const staff = group.filter(g => g.kind === "teacher").length;
+  const summary = [
+    persons ? `${persons} ${persons === 1 ? "Person/Klasse" : "Personen/Klassen"}` : "",
+    staff ? `${staff} ${staff === 1 ? "Lehrkraft" : "Lehrkräfte"}` : ""
+  ].filter(Boolean).join(", ");
+
   return `<h2>Termin finden</h2>
-    <div class="summary">${group.length}
-      ${group.length === 1 ? "Beteiligter" : "Beteiligte"} ·
-      ${blocks.reduce((n, b) => n + b[1].length, 0)} gemeinsam freie Stunden</div>
+    <div class="summary">${summary} ·
+      ${blocks.reduce((n, b) => n + b[1].length, 0)} gemeinsam freie Stunden ·
+      ${sharedRows.length} gemeinsame Kurse</div>
     <div class="chips">${chips}</div>
+    ${group.length > 1 ? `<h3>Gemeinsame Kurse</h3>
+    <p class="note">Kurse, in denen sich mindestens zwei der Ausgewählten bereits sehen.</p>
+    ${sharedRows.length ? table([
+      {key: "fach", label: "Fach"},
+      {key: "lehrkraft", label: "Lehrkraft"},
+      {key: "termine", label: "Termine"},
+      {key: "raum", label: "Raum"},
+      {key: "beteiligte", label: "Beteiligte", right: true}
+    ], sharedRows, {key: "beteiligte", dir: -1})
+      : '<p class="note">Kein gemeinsamer Kurs.</p>'}` : ""}
     <h3>Gemeinsam frei</h3>
-    ${weekGrid((d, p) => isFree(d, p) ? '<div class="free">frei</div>' : "", 10)}
+    ${weekGrid((d, p) => isFree(d, p) ? {html: '<div class="free">frei</div>'} : null, 10)}
     <h3>Freie Blöcke</h3>
     <p class="note">„Frei“ heißt: kommt in diesen Plänen nicht vor.
       AGs, Konferenzen, Vertretung und Fremdnutzung stehen nicht in den PDFs.</p>
@@ -747,15 +809,36 @@ const $tally = document.getElementById("tally");
 const $detail = document.getElementById("detail");
 
 function entries() {
-  if (view === "people" || view === "finder") {
+  if (view === "people") {
     return Object.keys(PEOPLE).sort(de.compare)
       .filter(n => !level || PEOPLE[n].level === level)
       .map(n => ({
-        id: n, route: "person/" + url(n), title: n,
+        id: n, kind: "person", route: "person/" + url(n), title: n,
         note: `${PEOPLE[n].level} · ${PEOPLE[n].courses.length} Kurse, ${PEOPLE[n].hours} Std.`,
         haystack: (n + " " + PEOPLE[n].level + " " +
           PEOPLE[n].courses.map(id => courseName(COURSES[id])).join(" ")).toLowerCase()
       }));
+  }
+  if (view === "finder") {
+    const people = Object.keys(PEOPLE).sort(de.compare)
+      .filter(n => !level || PEOPLE[n].level === level)
+      .map(n => ({
+        id: n, kind: "person", route: "", title: n,
+        note: `${PEOPLE[n].level} · ${PEOPLE[n].courses.length} Kurse, ${PEOPLE[n].hours} Std.`,
+        haystack: (n + " " + PEOPLE[n].level + " " +
+          PEOPLE[n].courses.map(id => courseName(COURSES[id])).join(" ")).toLowerCase()
+      }));
+    const staff = Object.keys(STAFF)
+      .filter(ab => !level || STAFF[ab].courses.some(id => COURSES[id].levels.includes(level)))
+      .sort((a, b) => de.compare(teacherName(a), teacherName(b)))
+      .map(ab => ({
+        id: ab, kind: "teacher", route: "", title: teacherName(ab) + " · Lehrkraft",
+        note: `${STAFF[ab].courses.length} Kurse` +
+              `${STAFF[ab].subjects ? " · " + STAFF[ab].subjects : ""}`,
+        haystack: (ab + " " + teacherName(ab) + " " + STAFF[ab].subjects + " " +
+          STAFF[ab].courses.map(id => courseName(COURSES[id])).join(" ")).toLowerCase()
+      }));
+    return [...people, ...staff];
   }
   if (view === "courses") {
     return Object.keys(COURSES)
@@ -799,9 +882,12 @@ function renderList() {
     ? all.filter(e => terms.every(t => e.haystack.includes(t))) : all;
   $tally.textContent = terms.length
     ? `${hits.length} von ${all.length}` : `${all.length} Einträge`;
+  const isCurrent = e => view === "finder"
+    ? group.some(g => g.kind === e.kind && g.id === e.id)
+    : e.id === selected;
   $results.innerHTML = hits.length
-    ? hits.map(e => `<button data-id="${esc(e.id)}" data-route="${e.route}"` +
-        `${e.id === selected ? ' aria-current="true"' : ""}>` +
+    ? hits.map(e => `<button data-id="${esc(e.id)}" data-kind="${esc(e.kind || "")}"` +
+        ` data-route="${e.route}"${isCurrent(e) ? ' aria-current="true"' : ""}>` +
         `<b>${esc(e.title)}</b><small>${esc(e.note)}</small></button>`).join("")
     : '<div class="blank">Kein Treffer</div>';
 }
@@ -841,9 +927,11 @@ $results.addEventListener("click", event => {
   const button = event.target.closest("button[data-route]");
   if (!button) return;
   if (view === "finder") {
-    const name = button.dataset.id;
-    if (PEOPLE[name] && !group.includes(name)) group.push(name);
+    const entry = {kind: button.dataset.kind, id: button.dataset.id};
+    const idx = group.findIndex(g => g.kind === entry.kind && g.id === entry.id);
+    if (idx === -1) group.push(entry); else group.splice(idx, 1);
     show(finderView());
+    renderList();
   } else {
     location.hash = button.dataset.route;
   }
@@ -852,8 +940,10 @@ $results.addEventListener("click", event => {
 $detail.addEventListener("click", event => {
   const chip = event.target.closest("[data-drop]");
   if (!chip) return;
-  group = chip.dataset.drop === "*" ? [] : group.filter(n => n !== chip.dataset.drop);
+  if (chip.dataset.drop === "*") group = [];
+  else group.splice(Number(chip.dataset.drop), 1);
   show(finderView());
+  renderList();
 });
 
 $search.addEventListener("input", renderList);
